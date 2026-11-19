@@ -1,16 +1,16 @@
 id: cloudarmor-staging-eight
 service: game-engine
 env: staging
-claim: "cf-origin-lock-staging terpasang di 8 backend (5 game-engine + 3 tripay: be, callback, open)"
-belief_source: "MASTER_INFRA_KNOWLEDGE_BASE.md §14; live-verified 2026-11-15"
-note: "3 backend tripay bukan dari scope game-engine — jika tripay melepas policy, count drop ke 5 = drift intentional, flip kartu."
+claim: "cf-origin-lock-staging terpasang di 10 backend (5 game-engine + 3 tripay: be, callback, open + 2 amp: build, serve)"
+belief_source: "Live-verified 2026-11-15 (8 backend) → drift sweep 2026-11-19: +2 amp (amp-build, amp-serve)"
+note: "3 backend tripay & 2 backend amp bukan dari scope game-engine — jika pihak lain melepas/menambah policy, count berubah = drift (konfirmasi intent lalu update kartu)."
 check:
   tool: gcp_backend_services_policy
   args:
     project: tokobuah-staging-499001
     policy_suffix: cf-origin-lock-staging
 expect:
-  count: 8
+  count: 10
 severity: critical
 recheck: 12h
 retry: 2

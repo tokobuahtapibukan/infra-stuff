@@ -520,7 +520,7 @@ Di project ini, Cloud Armor ter-attach di level **BackendService**, **bukan** di
 * **Attachment chain**: Annotation Service `cloud.google.com/backend-config` → CRD `BackendConfig` GKE (`spec.securityPolicy.name`) → loadbalancer-controller → field `securityPolicy` di `BackendService` (`k8s1-*`).
 * **Active policies (live-verified 2026-11-15)**:
   * `cf-origin-lock-production` (`tokobuah-production`): 5 backend game-engine di namespace `game` (cluster `game-cluster`) — `game-engine-all-service`, `game-engine-launcher-service`, `game-engine-pg-service`, `game-engine-pp-service`, `game-engine-transactions-service`.
-  * `cf-origin-lock-staging` (`tokobuah-staging-499001`): 8 backend — 5 game-engine (namespace `core`) **+ 3 tripay** (`tripay-be`, `tripay-callback`, `tripay-open`).
+  * `cf-origin-lock-staging` (`tokobuah-staging-499001`): 10 backend — 5 game-engine (namespace `core`) **+ 3 tripay** (`tripay-be`, `tripay-callback`, `tripay-open`) **+ 2 amp** (`amp-build-service`, `amp-serve-service`, terkonfirmasi drift sweep 2026-11-19).
   * Bentuk rule identik: prio `1000`/`1010` allow Cloudflare IPv4, prio `1020` allow Cloudflare IPv6, prio `2147483647` default `deny(403)`; semua `preview: false` (enforcing, bukan preview).
 * **Efek operasional**: Hanya IP proxy Cloudflare yang bisa mencapai backend-backend tersebut via GCLB. Probe langsung dari source IP non-Cloudflare (office, script, kubernetes exec dari VM lain) akan mengembalikan **403 dari Cloud Armor** — gejala yang bisa dikira service down padahal source-lock bekerja sesuai desain. Untuk testing, akses via domain yang di-proxy Cloudflare.
 * **Perintah verifikasi**:

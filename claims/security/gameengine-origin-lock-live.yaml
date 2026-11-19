@@ -7,7 +7,7 @@ note: "IP pada URL dari kartu gameengine-gclb-ip; jika IP pindah, kartu ini ikut
 check:
   tool: http_probe_status
   args:
-    url: "http://34.110.211.59/"
+    url: "http://34.110.211.59/v1/seamless/pp"
     host_header: buah.iknmarketfruit.com
 expect:
   status: 403

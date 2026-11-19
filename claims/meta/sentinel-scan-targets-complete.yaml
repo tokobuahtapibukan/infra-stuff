@@ -1,15 +1,13 @@
 id: sentinel-scan-targets-complete
 service: meta
 env: production
-claim: "Semua global HTTP LB production ter-cover oleh scan-target 7-day direct-probe di tokobuah-agentic-hub (core/sre_and_waf_live.py)"
-belief_source: "Audit kode 2026-11-19: scan-target di-hardcode (dulu hanya game-engine-ingress & amp-ingress) → blind spot"
-note: "KARTU META (kesehatan radar). Drift di sini = sentinel buta terhadap LB baru, bukan drift infra itu sendiri. Fix = patch list scan-target di hub (jalur drift/auto)."
+claim: "Semua global HTTP LB production yang menerima traffic muncul di log http_load_balancer 7 hari terakhir (mekanisme scan 7-day sentinel hub)"
+belief_source: "Audit kode hub 2026-11-19: scan direct-IP hub bersifat log-based (Cloud Logging resource.type=http_load_balancer) — LB baru tanpa traffic tidak akan pernah terlihat"
+note: "KARTU META (kesehatan radar). 'uncovered' = LB live yang NOL entri log 7d → tidak terlihat oleh sentinel. Drift di sini = radar buta, bukan drift infra. Fix: investigasi (LB baru? traffic mati? log sink bermasalah?)."
 check:
   tool: compare_lb_inventory_vs_hub_scan_targets
   args:
     project: tokobuah-production
-    hub_repo: "~/tokobuah/tokobuah-agentic-hub"
-    hub_scan_file: "core/sre_and_waf_live.py"
 expect:
   uncovered: []
 severity: critical

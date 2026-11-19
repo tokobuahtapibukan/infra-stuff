@@ -1,14 +1,28 @@
 # STATUS BRIEF
 
-> ⚠️ FILE INI **GENERATED** oleh drift engine (Fase 1: manual di Mac → Fase 2: otomatis oleh hub tiap sweep).
-> Jangan edit manual. Data di bawah adalah placeholder sampai sweep pertama berjalan.
+> ⚠️ FILE INI **GENERATED** oleh drift engine — jangan edit manual.
+> Last sweep: **2026-11-19 12:40 UTC** · engine: `drift_engine (mac) v1` (manual)
 
-**Last sweep:** belum ada (engine Fase 1 belum berjalan)
-**Cards:** 14 seeded (2026-11-19) — 5 security · 3 inventory · 2 surface · 3 fix-tracking · 1 meta
+**Total: 14 kartu · ✅ 14 verified · ❌ 0 drift · ⚠️ 0 stale**
+
+## Per environment
 
 | Env | Verified | Drift | Stale |
 |---|---|---|---|
-| production | — | — | — |
-| staging | — | — | — |
+| production | 9 | 0 | 0 |
+| staging | 2 | 0 | 0 |
+| both | 3 | 0 | 0 |
 
-**Open fix-tracking:** P0 secret.yaml (expect flip 26 → 0) · P1 x/net (expect flip 7 → 0) · staging-url-in-prod-bundle (expect flip found → false)
+## ❌ Drift
+
+- (tidak ada — semua klaim sesuai ekspektasi)
+
+## ⚠️ Stale (cek tidak bisa dijalankan)
+
+- (tidak ada)
+
+## 📋 Fix-tracking (open items yang sedang di-follow)
+
+- ✅ `gonet-x-lag` — P1 (masih OPEN): golang.org/x/net versi deklarasinya masih < 0.62.0 di 7 dari 8 repo Go (audit, auth, connecto
+- ✅ `p0-secret-yaml-tracked` — P0 (masih OPEN): 26 file 'secret.yaml*' masih ter-track di git repo company-deployment-key (12 production + 14
+- ✅ `staging-url-in-prod-bundle` — Open finding: JS bundle produksi dutaledak.online masih hardcode 'https://stagingtokobuah.xyz' (fallback canon
