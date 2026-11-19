@@ -11,4 +11,4 @@
 | production | — | — | — |
 | staging | — | — | — |
 
-**Open fix-tracking:** P0 secret.yaml (expect flip 22 → 0) · P1 x/net (expect flip 7 → 0) · staging-url-in-prod-bundle (expect flip found → false)
+**Open fix-tracking:** P0 secret.yaml (expect flip 26 → 0) · P1 x/net (expect flip 7 → 0) · staging-url-in-prod-bundle (expect flip found → false)
