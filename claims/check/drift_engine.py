@@ -460,6 +460,13 @@ def load_cards():
 RECHECK_HOURS = {"12h": 12, "24h": 24, "7d": 168}
 
 
+def _atomic_write(path: Path, text: str):
+    """tulis ke tmp lalu rename (hindari file setengah-jadi bila proses terinterupsi)."""
+    tmp = path.with_suffix(path.suffix + ".tmp")
+    tmp.write_text(text, encoding="utf-8")
+    os.replace(tmp, path)
+
+
 def load_last_runs():
     """ambil run-at terakhir per kartu dari latest.json (untuk honour recheck interval)."""
     f = RESULTS_DIR / "latest.json"
@@ -576,12 +583,12 @@ def main():
             "skipped": sum(r["status"] == "SKIPPED" for r in results)}
 
     RESULTS_DIR.mkdir(exist_ok=True)
-    RESULTS_DIR.joinpath("latest.json").write_text(
+    _atomic_write(RESULTS_DIR / "latest.json",
         json.dumps({"run_at": now.isoformat(), "engine": "drift_engine v1",
                     "cards_total": len(checked), "skipped_total": summ["skipped"],
                     "summary": summ, "results": checked,
                     "skipped": [r["id"] for r in results if r["status"] == "SKIPPED"]},
-                   indent=1), encoding="utf-8")
+                   indent=1))
     write_brief(results, now, summ)
     print(f"\nTotal {len(checked)} kartu dicek: {summ['verified']} verified · "
           f"{summ['drifted']} drifted · {summ['stale']} stale "
@@ -652,7 +659,7 @@ def write_brief(results, now, summ):
     else:
         a("- (belum ada)")
     a("")
-    BRIEF_PATH.write_text("\n".join(lines), encoding="utf-8")
+    _atomic_write(BRIEF_PATH, "\n".join(lines))
 
 
 if __name__ == "__main__":
