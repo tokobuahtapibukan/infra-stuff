@@ -369,6 +369,34 @@ def load_cards():
     return cards
 
 
+RECHECK_HOURS = {"12h": 12, "24h": 24, "7d": 168}
+
+
+def load_last_runs():
+    """ambil run-at terakhir per kartu dari latest.json (untuk honour recheck interval)."""
+    f = RESULTS_DIR / "latest.json"
+    if not f.exists():
+        return {}
+    try:
+        d = json.loads(f.read_text(encoding="utf-8"))
+        return {r["id"]: r.get("at") or d.get("run_at") for r in d.get("results", [])}
+    except Exception:
+        return {}
+
+
+def due_now(card, last_runs):
+    """True jika kartu sudah masuk jadwal recheck (default engine menghormati interval)."""
+    last = last_runs.get(card["id"])
+    if not last:
+        return True
+    try:
+        ts = datetime.fromisoformat(last)
+        age_h = (datetime.now(timezone.utc) - ts).total_seconds() / 3600
+    except Exception:
+        return True
+    return age_h >= RECHECK_HOURS.get(card.get("recheck", "24h"), 24)
+
+
 def run_card(card):
     tool = card["check"]["tool"]
     fn = CHECKS.get(tool)
@@ -401,6 +429,8 @@ def main():
     ap.add_argument("--card")
     ap.add_argument("--env")
     ap.add_argument("--severity")
+    ap.add_argument("--force-all", action="store_true",
+                    help="abaikan interval recheck (jalan semua kartu sekarang)")
     args = ap.parse_args()
 
     cards = load_cards()
@@ -414,10 +444,19 @@ def main():
         print("tidak ada kartu yang sesuai filter")
         sys.exit(1)
 
+    last_runs = {} if args.force_all else load_last_runs()
     results = []
     for c in cards:
+        if not args.force_all and not due_now(c, last_runs):
+            results.append({"id": c["id"], "service": c.get("service"), "env": c.get("env"),
+                            "severity": c.get("severity"), "claim": c.get("claim"),
+                            "card_file": c["_file"], "status": "SKIPPED",
+                            "reason": f"masih dalam jendela recheck {c.get('recheck','24h')}"})
+            print(f"⏭️ [SKIPPED  ] {c['id']:36s} (recheck {c.get('recheck','24h')})")
+            continue
         icon = {"critical": "‼", "warn": "△", "info": "·"}.get(c.get("severity"), " ")
         r = run_card(c)
+        r["at"] = datetime.now(timezone.utc).isoformat()
         results.append({"id": c["id"], "service": c.get("service"), "env": c.get("env"),
                         "severity": c.get("severity"), "claim": c.get("claim"),
                         "card_file": c["_file"], **r})
@@ -425,39 +464,50 @@ def main():
         extra = r.get("detail") or r.get("reason") or ""
         print(f"{mark} [{r['status']:9s}] {icon} {c['id']:36s} {extra}")
 
+    # kartu SKIPPED: catat last_run dari run sebelumnya (bukti masih terawati)
+    for r in results:
+        if r["status"] == "SKIPPED":
+            r["last_run"] = last_runs.get(r["id"])
     now = datetime.now(timezone.utc)
-    summ = {"verified": sum(r["status"] == "VERIFIED" for r in results),
-            "drifted": sum(r["status"] == "DRIFTED" for r in results),
-            "stale": sum(r["status"] == "STALE" for r in results)}
+    checked = [r for r in results if r["status"] != "SKIPPED"]
+    summ = {"verified": sum(r["status"] == "VERIFIED" for r in checked),
+            "drifted": sum(r["status"] == "DRIFTED" for r in checked),
+            "stale": sum(r["status"] == "STALE" for r in checked),
+            "skipped": sum(r["status"] == "SKIPPED" for r in results)}
 
     RESULTS_DIR.mkdir(exist_ok=True)
     RESULTS_DIR.joinpath("latest.json").write_text(
-        json.dumps({"run_at": now.isoformat(), "engine": "drift_engine (mac) v1",
-                    "cards_total": len(results), "summary": summ, "results": results},
+        json.dumps({"run_at": now.isoformat(), "engine": "drift_engine v1",
+                    "cards_total": len(checked), "skipped_total": summ["skipped"],
+                    "summary": summ, "results": checked,
+                    "skipped": [r["id"] for r in results if r["status"] == "SKIPPED"]},
                    indent=1), encoding="utf-8")
     write_brief(results, now, summ)
-    print(f"\nTotal {len(results)} kartu: {summ['verified']} verified · "
-          f"{summ['drifted']} drifted · {summ['stale']} stale")
+    print(f"\nTotal {len(checked)} kartu dicek: {summ['verified']} verified · "
+          f"{summ['drifted']} drifted · {summ['stale']} stale "
+          f"(+{summ['skipped']} skipped dalam jendela recheck)")
     print(f"Brief: {BRIEF_PATH}")
 
 
 def write_brief(results, now, summ):
     lines = []
     a = lines.append
+    checked = [r for r in results if r["status"] != "SKIPPED"]
     a("# STATUS BRIEF")
     a("")
     a("> ⚠️ FILE INI **GENERATED** oleh drift engine — jangan edit manual.")
-    a(f"> Last sweep: **{now.strftime('%Y-%m-%d %H:%M UTC')}** · engine: `drift_engine (mac) v1` (manual)")
+    a(f"> Last sweep: **{now.strftime('%Y-%m-%d %H:%M UTC')}** · engine: `drift_engine v1`")
     a("")
-    a(f"**Total: {len(results)} kartu · ✅ {summ['verified']} verified · "
-      f"❌ {summ['drifted']} drift · ⚠️ {summ['stale']} stale**")
+    a(f"**Total dicek: {len(checked)} kartu · ✅ {summ['verified']} verified · "
+      f"❌ {summ['drifted']} drift · ⚠️ {summ['stale']} stale · "
+      f"⏭️ {summ.get('skipped', 0)} dalam jendela recheck**")
     a("")
     a("## Per environment")
     a("")
     a("| Env | Verified | Drift | Stale |")
     a("|---|---|---|---|")
     for env in ("production", "staging", "both"):
-        rs = [r for r in results if r.get("env") == env]
+        rs = [r for r in checked if r.get("env") == env]
         if not rs:
             continue
         a(f"| {env} | {sum(r['status']=='VERIFIED' for r in rs)} | "
@@ -485,7 +535,7 @@ def write_brief(results, now, summ):
     a("")
     a("## 📋 Fix-tracking (open items yang sedang di-follow)")
     a("")
-    ft = [r for r in results if r.get("card_file", "").startswith("claims/fix-tracking/")]
+    ft = [r for r in checked if r.get("card_file", "").startswith("claims/fix-tracking/")]
     if ft:
         for r in ft:
             st = "✅" if r["status"] == "VERIFIED" else ("❌" if r["status"] == "DRIFTED" else "⚠️")
