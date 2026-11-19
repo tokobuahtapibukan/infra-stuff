@@ -62,7 +62,21 @@ def get_gcp_token():
     if _TOKEN_CACHE["tok"] and time.time() < _TOKEN_CACHE["exp"]:
         return _TOKEN_CACHE["tok"]
     tok = None
-    rc, out = sh(["gcloud", "auth", "print-access-token", "--quiet"], timeout=40)
+    # 0. key drift khusus (path JSON dari env — pemisahan viewer-SA utk watchdog)
+    drift_key = os.environ.get("DRIFT_GCP_KEY", "")
+    if drift_key and os.path.isfile(os.path.expanduser(drift_key)):
+        try:
+            from google.oauth2 import service_account
+            from google.auth.transport.requests import Request as _Req
+            c = service_account.Credentials.from_service_account_file(
+                os.path.expanduser(drift_key),
+                scopes=["https://www.googleapis.com/auth/cloud-platform"])
+            c.refresh(_Req())
+            tok = c.token
+        except Exception:
+            tok = None
+    if not tok:
+        rc, out = sh(["gcloud", "auth", "print-access-token", "--quiet"], timeout=40)
     if rc == 0 and out.strip().startswith(("1/", "ya29.")):
         tok = out.strip()
     if not tok:
@@ -447,6 +461,23 @@ def chk_http_header_contains(args):
     return {"header_present": present, "contains": contains}
 
 
+import hashlib
+
+
+def chk_iam_policy_hash(args):
+    """Hash deterministik dari set role yang diikat ke sebuah member (SA) di project.
+    Deteksi 'siapa pun mengubah izin SA' — self-monitoring. (gcloud CLI; REST IAM 404 di env ini)"""
+    rc, out = sh(["gcloud", "projects", "get-iam-policy", args["project"],
+                  "--format=json"], timeout=120)
+    if rc != 0:
+        raise CheckError(f"get-iam-policy gagal: {out.strip()[:150]}")
+    d = json.loads(out)
+    roles = sorted({b["role"] for b in d.get("bindings", [])
+                    if any(args["member_contains"] in m for m in b.get("members", []))})
+    h = hashlib.sha256("|".join(roles).encode()).hexdigest()[:16]
+    return {"roles": roles, "hash": h}
+
+
 def chk_git_commit_age(args):
     if args["repo"] == "DRIFT_REGISTRY":
         env = os.environ.get("DRIFT_REGISTRY_PATH", "")
@@ -531,6 +562,7 @@ CHECKS = {
     "repo_grep_count": chk_repo_grep_count,
     "http_json_field": chk_http_json_field,
     "http_header_contains": chk_http_header_contains,
+    "iam_policy_hash": chk_iam_policy_hash,
     "git_commit_age": chk_git_commit_age,
     "compare_lb_inventory_vs_hub_scan_targets": chk_lb_log_coverage,
 }

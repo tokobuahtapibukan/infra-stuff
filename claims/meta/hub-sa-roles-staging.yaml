@@ -1,0 +1,20 @@
+id: hub-sa-roles-staging
+service: meta
+env: staging
+claim: "Set role hermes-monitor-sa di tokobuah-staging-499001 TIDAK berubah (self-monitoring: hash role)"
+belief_source: "Audit IAM 2026-11-20: artifactregistry.admin, compute.instanceAdmin.v1, container.developer, run.admin, storage.viewer, dll."
+note: "KARTU META. Hash berubah = izin SA hub berubah → review. Pair dengan hub-sa-roles-prod."
+requires_tools: [gcloud]
+check:
+  tool: iam_policy_hash
+  args:
+    project: tokobuah-staging-499001
+    member_contains: hermes-monitor-sa
+expect:
+  hash: "a5d4657029397abe"
+severity: warn
+recheck: 24h
+retry: 1
+created: 2026-11-20
+last_verified: null
+status: active

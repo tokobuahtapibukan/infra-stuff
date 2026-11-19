@@ -1,0 +1,20 @@
+id: hub-sa-roles-prod
+service: meta
+env: production
+claim: "Set role hermes-monitor-sa di tokobuah-production TIDAK berubah (self-monitoring: hash role)"
+belief_source: "Audit IAM 2026-11-20: container.editor, compute.viewer, run.admin, logging.*, artifactregistry.reader, bigquery.dataViewer, cloudsql.viewer, iam.serviceAccountUser, monitoring.metricWriter, run.developer"
+note: "KARTU META. Hash berubah = seseorang mengubah izin SA hub (legit atau jahat) → review audit log IAM. Role saat ini sengaja luas (deploy bot Telegram) — setelah disepakati least-priv, update hash & claim di sini."
+requires_tools: [gcloud]
+check:
+  tool: iam_policy_hash
+  args:
+    project: tokobuah-production
+    member_contains: hermes-monitor-sa
+expect:
+  hash: "22cc52a9221ee0ff"
+severity: warn
+recheck: 24h
+retry: 1
+created: 2026-11-20
+last_verified: null
+status: active
