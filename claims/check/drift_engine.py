@@ -464,12 +464,15 @@ def load_last_runs():
     """ambil run-at terakhir per kartu dari latest.json (untuk honour recheck interval)."""
     f = RESULTS_DIR / "latest.json"
     if not f.exists():
-        return {}
+        return {}, {}
     try:
         d = json.loads(f.read_text(encoding="utf-8"))
-        return {r["id"]: r.get("at") or d.get("run_at") for r in d.get("results", [])}
+        runs = {r["id"]: r.get("at") or d.get("run_at") for r in d.get("results", [])}
+        prev_status = {r["id"]: {"status": r.get("status"), "at": r.get("at"), "detail": r.get("detail")}
+                       for r in d.get("results", [])}
+        return runs, prev_status
     except Exception:
-        return {}
+        return {}, {}
 
 
 def due_now(card, last_runs):
@@ -538,15 +541,18 @@ def main():
         print("tidak ada kartu yang sesuai filter")
         sys.exit(1)
 
-    last_runs = {} if args.force_all else load_last_runs()
+    last_runs, prev_status = ({}, {}) if args.force_all else load_last_runs()
     results = []
     for c in cards:
         if not args.force_all and not due_now(c, last_runs):
+            prev = prev_status.get(c["id"]) or {}
             results.append({"id": c["id"], "service": c.get("service"), "env": c.get("env"),
                             "severity": c.get("severity"), "claim": c.get("claim"),
                             "card_file": c["_file"], "status": "SKIPPED",
-                            "reason": f"masih dalam jendela recheck {c.get('recheck','24h')}"})
-            print(f"⏭️ [SKIPPED  ] {c['id']:36s} (recheck {c.get('recheck','24h')})")
+                            "reason": f"masih dalam jendela recheck {c.get('recheck','24h')}",
+                            "carried_status": prev.get("status"),
+                            "carried_at": prev.get("at")})
+            print(f"⏭️ [SKIPPED  ] {c['id']:36s} (recheck {c.get('recheck','24h')}, last: {prev.get('status','?')})")
             continue
         icon = {"critical": "‼", "warn": "△", "info": "·"}.get(c.get("severity"), " ")
         r = run_card(c)
@@ -592,11 +598,18 @@ def write_brief(results, now, summ):
     a("> ⚠️ FILE INI **GENERATED** oleh drift engine — jangan edit manual.")
     a(f"> Last sweep: **{now.strftime('%Y-%m-%d %H:%M UTC')}** · engine: `drift_engine v1`")
     a("")
-    a(f"**Total dicek: {len(checked)} kartu · ✅ {summ['verified']} verified · "
+    a(f"**Sweep ini: {len(checked)} kartu dicek · ✅ {summ['verified']} verified · "
       f"❌ {summ['drifted']} drift · ⚠️ {summ['stale']} stale · "
-      f"⏭️ {summ.get('skipped', 0)} dalam jendela recheck**")
+      f"⏭️ {summ.get('skipped', 0)} carry-forward (dalam jendela recheck)**")
     a("")
-    a("## Per environment")
+    carried = [r for r in results if r["status"] == "SKIPPED"]
+    if carried:
+        ok_c = sum(1 for r in carried if r.get("carried_status") == "VERIFIED")
+        bad_c = [r for r in carried if r.get("carried_status") in ("DRIFTED", "STALE")]
+        a(f"**Carry-forward {len(carried)} kartu** (terakhir dicek {(carried[0].get('carried_at') or '?')[:16].replace('T',' ')}): "
+          f"{ok_c} terakhir VERIFIED" + (f", ⚠️ {len(bad_c)} masih belum sehat: " + ", ".join(f'`{r["id"]}` ({r.get("carried_status")})' for r in bad_c) if bad_c else ""))
+        a("")
+    a("## Per environment (sweep ini)")
     a("")
     a("| Env | Verified | Drift | Stale |")
     a("|---|---|---|---|")
@@ -629,11 +642,13 @@ def write_brief(results, now, summ):
     a("")
     a("## 📋 Fix-tracking (open items yang sedang di-follow)")
     a("")
-    ft = [r for r in checked if r.get("card_file", "").startswith("claims/fix-tracking/")]
+    ft = [r for r in checked if r.get("card_file", "").startswith("claims/fix-tracking/")] + \
+         [r for r in carried if r.get("card_file", "").startswith("claims/fix-tracking/")]
     if ft:
         for r in ft:
-            st = "✅" if r["status"] == "VERIFIED" else ("❌" if r["status"] == "DRIFTED" else "⚠️")
-            a(f"- {st} `{r['id']}` — {r.get('claim','')[:110]}")
+            st = {"VERIFIED": "✅", "DRIFTED": "❌", "STALE": "⚠️"}.get(r["status"], "⏭️")
+            note = "" if r["status"] != "SKIPPED" else f" (carry: {r.get('carried_status','?')})"
+            a(f"- {st} `{r['id']}`{note} — {r.get('claim','')[:110]}")
     else:
         a("- (belum ada)")
     a("")
