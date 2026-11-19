@@ -486,6 +486,12 @@ def due_now(card, last_runs):
 
 
 def run_card(card):
+    # kartu lokal-only (cek repo di host ini): skip rapi kalau reponya tidak ada
+    if card.get("local_only"):
+        args = card["check"].get("args") or {}
+        paths = [args.get("repo", "")] + list(args.get("repos") or [])
+        if paths and not any(Path(os.path.expanduser(p)).exists() for p in paths if p):
+            return {"status": "SKIPPED", "reason": "local_only: repo tidak ada di host ini (dijalankan di Mac)"}
     tool = card["check"]["tool"]
     fn = CHECKS.get(tool)
     if fn is None:
@@ -548,7 +554,7 @@ def main():
         results.append({"id": c["id"], "service": c.get("service"), "env": c.get("env"),
                         "severity": c.get("severity"), "claim": c.get("claim"),
                         "card_file": c["_file"], **r})
-        mark = {"VERIFIED": "✅", "DRIFTED": "❌", "STALE": "⚠️"}[r["status"]]
+        mark = {"VERIFIED": "✅", "DRIFTED": "❌", "STALE": "⚠️", "SKIPPED": "⏭️"}[r["status"]]
         extra = r.get("detail") or r.get("reason") or ""
         print(f"{mark} [{r['status']:9s}] {icon} {c['id']:36s} {extra}")
 

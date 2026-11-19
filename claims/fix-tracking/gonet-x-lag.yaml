@@ -24,6 +24,7 @@ expect:
 severity: warn
 recheck: 24h
 retry: 1
+local_only: true
 created: 2026-11-19
 last_verified: null
 status: active
