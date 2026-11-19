@@ -50,23 +50,97 @@ def sh(args, timeout=120):
         return -1, str(e)
 
 
-def gcloud_json(args):
-    """gcloud ... --format=json → parsed list/dict. raises CheckError on failure."""
-    cmd = ["gcloud"] + args + ["--format=json"]
-    rc, out = sh(cmd, timeout=180)
-    if rc != 0:
-        raise CheckError(f"gcloud gagal (rc={rc}): {out.strip()[:200]}")
-    out = out.strip()
-    if not out:
-        return []
-    try:
-        return json.loads(out)
-    except json.JSONDecodeError:
-        raise CheckError(f"output gcloud bukan JSON: {out[:200]}")
-
-
 class CheckError(Exception):
     """cek gagal dijalankan → STALE (bukan DRIFTED)."""
+
+
+_TOKEN_CACHE = {"tok": None, "exp": 0}
+
+
+def get_gcp_token():
+    """Token GCP portabel: (1) gcloud CLI → (2) SA key file → (3) GCE metadata."""
+    if _TOKEN_CACHE["tok"] and time.time() < _TOKEN_CACHE["exp"]:
+        return _TOKEN_CACHE["tok"]
+    tok = None
+    rc, out = sh(["gcloud", "auth", "print-access-token", "--quiet"], timeout=40)
+    if rc == 0 and out.strip().startswith(("1/", "ya29.")):
+        tok = out.strip()
+    if not tok:
+        cands = [
+            os.environ.get("GOOGLE_APPLICATION_CREDENTIALS", ""),
+            "/app/gcp_key.json",
+            os.path.expanduser("~/.config/gcp_key.json"),
+            "/home/avocado/gcp_key.json",
+        ]
+        for p in cands:
+            if p and os.path.isfile(p):
+                try:
+                    from google.oauth2 import service_account
+                    from google.auth.transport.requests import Request as _Req
+                    creds = service_account.Credentials.from_service_account_file(
+                        p, scopes=["https://www.googleapis.com/auth/cloud-platform"])
+                    creds.refresh(_Req())
+                    tok = creds.token
+                    break
+                except Exception:
+                    continue
+    if not tok:
+        rc, out = sh(["curl", "-sS", "--max-time", "5",
+                      "-H", "Metadata-Flavor: Google",
+                      "http://metadata.google.internal/computeMetadata/v1/instance/"
+                      "service-accounts/default/token"], timeout=15)
+        if rc == 0:
+            try:
+                tok = json.loads(out).get("access_token")
+            except Exception:
+                tok = None
+    if not tok:
+        raise CheckError("token GCP tidak tersedia (gcloud CLI / SA key / metadata)")
+    _TOKEN_CACHE.update(tok=tok, exp=time.time() + 240)
+    return tok
+
+
+def api_get(url, timeout=45, want_status=False):
+    tok = get_gcp_token()
+    cmd = ["curl", "-sS", "--max-time", str(timeout),
+           "-H", f"Authorization: Bearer {tok}",
+           "-H", "Accept: application/json", url]
+    if want_status:
+        cmd.insert(2, "-w")
+        cmd.insert(3, "\n__HTTP__%{http_code}")
+    rc, out = sh(cmd, timeout=timeout + 10)
+    if rc != 0:
+        raise CheckError(f"API call gagal: {out.strip()[:150]}")
+    status = None
+    if want_status:
+        body, _, st = out.rpartition("__HTTP__")
+        out, status = body, st.strip()
+    out = out.strip()
+    if not out:
+        return {} if not want_status else (None, status)
+    try:
+        d = json.loads(out)
+        return d if not want_status else (d, status)
+    except json.JSONDecodeError:
+        extra = f" (HTTP {status})" if status else ""
+        raise CheckError(f"respons API bukan JSON{extra}: {out[:120]}")
+
+
+def compute_list(path):
+    """GET list resource compute v1 global dengan pagination."""
+    items, token = [], None
+    for _ in range(5):
+        u = f"https://compute.googleapis.com/compute/v1/{path}"
+        if token:
+            u += f"&pageToken={token}"
+        else:
+            u += "?"
+        d = api_get(u)
+        items.extend(d.get("items", []))
+        token = d.get("nextPageToken")
+        if not token:
+            break
+    return items
 
 
 def curl_status(url, host_header=None, timeout=30):
@@ -109,7 +183,7 @@ def find_go_mod(repo_path, max_depth=3):
 # ───────────────────────── check tools ─────────────────────────
 
 def chk_gcp_backend_services_policy(args):
-    data = gcloud_json(["compute", "backend-services", "list", "--project", args["project"]])
+    data = compute_list(f"projects/{args['project']}/global/backendServices")
     hits = [b["name"] for b in data if (b.get("securityPolicy") or "").endswith(args["policy_suffix"])]
     return {"count": len(hits), "names": sorted(hits)}
 
@@ -117,12 +191,13 @@ def chk_gcp_backend_services_policy(args):
 def chk_gcp_target_proxies_no_policy(args):
     total = 0
     details = []
+    kinds = ["targetHttpProxies", "targetHttpsProxies", "targetSslProxies", "targetTcpProxies"]
     for proj in args["projects"]:
-        for kind in ["target-http-proxies", "target-https-proxies", "target-ssl-proxies", "target-tcp-proxies"]:
+        for kind in kinds:
             try:
-                data = gcloud_json(["compute", kind, "list", "--project", proj])
+                data = compute_list(f"projects/{proj}/global/{kind}")
             except CheckError:
-                data = []
+                continue
             for p in data:
                 if p.get("securityPolicy"):
                     total += 1
@@ -199,12 +274,27 @@ def chk_cross_tenant_probe(args):
 
 
 def chk_gcp_gke_cluster_absent(args):
-    data = gcloud_json(["container", "clusters", "list", "--project", args["project"]])
-    return {"exists": any(c.get("name") == args["name"] for c in data)}
+    """REST GKE dulu; kalau API ter-404/terblokir untuk token ini, fallback gcloud CLI."""
+    names = None
+    try:
+        d, st = api_get(
+            f"https://container.googleapis.com/v1/projects/{args['project']}/global/clusters",
+            want_status=True)
+        if st == "200":
+            names = [c.get("name") for c in d.get("clusters", [])]
+    except CheckError:
+        names = None
+    if names is None:
+        rc, out = sh(["gcloud", "container", "clusters", "list",
+                      "--project", args["project"], "--format", "value(name)"], timeout=120)
+        if rc != 0:
+            raise CheckError(f"GKE REST tidak tersedia DAN gcloud CLI gagal: {out.strip()[:150]}")
+        names = [l for l in out.split() if l]
+    return {"exists": args["name"] in names, "live_clusters": names}
 
 
 def chk_gcp_target_http_proxies_prefix_count(args):
-    data = gcloud_json(["compute", "target-http-proxies", "list", "--project", args["project"]])
+    data = compute_list(f"projects/{args['project']}/global/targetHttpProxies")
     names = [p["name"] for p in data if p["name"].startswith(args["name_prefix"])]
     return {"count": len(names), "names": sorted(names)}
 
@@ -286,15 +376,13 @@ def chk_lb_log_coverage(args):
     """Semua public global HTTP LB (forwarding rule) production HARUS muncul di
     log http_load_balancer 7 hari terakhir (mekanisme scan 7-day hub)."""
     proj = args["project"]
-    frs = gcloud_json(["compute", "forwarding-rules", "list", "--project", proj])
+    frs = compute_list(f"projects/{proj}/global/forwardingRules")
     live = {f["name"] for f in frs
             if f.get("networkTier") == "PREMIUM"
             and (f.get("target") or "").endswith("targetHttpProxies")
             and f.get("ipAddresses")}
     # logging API
-    rc, tok = sh(["gcloud", "auth", "print-access-token"], timeout=30)
-    if rc != 0:
-        raise CheckError("gcloud token gagal")
+    tok = get_gcp_token()
     since = datetime.now(timezone.utc).timestamp() - 7 * 86400
     since_s = datetime.fromtimestamp(since, tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     logged = set()
