@@ -9,6 +9,7 @@ check:
     context: gke_tokobuah-production_asia-southeast1-c_game-cluster
     namespace: game
     ingress: game-engine-ingress
+requires_tools: [kubectl]
 expect:
   ip: 34.110.211.59
 severity: warn
