@@ -47,5 +47,16 @@ gomod_version_below                    # berapa go.mod yang modul-nya < versi X
 domain_sibling_app_match               # dig + compare fingerprint asset
 js_bundle_contains_url                 # homepage → chunk → grep string
 gcs_level_image_public                 # ambil image_url /beapi/public/levels → GET 200
-compare_lb_inventory_vs_hub_scan_targets # meta: semua public LB masuk scan hub
+js_bundle_contains_url                 # homepage → chunks JS → grep string
+k8s_deployments_healthy                # semua deployment ns siap (availableReplicas)
+repo_grep_count                        # hitung baris match regex di 1/banyak repo
+http_json_field                        # GET JSON publik → ambil nilai field
+http_header_contains                   # cek header response ada/mengandung X
+git_commit_age                         # umur commit terakhir author tertentu (dead-man's switch; repo=DRIFT_REGISTRY)
+compare_lb_inventory_vs_hub_scan_targets # meta: semua public LB muncul di log LB 7d
 ```
+
+Kartu juga bisa membawa:
+- `local_only: true` → skip rapi di host tanpa repo-nya (dijalankan di Mac)
+- `requires_tools: [kubectl]` → skip rapi di host tanpa binary tersebut (bukan STALE)
+- komparator khusus di `expect`: `status_in` (salah satu dari), `*_min` (>=), `*_max` (<=)

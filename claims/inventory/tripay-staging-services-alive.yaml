@@ -1,0 +1,20 @@
+id: tripay-staging-services-alive
+service: tripay-sc
+env: staging
+claim: "4 deployment tripay (be, callback, cron, open) di staging-gke-standard ns/tripay semuanya available"
+belief_source: "kubectl recon 2026-11-20; KB §4 (konsolidasi 11 Nov)"
+requires_tools: [kubectl]
+check:
+  tool: k8s_deployments_healthy
+  args:
+    context: gke_tokobuah-staging-499001_asia-southeast1-a_staging-gke-standard
+    namespaces: [tripay]
+expect:
+  unhealthy: 0
+  deployments_total: 4
+severity: warn
+recheck: 12h
+retry: 2
+created: 2026-11-20
+last_verified: null
+status: active

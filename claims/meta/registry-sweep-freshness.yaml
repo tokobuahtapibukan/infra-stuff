@@ -1,0 +1,19 @@
+id: registry-sweep-freshness
+service: meta
+env: both
+claim: "Dead-man's switch: commit terakhir author 'drift-watchdog' di registry berumur < 30 jam (bukti hub masih menyapu)"
+belief_source: "Didisain 2026-11-20 — deteksi hub mati diam-diam (skema: hub push hasil sweep tiap 12 jam)"
+note: "Jika STALE/DRIFT di sini: hub tidak menyapu 30 jam+ → periksa hermes-agent-host (container, scheduler, atau akses git). Ini bukan drift infra."
+check:
+  tool: git_commit_age
+  args:
+    repo: "DRIFT_REGISTRY"
+    author_pattern: "drift-watchdog"
+expect:
+  age_hours_max: 30
+severity: warn
+recheck: 24h
+retry: 1
+created: 2026-11-20
+last_verified: null
+status: active

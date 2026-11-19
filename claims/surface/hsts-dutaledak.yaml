@@ -1,0 +1,18 @@
+id: hsts-dutaledak
+service: user-site
+env: production
+claim: "dutaledak.online mengirim header HSTS (preload) — proteksi downgrade TLS tetap aktif"
+belief_source: "Header recon 2026-11-17 (strict-transport-security max-age=63072000; includeSubDomains; preload)"
+check:
+  tool: http_header_contains
+  args:
+    url: "https://dutaledak.online/"
+    header: "strict-transport-security"
+expect:
+  header_present: true
+severity: warn
+recheck: 7d
+retry: 1
+created: 2026-11-20
+last_verified: null
+status: active

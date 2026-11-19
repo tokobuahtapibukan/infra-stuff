@@ -274,21 +274,16 @@ def chk_cross_tenant_probe(args):
 
 
 def chk_gcp_gke_cluster_absent(args):
-    """REST GKE dulu; kalau API ter-404/terblokir untuk token ini, fallback gcloud CLI."""
-    names = None
+    """Endpoint /global/clusters sudah DEPRECATED (404 per 2026); pakai locations/-."""
+    names = []
     try:
-        d, st = api_get(
-            f"https://container.googleapis.com/v1/projects/{args['project']}/global/clusters",
-            want_status=True)
-        if st == "200":
-            names = [c.get("name") for c in d.get("clusters", [])]
+        d = api_get(f"https://container.googleapis.com/v1/projects/{args['project']}/locations/-/clusters")
+        names = [c.get("name") for c in d.get("clusters", [])]
     except CheckError:
-        names = None
-    if names is None:
         rc, out = sh(["gcloud", "container", "clusters", "list",
                       "--project", args["project"], "--format", "value(name)"], timeout=120)
         if rc != 0:
-            raise CheckError(f"GKE REST tidak tersedia DAN gcloud CLI gagal: {out.strip()[:150]}")
+            raise CheckError(f"GKE REST (locations/-) gagal DAN gcloud CLI gagal: {out.strip()[:150]}")
         names = [l for l in out.split() if l]
     return {"exists": args["name"] in names, "live_clusters": names}
 
@@ -300,18 +295,26 @@ def chk_gcp_target_http_proxies_prefix_count(args):
 
 
 def chk_git_ls_files_count(args):
-    repo = Path(os.path.expanduser(args["repo"]))
-    if not (repo / ".git").exists() and not (repo / "HEAD").exists():
-        # coba apakah repo itu sendiri ada sebagai git worktree
-        rc0, out0 = sh(["git", "-C", str(repo), "rev-parse", "--is-inside-work-tree"], timeout=30)
-        if rc0 != 0:
-            raise CheckError(f"bukan git repo / tidak ada: {repo}")
-    rc, out = sh(["git", "-C", str(repo), "ls-files"], timeout=60)
-    if rc != 0:
-        raise CheckError(f"git ls-files gagal: {out[:150]}")
+    repos = [args["repo"]] if args.get("repo") else list(args.get("repos") or [])
     pat = re.compile(args["pattern"])
-    files = [l for l in out.splitlines() if pat.search(l)]
-    return {"count": len(files), "files": files[:30]}
+    total, files, missing = 0, [], []
+    for rp in repos:
+        repo = Path(os.path.expanduser(rp))
+        rc0, _ = sh(["git", "-C", str(repo), "rev-parse", "--is-inside-work-tree"], timeout=30)
+        if rc0 != 0:
+            missing.append(str(repo))
+            continue
+        rc, out = sh(["git", "-C", str(repo), "ls-files"], timeout=60)
+        if rc != 0:
+            raise CheckError(f"git ls-files gagal di {repo}: {out[:120]}")
+        for l in out.splitlines():
+            if pat.search(l):
+                total += 1
+                if len(files) < 30:
+                    files.append(f"{Path(rp).name}:{l}")
+    if missing:
+        raise CheckError(f"repo tidak ada di host ini: {', '.join(missing)}")
+    return {"count": total, "files": files}
 
 
 def chk_gomod_version_below(args):
@@ -372,6 +375,102 @@ def chk_js_bundle_contains_url(args):
     return {"found": False, "_chunks_scanned": len(chunks)}
 
 
+def chk_k8s_deployments_healthy(args):
+    """Semua deployment di namespace harus ready (availableReplicas >= 1 atau spec 0)."""
+    ctx = args.get("context")
+    ns = args["namespaces"] if isinstance(args["namespaces"], list) else [args["namespaces"]]
+    bad, total = [], 0
+    for n in ns:
+        cmd = ["kubectl"]
+        if ctx:
+            cmd += ["--context", ctx]
+        cmd += ["-n", n, "get", "deployments", "-o", "json"]
+        rc, out = sh(cmd, timeout=90)
+        if rc != 0:
+            raise CheckError(f"kubectl ns {n} gagal: {out.strip()[:150]}")
+        items = json.loads(out).get("items", [])
+        total += len(items)
+        for dep in items:
+            name = dep["metadata"]["name"]
+            spec = dep.get("spec", {}).get("replicas", 1)
+            avail = (dep.get("status") or {}).get("availableReplicas", 0)
+            if spec > 0 and avail < spec:
+                bad.append(f"{n}/{name} ({avail}/{spec} available)")
+    return {"deployments_total": total, "unhealthy": len(bad), "unhealthy_list": bad[:10]}
+
+
+def chk_repo_grep_count(args):
+    """Hitung baris yang match regex di file-file repo (1 atau banyak repo, glob path opsional)."""
+    repos = [args["repo"]] if args.get("repo") else list(args.get("repos") or [])
+    pat = re.compile(args["pattern"])
+    file_glob = args.get("files", "**")
+    count, hits, missing = 0, [], []
+    for rp in repos:
+        repo = Path(os.path.expanduser(rp))
+        if not repo.exists():
+            missing.append(str(repo))
+            continue
+        for f in repo.glob(file_glob):
+            if not f.is_file() or ".git" in f.parts:
+                continue
+            if f.stat().st_size > 2_000_000:
+                continue
+            try:
+                for i, line in enumerate(f.read_text(encoding="utf-8", errors="replace").splitlines(), 1):
+                    if pat.search(line):
+                        count += 1
+                        if len(hits) < 10:
+                            hits.append(f"{repo.name}/{f.name}:{i}: {line.strip()[:90]}")
+            except OSError:
+                continue
+    if missing:
+        raise CheckError(f"repo tidak ada di host ini: {', '.join(missing)}")
+    return {"count": count, "hits": hits}
+
+
+def chk_http_json_field(args):
+    out = curl_get(args["url"], host_header=args.get("host_header"), timeout=30)
+    d = json.loads(out)
+    val = d
+    for part in args["field_path"].split("."):
+        val = val.get(part) if isinstance(val, dict) else None
+    return {"value": val}
+
+
+def chk_http_header_contains(args):
+    rc, out = sh(["curl", "-sS", "-D", "-", "-o", "/dev/null", "--max-time", "30", args["url"]], timeout=40)
+    if rc != 0:
+        raise CheckError(f"curl gagal: {out[:120]}")
+    headers = "\n".join(l for l in out.splitlines() if ":" in l).lower()
+    present = args["header"].lower() in headers
+    contains = (args.get("contains") or "").lower() in headers if args.get("contains") else present
+    return {"header_present": present, "contains": contains}
+
+
+def chk_git_commit_age(args):
+    if args["repo"] == "DRIFT_REGISTRY":
+        env = os.environ.get("DRIFT_REGISTRY_PATH", "")
+        repo = Path(os.path.expanduser(env)) if env else None
+        if repo is None or not repo.exists():
+            repo = None
+            for cand in ("/registry/infra-stuff",
+                         os.path.expanduser("~/tokobuah/infra-stuff"),
+                         "/home/avocado/tokobuah/infra-stuff"):
+                if Path(cand).exists():
+                    repo = Path(cand)
+                    break
+        if repo is None:
+            raise CheckError("registry drift tidak ditemukan di host ini")
+    else:
+        repo = Path(os.path.expanduser(args["repo"]))
+    rc, out = sh(["git", "-C", str(repo), "log", "-1", "--author=" + args["author_pattern"],
+                  "--format=%ct"], timeout=60)
+    if rc != 0 or not out.strip():
+        return {"age_hours": None, "last_commit": None}
+    age_h = (time.time() - int(out.strip())) / 3600
+    return {"age_hours": round(age_h, 1), "last_commit": out.strip()}
+
+
 def chk_lb_log_coverage(args):
     """Semua public global HTTP LB (forwarding rule) production HARUS muncul di
     log http_load_balancer 7 hari terakhir (mekanisme scan 7-day hub)."""
@@ -428,6 +527,11 @@ CHECKS = {
     "domain_sibling_app_match": chk_domain_sibling_app_match,
     "gcs_level_image_public": chk_gcs_level_image_public,
     "js_bundle_contains_url": chk_js_bundle_contains_url,
+    "k8s_deployments_healthy": chk_k8s_deployments_healthy,
+    "repo_grep_count": chk_repo_grep_count,
+    "http_json_field": chk_http_json_field,
+    "http_header_contains": chk_http_header_contains,
+    "git_commit_age": chk_git_commit_age,
     "compare_lb_inventory_vs_hub_scan_targets": chk_lb_log_coverage,
 }
 
@@ -435,14 +539,41 @@ CHECKS = {
 # ───────────────────────── verify & run ─────────────────────────
 
 def verify(expect, actual):
-    """bandingkan per-key; return (ok, detail)."""
+    """bandingkan per-key; support: equality biasa, '<key>_in' (membership), '<key>_min' (>=)."""
     ok = True
     detail = []
     for k, v in expect.items():
-        av = actual.get(k)
-        if av != v:
-            ok = False
-            detail.append(f"{k}: expect {v!r} got {av!r}")
+        if k.endswith("_in"):
+            key, allowed = k[:-3], v
+            av = actual.get(key)
+            if av not in allowed:
+                ok = False
+                detail.append(f"{key}: expect salah satu {allowed}, got {av!r}")
+        elif k.endswith("_min"):
+            key, floor = k[:-4], v
+            av = actual.get(key)
+            try:
+                if av is None or av < floor:
+                    ok = False
+                    detail.append(f"{key}: expect >={floor}, got {av!r}")
+            except TypeError:
+                ok = False
+                detail.append(f"{key}: tidak bisa dibandingkan ({av!r})")
+        elif k.endswith("_max"):
+            key, ceil = k[:-4], v
+            av = actual.get(key)
+            try:
+                if av is None or av > ceil:
+                    ok = False
+                    detail.append(f"{key}: expect <={ceil}, got {av!r}")
+            except TypeError:
+                ok = False
+                detail.append(f"{key}: tidak bisa dibandingkan ({av!r})")
+        else:
+            av = actual.get(k)
+            if av != v:
+                ok = False
+                detail.append(f"{k}: expect {v!r} got {av!r}")
     return ok, "; ".join(detail) or "ok"
 
 
@@ -502,6 +633,11 @@ def run_card(card):
         paths = [args.get("repo", "")] + list(args.get("repos") or [])
         if paths and not any(Path(os.path.expanduser(p)).exists() for p in paths if p):
             return {"status": "SKIPPED", "reason": "local_only: repo tidak ada di host ini (dijalankan di Mac)"}
+    # kartu yang butuh binary tertentu (mis. kubectl): skip rapi kalau tidak tersedia
+    for tool in (card.get("requires_tools") or []):
+        rc, _ = sh(["which", tool], timeout=10)
+        if rc != 0:
+            return {"status": "SKIPPED", "reason": f"env: '{tool}' tidak tersedia di host ini"}
     tool = card["check"]["tool"]
     fn = CHECKS.get(tool)
     if fn is None:

@@ -1,0 +1,29 @@
+id: gocrypto-x-lag
+service: all-go
+env: both
+claim: "P1 (masih OPEN): golang.org/x/crypto masih < 0.58.1 di 7 dari 8 repo Go (devops-engine jauh di v0.25.0; whitelist-engine tidak memakai x/crypto)"
+belief_source: "OSV scan 2026-11-09 (floor tertinggi advisory: 0.58.1-pseudo) + re-verifikasi go.mod 2026-11-20 (6x v0.58.0, 1x v0.25.0)"
+flip_note: "Setelah bump go.mod + go mod tidy: flip expect menjadi count_below: 0"
+check:
+  tool: gomod_version_below
+  args:
+    repos:
+      - "~/tokobuah/audit-engine-go"
+      - "~/tokobuah/auth-engine-go"
+      - "~/tokobuah/connector-engine-go"
+      - "~/tokobuah/devops-engine"
+      - "~/tokobuah/gamelist-engine-go"
+      - "~/tokobuah/spinwheel-engine-go"
+      - "~/tokobuah/transactional-engine-go"
+      - "~/tokobuah/whitelist-engine-go"
+    module: golang.org/x/crypto
+    below: 0.58.1
+expect:
+  count_below: 7
+severity: warn
+recheck: 24h
+retry: 1
+local_only: true
+created: 2026-11-20
+last_verified: null
+status: active

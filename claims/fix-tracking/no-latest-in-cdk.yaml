@@ -1,0 +1,21 @@
+id: no-latest-in-cdk
+service: company-deployment-key
+env: both
+claim: "Open (P2): 51 baris manifest di 26 file company-deployment-key masih memakai tag image :latest (prod+staging)"
+belief_source: "Recon git grep 2026-11-20 (51 baris / 26 file)"
+flip_note: "Setelah pin digest/tag: flip expect menjadi count: 0"
+check:
+  tool: repo_grep_count
+  args:
+    repo: "~/tokobuah/company-deployment-key"
+    files: "**/*.yaml"
+    pattern: "image:.*:latest"
+expect:
+  count: 51
+severity: warn
+recheck: 24h
+retry: 1
+local_only: true
+created: 2026-11-20
+last_verified: null
+status: active

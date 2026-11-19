@@ -1,0 +1,19 @@
+id: maintenance-off-dutaledak
+service: user-site
+env: production
+claim: "Flag maintenance tenant dutaledak = false (layanan normal)"
+belief_source: "GET /api/maintenance 2026-11-20"
+note: "Kartu perilaku: maintenance ON = drift SENGaja mungkin (jadwal maintenance) — konfirmasi sebelum menganggap insiden."
+check:
+  tool: http_json_field
+  args:
+    url: "https://dutaledak.online/api/maintenance"
+    field_path: maintenance
+expect:
+  value: false
+severity: warn
+recheck: 12h
+retry: 2
+created: 2026-11-20
+last_verified: null
+status: active

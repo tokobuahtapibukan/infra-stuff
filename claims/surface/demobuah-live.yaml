@@ -1,0 +1,17 @@
+id: demobuah-live
+service: user-site
+env: production
+claim: "demobuah.online (tenant buah5758, user-site) hidup di balik Cloudflare (HTTP 200)"
+belief_source: "Red-team 2026-11-17 + probe 2026-11-20"
+check:
+  tool: http_probe_status
+  args:
+    url: "https://demobuah.online/"
+expect:
+  status_in: [200]
+severity: warn
+recheck: 12h
+retry: 2
+created: 2026-11-20
+last_verified: null
+status: active

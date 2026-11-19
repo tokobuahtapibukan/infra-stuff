@@ -1,0 +1,25 @@
+id: node20-eol-dockerfiles
+service: multi
+env: both
+claim: "Open (P2): base image node:20 (EOL April 2026) masih dipakai di 8 baris Dockerfile lintas 4 repo (backend-pg, domain-management, dashboard-pga-mock, super-agent)"
+belief_source: "Supply chain scan 2026-11-09 + recon grep 2026-11-20"
+flip_note: "Setelah migrasi ke node:22/24: flip expect menjadi count: 0"
+check:
+  tool: repo_grep_count
+  args:
+    repos:
+      - "~/tokobuah/backend-pg"
+      - "~/tokobuah/domain-management"
+      - "~/tokobuah/dashboard-pga-mock"
+      - "~/tokobuah/super-agent"
+    files: "**/Dockerfile*"
+    pattern: "node:20"
+expect:
+  count: 8
+severity: warn
+recheck: 24h
+retry: 1
+local_only: true
+created: 2026-11-20
+last_verified: null
+status: active

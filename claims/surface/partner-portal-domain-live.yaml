@@ -1,0 +1,17 @@
+id: partner-portal-domain-live
+service: partner-data-portal
+env: production
+claim: "Domain masking partner-data-portal (buahdatasemuammanis.net, via Cloudflare) hidup dan mengarahkan ke login (2xx/3xx, bukan 4xx/5xx)"
+belief_source: "PARTNER_DATA_PORTAL_AND_ANALYTICS_RUNBOOK + probe 2026-11-20 (HTTP 302)"
+check:
+  tool: http_probe_status
+  args:
+    url: "https://buahdatasemuammanis.net/"
+expect:
+  status_in: [200, 301, 302, 307, 308]
+severity: warn
+recheck: 12h
+retry: 2
+created: 2026-11-20
+last_verified: null
+status: active

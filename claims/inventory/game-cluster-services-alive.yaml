@@ -1,0 +1,20 @@
+id: game-cluster-services-alive
+service: game-engine
+env: production
+claim: "5 deployment game-engine di game-cluster ns/game semuanya available"
+belief_source: "kubectl recon 2026-11-20"
+requires_tools: [kubectl]
+check:
+  tool: k8s_deployments_healthy
+  args:
+    context: gke_tokobuah-production_asia-southeast1-c_game-cluster
+    namespaces: [game]
+expect:
+  unhealthy: 0
+  deployments_total: 5
+severity: critical
+recheck: 12h
+retry: 2
+created: 2026-11-20
+last_verified: null
+status: active

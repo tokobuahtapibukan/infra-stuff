@@ -1,0 +1,20 @@
+id: core-cluster-services-alive
+service: multi
+env: production
+claim: "9 deployment di prod-core-cluster ns/core semuanya available (audit, auth, backend-pg, connector, content-management, domain-management, gamelist, spinwheel, whitelist)"
+belief_source: "kubectl recon 2026-11-20"
+requires_tools: [kubectl]
+check:
+  tool: k8s_deployments_healthy
+  args:
+    context: gke_tokobuah-production_asia-southeast1_prod-core-cluster
+    namespaces: [core]
+expect:
+  unhealthy: 0
+  deployments_total: 9
+severity: critical
+recheck: 12h
+retry: 2
+created: 2026-11-20
+last_verified: null
+status: active
