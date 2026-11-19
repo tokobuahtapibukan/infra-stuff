@@ -1,0 +1,19 @@
+id: gameengine-origin-lock-live
+service: game-engine
+env: production
+claim: "Probe HTTP langsung dari source non-Cloudflare ke GCLB game-engine ditolak (403 Cloud Armor)"
+belief_source: "Live probe 2026-11-15 dari 34.2.153.31 (non-Cloudflare) → 403, body 134-byte"
+note: "IP pada URL dari kartu gameengine-gclb-ip; jika IP pindah, kartu ini ikut drift (double alarm, by design). Source cek harus non-Cloudflare (host hub = GCP IP, OK)."
+check:
+  tool: http_probe_status
+  args:
+    url: "http://34.110.211.59/"
+    host_header: buah.iknmarketfruit.com
+expect:
+  status: 403
+severity: critical
+recheck: 12h
+retry: 2
+created: 2026-11-19
+last_verified: null
+status: active

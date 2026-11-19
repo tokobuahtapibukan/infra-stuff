@@ -1,0 +1,24 @@
+id: cross-tenant-isolation-holds
+service: user-site
+env: production
+claim: "JWT tenant B (buah5758/demobuah.online) ditolak 403 WRONG_COMPANY saat dipakai di domain tenant A (dutaledak.online) dan sebaliknya"
+belief_source: "Red-team test 2026-11-17: /beapi/player/me dengan token tertukar → 403 {code: WRONG_COMPANY}"
+note: "KARTU INVARIANT — mini-pentest terjadwal. Jika menjadi 200, isolasi multi-tenant JEBOL tanpa perlu ada hacker."
+credentials:
+  - HUB_TEST_ACCOUNT_A   # env-var di hub VM (username+password tenant A); TIDAK pernah di-git
+  - HUB_TEST_ACCOUNT_B
+check:
+  tool: cross_tenant_probe
+  args:
+    domain_a: dutaledak.online
+    domain_b: demobuah.online
+    path: /beapi/player/me
+expect:
+  status: 403
+  error_code: WRONG_COMPANY
+severity: critical
+recheck: 12h
+retry: 1
+created: 2026-11-19
+last_verified: null
+status: active

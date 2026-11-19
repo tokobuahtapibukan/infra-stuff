@@ -1,0 +1,20 @@
+id: cloudarmor-layer-fact
+service: meta
+env: both
+claim: "Cloud Armor ter-attach di level BackendService, BUKAN target proxy: 0 target proxy (http/https/ssl/tcp) di kedua project yang punya securityPolicy"
+belief_source: "Live-verified 2026-11-15 (raw compute API, semua 4 tipe proxy)"
+note: "Fakta arsitektur. Jika suatu hari policy di-attach ke target proxy, perilaku LB berubah → wajib diketahui."
+check:
+  tool: gcp_target_proxies_no_policy
+  args:
+    projects:
+      - tokobuah-production
+      - tokobuah-staging-499001
+expect:
+  with_policy: 0
+severity: critical
+recheck: 24h
+retry: 2
+created: 2026-11-19
+last_verified: null
+status: active

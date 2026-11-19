@@ -1,0 +1,18 @@
+id: gcs-level-images-public
+service: user-site
+env: production
+claim: "Image level dari GCS bucket tokobuah-production.firebasestorage.app public-read (by design — dipakai /beapi/public/levels tanpa auth)"
+belief_source: "Red-team 2026-11-17: GET object image level → 200 image/webp"
+note: "Kartu intent-state: expect 200. Jika berubah 403/401 = seseorang me-lock bucket (breaking change app) ATAU kartu harus di-retire karena design berubah — konfirmasi manual."
+check:
+  tool: gcs_level_image_public
+  args:
+    api_domain: dutaledak.online
+expect:
+  status: 200
+severity: info
+recheck: 7d
+retry: 2
+created: 2026-11-19
+last_verified: null
+status: active

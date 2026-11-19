@@ -1,0 +1,29 @@
+id: gonet-x-lag
+service: all-go
+env: both
+claim: "P1 (masih OPEN): golang.org/x/net versi deklarasinya masih < 0.62.0 di 7 dari 8 repo Go (audit, auth, connector, devops, gamelist, spinwheel, transactional — whitelist-engine bersih)"
+belief_source: "OSV scan 2026-11-09 (GO-2026-6860/6866 dkk, floor tertinggi 0.62.0) → report 2026-11-16 §4"
+flip_note: "Setelah bump go.mod + go mod tidy di 7 repo: flip expect menjadi count_below: 0."
+note: "Expected value dari scan 2026-11-09; sweep pertama akan memvalidasinya terhadap go.mod terkini (jika ternyata sudah ada yang bump, adjust count — bukan drift infra)."
+check:
+  tool: gomod_version_below
+  args:
+    repos:
+      - "~/tokobuah/audit-engine-go"
+      - "~/tokobuah/auth-engine-go"
+      - "~/tokobuah/connector-engine-go"
+      - "~/tokobuah/devops-engine"
+      - "~/tokobuah/gamelist-engine-go"
+      - "~/tokobuah/spinwheel-engine-go"
+      - "~/tokobuah/transactional-engine-go"
+      - "~/tokobuah/whitelist-engine-go"
+    module: golang.org/x/net
+    below: 0.62.0
+expect:
+  count_below: 7
+severity: warn
+recheck: 24h
+retry: 1
+created: 2026-11-19
+last_verified: null
+status: active

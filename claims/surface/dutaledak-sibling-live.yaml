@@ -1,0 +1,20 @@
+id: dutaledak-sibling-live
+service: user-site
+env: production
+claim: "dutaledak.store LIVE di balik Cloudflare dan menyajikan build app yang sama dengan dutaledak.online (domain saudara tenant dutaledak)"
+belief_source: "Red-team 2026-11-17: bocor dari robots.txt dutaledak.online; verifikasi dig + hash asset identik"
+note: "Kartu permukaan: domain baru/live adalah input radar sentinel. If down (3xx NXDOMAIN/CF error) = drift info — mungkin di-sunat intentional, konfirmasi lalu flip/retire."
+check:
+  tool: domain_sibling_app_match
+  args:
+    primary: dutaledak.online
+    sibling: dutaledak.store
+expect:
+  sibling_live: true
+  same_app: true
+severity: info
+recheck: 7d
+retry: 1
+created: 2026-11-19
+last_verified: null
+status: active

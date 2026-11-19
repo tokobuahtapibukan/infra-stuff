@@ -1,0 +1,18 @@
+id: cloudarmor-prod-gameengine
+service: game-engine
+env: production
+claim: "cf-origin-lock-production terpasang di persis 5 backend game-engine (all, launcher, pg, pp, transactions)"
+belief_source: "MASTER_INFRA_KNOWLEDGE_BASE.md §14 (Cloud Armor Attachment Verification)"
+check:
+  tool: gcp_backend_services_policy
+  args:
+    project: tokobuah-production
+    policy_suffix: cf-origin-lock-production
+expect:
+  count: 5
+severity: critical
+recheck: 12h
+retry: 2
+created: 2026-11-19
+last_verified: null
+status: active

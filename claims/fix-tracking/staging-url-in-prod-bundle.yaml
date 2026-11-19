@@ -1,0 +1,20 @@
+id: staging-url-in-prod-bundle
+service: user-site
+env: production
+claim: "Open finding: JS bundle produksi dutaledak.online masih hardcode 'https://stagingtokobuah.xyz' (fallback canonical/og_url)"
+belief_source: "Red-team 2026-11-17: grep chunk JS produksi"
+flip_note: "Setelah tim app menghapus hardcode: flip expect menjadi found: false."
+note: "Severity warn (info leak domain staging, bukan breach data)."
+check:
+  tool: js_bundle_contains_url
+  args:
+    domain: dutaledak.online
+    needle: "stagingtokobuah.xyz"
+expect:
+  found: true
+severity: warn
+recheck: 24h
+retry: 1
+created: 2026-11-19
+last_verified: null
+status: active

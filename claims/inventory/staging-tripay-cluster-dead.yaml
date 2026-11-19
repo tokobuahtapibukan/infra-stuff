@@ -1,0 +1,18 @@
+id: staging-tripay-cluster-dead
+service: tripay
+env: staging
+claim: "Cluster staging-tripay-cluster TIDAK ADA (dihapus 2026-11-11; workload ter-konsolidasi ke staging-gke-standard)"
+belief_source: "MASTER_INFRA_KNOWLEDGE_BASE.md §4 (konsolidasi) + gcloud clusters list 2026-11-15"
+check:
+  tool: gcp_gke_cluster_absent
+  args:
+    project: tokobuah-staging-499001
+    name: staging-tripay-cluster
+expect:
+  exists: false
+severity: info
+recheck: 7d
+retry: 1
+created: 2026-11-19
+last_verified: null
+status: active

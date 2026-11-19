@@ -1,0 +1,5 @@
+# macOS
+.DS_Store
+
+# local tool state (per-chat settings, not shared knowledge)
+.sc/

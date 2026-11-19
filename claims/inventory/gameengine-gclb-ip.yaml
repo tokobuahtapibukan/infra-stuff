@@ -1,0 +1,19 @@
+id: gameengine-gclb-ip
+service: game-engine
+env: production
+claim: "GCLB IP game-engine-ingress (prod, game-cluster, ns game) = 34.110.211.59"
+belief_source: "kubectl ingress status live-verified 2026-11-15"
+check:
+  tool: k8s_ingress_status_ip
+  args:
+    context: gke_tokobuah-production_asia-southeast1-c_game-cluster
+    namespace: game
+    ingress: game-engine-ingress
+expect:
+  ip: 34.110.211.59
+severity: warn
+recheck: 24h
+retry: 2
+created: 2026-11-19
+last_verified: null
+status: active
