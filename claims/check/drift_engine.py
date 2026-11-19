@@ -478,6 +478,26 @@ def chk_iam_policy_hash(args):
     return {"roles": roles, "hash": h}
 
 
+def chk_gcp_firewall_sources(args):
+    """Self-monitoring: sourceRanges rule firewall tetap terkunci + tidak ada rule RDP baru."""
+    proj = args["project"]
+    expected = set(args["expected_sources"])
+    rules = compute_list(f"projects/{proj}/global/firewalls")
+    ok, detail = True, []
+    for name in args["rules"]:
+        r = next((x for x in rules if x["name"] == name), None)
+        if r is None:
+            ok = False; detail.append(f"{name}: rule hilang")
+            continue
+        src = set(r.get("sourceRanges") or [])
+        if src != expected:
+            ok = False; detail.append(f"{name}: {sorted(src)} != {sorted(expected)}")
+    rdp = [x["name"] for x in rules
+           if any(a.get("IPProtocol") == "tcp" and "3389" in (a.get("ports") or [])
+                  for a in (x.get("allowed") or []))]
+    return {"ssh_sources_ok": ok, "rdp_rule_count": len(rdp), "_detail": detail, "_rdp": rdp}
+
+
 def chk_git_commit_age(args):
     if args["repo"] == "DRIFT_REGISTRY":
         env = os.environ.get("DRIFT_REGISTRY_PATH", "")
@@ -563,6 +583,7 @@ CHECKS = {
     "http_json_field": chk_http_json_field,
     "http_header_contains": chk_http_header_contains,
     "iam_policy_hash": chk_iam_policy_hash,
+    "gcp_firewall_sources": chk_gcp_firewall_sources,
     "git_commit_age": chk_git_commit_age,
     "compare_lb_inventory_vs_hub_scan_targets": chk_lb_log_coverage,
 }

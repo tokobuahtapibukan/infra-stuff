@@ -1,10 +1,10 @@
 {
- "run_at": "2026-11-19T18:22:00.199810+00:00",
+ "run_at": "2026-11-19T18:53:10.321311+00:00",
  "engine": "drift_engine v1",
- "cards_total": 31,
+ "cards_total": 32,
  "skipped_total": 0,
  "summary": {
-  "verified": 31,
+  "verified": 32,
   "drifted": 0,
   "stale": 0,
   "skipped": 0
@@ -31,7 +31,7 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-19T18:21:30.056504+00:00"
+   "at": "2026-11-19T18:52:36.621373+00:00"
   },
   {
    "id": "gocrypto-x-lag",
@@ -72,7 +72,7 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-19T18:21:30.160109+00:00"
+   "at": "2026-11-19T18:52:36.727119+00:00"
   },
   {
    "id": "gonet-x-lag",
@@ -113,7 +113,7 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-19T18:21:30.194549+00:00"
+   "at": "2026-11-19T18:52:36.761959+00:00"
   },
   {
    "id": "no-latest-in-cdk",
@@ -158,7 +158,7 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-19T18:21:30.267852+00:00"
+   "at": "2026-11-19T18:52:36.837100+00:00"
   },
   {
    "id": "node20-eol-dockerfiles",
@@ -199,7 +199,7 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-19T18:21:31.150649+00:00"
+   "at": "2026-11-19T18:52:37.720373+00:00"
   },
   {
    "id": "p0-secret-yaml-tracked",
@@ -276,7 +276,7 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-19T18:21:31.165619+00:00"
+   "at": "2026-11-19T18:52:37.736290+00:00"
   },
   {
    "id": "staging-url-in-prod-bundle",
@@ -299,7 +299,7 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-19T18:21:32.715002+00:00"
+   "at": "2026-11-19T18:52:39.384974+00:00"
   },
   {
    "id": "tripay-sc-secrets-tracked",
@@ -332,7 +332,7 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-19T18:21:32.755625+00:00"
+   "at": "2026-11-19T18:52:39.425327+00:00"
   },
   {
    "id": "core-cluster-services-alive",
@@ -358,7 +358,7 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-19T18:21:33.169147+00:00"
+   "at": "2026-11-19T18:52:40.211559+00:00"
   },
   {
    "id": "game-cluster-services-alive",
@@ -384,7 +384,7 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-19T18:21:33.581416+00:00"
+   "at": "2026-11-19T18:52:40.555885+00:00"
   },
   {
    "id": "gameengine-gclb-ip",
@@ -405,7 +405,7 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-19T18:21:33.744271+00:00"
+   "at": "2026-11-19T18:52:40.719166+00:00"
   },
   {
    "id": "staging-tripay-cluster-dead",
@@ -432,7 +432,7 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-19T18:21:34.612039+00:00"
+   "at": "2026-11-19T18:52:42.754326+00:00"
   },
   {
    "id": "tenant-prod-lbs",
@@ -481,7 +481,7 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-19T18:21:35.111084+00:00"
+   "at": "2026-11-19T18:52:43.186717+00:00"
   },
   {
    "id": "tripay-staging-services-alive",
@@ -507,7 +507,7 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-19T18:21:35.418883+00:00"
+   "at": "2026-11-19T18:52:43.443268+00:00"
   },
   {
    "id": "hub-sa-roles-prod",
@@ -556,7 +556,7 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-19T18:21:37.033723+00:00"
+   "at": "2026-11-19T18:52:44.325496+00:00"
   },
   {
    "id": "hub-sa-roles-staging",
@@ -603,7 +603,7 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-19T18:21:37.760994+00:00"
+   "at": "2026-11-19T18:52:45.972895+00:00"
   },
   {
    "id": "registry-sweep-freshness",
@@ -617,16 +617,16 @@
     "age_hours_max": 30
    },
    "actual": {
-    "age_hours": 0.6,
+    "age_hours": 1.1,
     "last_commit": "1795110248"
    },
    "_actual_full": {
-    "age_hours": 0.6,
+    "age_hours": 1.1,
     "last_commit": "1795110248"
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-19T18:21:37.774492+00:00"
+   "at": "2026-11-19T18:52:45.985728+00:00"
   },
   {
    "id": "sentinel-scan-targets-complete",
@@ -651,7 +651,33 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-19T18:21:46.661313+00:00"
+   "at": "2026-11-19T18:52:56.355993+00:00"
+  },
+  {
+   "id": "staging-ssh-firewall-scoped",
+   "service": "meta",
+   "env": "staging",
+   "severity": "warn",
+   "claim": "Firewall staging terkunci: 3 rule SSH hanya dari VPN gateway + IAP; TIDAK ADA rule RDP",
+   "card_file": "claims/meta/staging-ssh-firewall-scoped.yaml",
+   "status": "VERIFIED",
+   "expect": {
+    "ssh_sources_ok": true,
+    "rdp_rule_count": 0
+   },
+   "actual": {
+    "ssh_sources_ok": true,
+    "rdp_rule_count": 0
+   },
+   "_actual_full": {
+    "ssh_sources_ok": true,
+    "rdp_rule_count": 0,
+    "_detail": [],
+    "_rdp": []
+   },
+   "detail": "ok",
+   "attempts": 1,
+   "at": "2026-11-19T18:52:56.877632+00:00"
   },
   {
    "id": "cloudarmor-layer-fact",
@@ -674,7 +700,7 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-19T18:21:50.880722+00:00"
+   "at": "2026-11-19T18:53:01.239442+00:00"
   },
   {
    "id": "cloudarmor-prod-gameengine",
@@ -709,7 +735,7 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-19T18:21:51.676802+00:00"
+   "at": "2026-11-19T18:53:01.895237+00:00"
   },
   {
    "id": "cloudarmor-staging-eight",
@@ -754,7 +780,7 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-19T18:21:52.336273+00:00"
+   "at": "2026-11-19T18:53:02.602002+00:00"
   },
   {
    "id": "cross-tenant-isolation-holds",
@@ -782,7 +808,7 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-19T18:21:53.592313+00:00"
+   "at": "2026-11-19T18:53:03.530669+00:00"
   },
   {
    "id": "gameengine-origin-lock-live",
@@ -803,7 +829,7 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-19T18:21:53.760671+00:00"
+   "at": "2026-11-19T18:53:03.705835+00:00"
   },
   {
    "id": "demobuah-live",
@@ -826,7 +852,7 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-19T18:21:54.135409+00:00"
+   "at": "2026-11-19T18:53:04.175061+00:00"
   },
   {
    "id": "dutaledak-sibling-live",
@@ -864,7 +890,7 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-19T18:21:55.001751+00:00"
+   "at": "2026-11-19T18:53:05.030514+00:00"
   },
   {
    "id": "gcs-level-images-public",
@@ -885,7 +911,7 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-19T18:21:55.309527+00:00"
+   "at": "2026-11-19T18:53:05.370563+00:00"
   },
   {
    "id": "hsts-demobuah",
@@ -908,7 +934,7 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-19T18:21:55.721039+00:00"
+   "at": "2026-11-19T18:53:05.825623+00:00"
   },
   {
    "id": "hsts-dutaledak",
@@ -931,7 +957,7 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-19T18:21:56.096740+00:00"
+   "at": "2026-11-19T18:53:06.221881+00:00"
   },
   {
    "id": "maintenance-off-demobuah",
@@ -952,7 +978,7 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-19T18:21:56.771542+00:00"
+   "at": "2026-11-19T18:53:06.977018+00:00"
   },
   {
    "id": "maintenance-off-dutaledak",
@@ -973,7 +999,7 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-19T18:21:57.537289+00:00"
+   "at": "2026-11-19T18:53:07.643779+00:00"
   },
   {
    "id": "partner-portal-domain-live",
@@ -1000,7 +1026,7 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-19T18:22:00.199697+00:00"
+   "at": "2026-11-19T18:53:10.321189+00:00"
   }
  ],
  "skipped": []

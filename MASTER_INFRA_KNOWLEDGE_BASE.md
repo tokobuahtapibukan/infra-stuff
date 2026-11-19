@@ -144,6 +144,11 @@ Tokobuah operates a high-availability, multi-tenant iGaming, FinTech, Payment, a
   * `35.244.234.26` (`staging-tripay-ingress-ip`): Global external static IPv4 bound to `tripay-ingress` on `staging-gke-standard`.
   * `136.82.0.162`: `amp-ingress`
   * `136.68.233.79`: `game-engine-ingress` (`buah.iknstaging.com`)
+* **Ingress Firewall Restrictions (staging-platform-vpc, enforced 2026-11-20)**:
+  * SSH (port 22) hanya dari: VPN gateway `10.10.16.10` (sg-vpn-gateway-dev-1), `10.10.16.11` (sg-vpn-gateway), `10.10.8.2` (jkt-vpn-gateway), dan range IAP `35.235.240.0/20` (gcloud compute ssh `--tunnel-through-iap`). Rules: `allow-ssh-staging-platform`, `default-allow-ssh`, `allow-partner-scp`.
+  * RDP (3389) dari internet: **dihapus** (`default-allow-rdp` deleted 2026-11-20).
+  * Di-watcher oleh drift card `staging-ssh-firewall-scoped` (infra-stuff/claims/meta) — pelebaran kembali sourceRanges = drift alert.
+
 * **Cloudflare Proxy Integration**:
   * Public domains (`tripay-be.iknstaging.com`, `tripay-cb.iknstaging.com`, `tripay-open.iknstaging.com`) resolve to Cloudflare edge IPs (`172.67.158.13`, `104.21.49.25`).
   * Cloudflare proxies SSL traffic to the GCP Global Static IP origin port 80/443.
