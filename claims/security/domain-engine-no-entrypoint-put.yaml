@@ -1,0 +1,21 @@
+id: domain-engine-no-entrypoint-put
+service: domain-management
+env: both
+claim: "Domain Engine tidak pernah melakukan PUT ke ruleset entrypoint Cloudflare (PUT menimpa semua rule redirect/config milik tenant di zone); rule diubah per rule (POST/PATCH/DELETE .../rules/{id})"
+belief_source: "Fix 2026-11-20 (PR #1, commit 1d74ab7): createRedirectRule/deleteRedirectRule lama melakukan PUT entrypoint http_request_dynamic_redirect. Tag production 0.0.10 masih memuat 2 pemanggilan .put( di file ini sampai rilis berikutnya."
+check:
+  tool: repo_grep_count
+  args:
+    repo: "~/tokobuah/domain-management"
+    files: "src/cloudflare/cloudflare.service.ts"
+    pattern: "\\.put\\("
+expect:
+  count: 0
+severity: warn
+recheck: 24h
+retry: 1
+local_only: true
+note: "Cek membaca working tree lokal (biasanya branch main). axios.put di src/amp/amp.service.ts (API internal AMP) sengaja di luar cakupan. Kode yang live di production baru memenuhi invariant ini setelah rilis > 0.0.10; lihat DOMAIN_ENGINE_RUNBOOK.md §4.2."
+created: 2026-11-21
+last_verified: null
+status: active

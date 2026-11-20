@@ -1,7 +1,7 @@
 # 🏛️ TOKOBUAH PLATFORM — MASTER INFRASTRUCTURE KNOWLEDGE BASE & OPERATIONS RUNBOOK
-> **Document Version**: 2.5.0  
+> **Document Version**: 2.6.0  
 > **Last Synchronized**: 2026-11-21 (see [Changelog](#changelog))  
-> **Service runbooks**: `AMP_PAGE_SERVICE_AND_TENANT_REGISTRY_RUNBOOK.md` (AMP, tenant-registry, AMP domains), `PROVIDER_PROXY_AND_STREAMING_OPERATIONS.md`, `PARTNER_DATA_PORTAL_AND_ANALYTICS_RUNBOOK.md`, `HERMES_DEVOPS_AUTOMATION_RUNBOOK.md`, `GCP_SERVICE_CONTROL_BILLING_AND_API_ARCHITECTURE_RUNBOOK.md`.  
+> **Service runbooks**: `AMP_PAGE_SERVICE_AND_TENANT_REGISTRY_RUNBOOK.md` (AMP, tenant-registry, AMP domains), `DOMAIN_ENGINE_RUNBOOK.md` (Domain Engine: domain types, subdomains, redirect model, releases), `PROVIDER_PROXY_AND_STREAMING_OPERATIONS.md`, `PARTNER_DATA_PORTAL_AND_ANALYTICS_RUNBOOK.md`, `HERMES_DEVOPS_AUTOMATION_RUNBOOK.md`, `GCP_SERVICE_CONTROL_BILLING_AND_API_ARCHITECTURE_RUNBOOK.md`.  
 > **Precedence**: Global rules in `~/AGENTS.md` apply on top of this document. If they differ, the **stricter rule wins**.  
 > **Scope**: Architecture, Kubernetes (GKE), Networking, Databases (Cloud SQL & HAProxy), Messaging (Kafka), In-Memory Caching (Redis), CI/CD (CloudBuild), Financial Cost Optimization, and Operational Guardrails.  
 > **Target Audience**: SREs, DevOps Engineers, and Autonomous AI Agents taking over this workspace.
@@ -320,6 +320,7 @@ All workloads were consolidated into `staging-gke-standard` under the `tripay` n
 * `summon-tenant`: Tenant provisioning and HAProxy registration scripts. Step 3 also labels `new-backend-internal` with `tokobuah.io/company-code` and pins its IP to a reserved static address (`prod-<code>-backend-internal`) since 2026-11-17 (not yet in git).
 * `AMP`: multi-tenant AMP page build & serve service (`amp-build` / `amp-serve`). Staging deploys from `main`; production by tag + manual `cloudbuild.prod.yaml`. See `AMP_PAGE_SERVICE_AND_TENANT_REGISTRY_RUNBOOK.md`.
 * `tenant-registry-go`: read-only internal lookup company code → tenant backend internal IP (from labelled Services), used by AMP for per-company promos.
+* `domain-management`: Domain Engine (NestJS), source of truth for tenant domains and the only writer to tenants' Cloudflare accounts (zones, DNS, SSL, redirects, AMP host registration). Staging = manual image `:latest` + restart; production = tag `0.0.N` + manifest. See `DOMAIN_ENGINE_RUNBOOK.md`.
 
 ### CloudBuild Configuration Update (`tripay-sc`):
 * CloudBuild deploy trigger files located in `deploy/cloudbuild/`:
@@ -559,6 +560,7 @@ The admin workstation's network transparently intercepts outbound DNS (UDP **and
 
 | Version | Date | Changes |
 | :--- | :--- | :--- |
+| 2.6.0 | 2026-11-21 | Added `DOMAIN_ENGINE_RUNBOOK.md` (Domain Engine topology staging/prod, domain types incl. AMP SUBDOMAIN and usersite SUBDOMAIN, redirect model with exclusions/loop check/rule-id drift adoption, usersite origin host-agnostic, release procedures, incidents: PUT entrypoint, DNS delete lag, zsh retag) and handoff prompts in `docs/handoffs/2026-11-subdomain-redirect/`. Updated §9 repositories (`domain-management`), AMP runbook §2.5/§4.4/§6/§7 to the revised contract. New claim cards `domain-engine-owner-runbook`, `domain-engine-no-entrypoint-put`. |
 | 2.5.0 | 2026-11-21 | Added `AMP_PAGE_SERVICE_AND_TENANT_REGISTRY_RUNBOOK.md` (AMP service, tenant-registry, tenant internal LB labels/pins, AMP domain modes D50, incidents) and handoff prompts in `docs/handoffs/2026-11-amp-subdomain/`. Updated §3 AMP ingress IPs (production AMP origin not locked), §9 repositories (`AMP`, `tenant-registry-go`, `summon-tenant` step 3), Caveat 4 (context can switch silently; VPN egress; diff exit codes). New claim cards for AMP/tenant-registry. |
 | 2.4.0 | 2026-11-17 | **Change applied (user-approved, C4)**: deletion protection on `proxy-stg-jkt` & `proxy-stg-sg`; daily snapshot schedules `proxy-stg-jkt-daily` / `proxy-stg-sg-daily` (7-day retention) attached to their boot disks; TCP:80 uptime checks for both proxies. No restart/downtime. Added email notification channel (admin) and two uptime alert policies (>1 region failing for 2 min). |
 | 2.3.0 | 2026-11-17 | **Change applied (user-approved)**: firewall rules `proxy-ssh-allow-trusted` (prio 900) and `proxy-ssh-deny-internet` (prio 950) restrict SSH/RDP on the vendor proxies to IAP, admin workstation egress, and Hermes host. Documented verification results and rollback. Promoted `hermes-agent-host` IP `34.87.88.43` to static address `hermes-agent-host-ip` (same IP, no downtime). |

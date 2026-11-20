@@ -1,0 +1,20 @@
+id: domain-engine-owner-runbook
+service: domain-management
+env: both
+claim: "Domain Engine (repo domain-management) punya runbook pemilik di infra-stuff/DOMAIN_ENGINE_RUNBOOK.md (owner: DevOps/SRE)"
+belief_source: "Dibuat 2026-11-21 dari sesi kerja AMP SUBDOMAIN + subdomain usersite (PR #1, #2)"
+check:
+  tool: repo_grep_count
+  args:
+    repo: "~/tokobuah/infra-stuff"
+    files: "DOMAIN_ENGINE_RUNBOOK.md"
+    pattern: "^> \\*\\*Primary Maintainers\\*\\*"
+expect:
+  count: 1
+severity: info
+recheck: 7d
+retry: 1
+local_only: true
+created: 2026-11-21
+last_verified: null
+status: active

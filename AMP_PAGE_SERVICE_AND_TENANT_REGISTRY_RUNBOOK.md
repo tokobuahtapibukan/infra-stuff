@@ -129,7 +129,7 @@ Status per 2026-11-21:
 | Mode | Contoh | Status |
 |---|---|---|
 | `STANDALONE` | `merekamp.com`, root domain + zone Cloudflare sendiri | Production |
-| `SUBDOMAIN` | `amp.merek.com`, satu tingkat di bawah money site (domain `STANDARD`) agen, memakai zone money site | AMP: staging (`eec8508`); Domain Engine & admin panel: dikerjakan |
+| `SUBDOMAIN` | `amp.merek.com`, satu tingkat di bawah money site (domain `STANDARD`) agen, memakai zone money site | AMP: staging (`eec8508`); Domain Engine: staging (`c5898f7`); admin panel: dikerjakan |
 
 Aturan inti (kontrak lengkap: `docs/handoffs/2026-11-amp-subdomain/00-kontrak-bersama.md`):
 * Satu tingkat saja; label `^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?$`, bukan `www`, default `amp`.
@@ -139,7 +139,10 @@ Aturan inti (kontrak lengkap: `docs/handoffs/2026-11-amp-subdomain/00-kontrak-be
 * Default `redirectTo` = money site; default `canonical` = **host AMP sendiri** (supaya terindeks). AMP tidak mengisi
   canonical sendiri, Domain Engine yang mengirim default.
 * DNS `A <label>` → IP ingress AMP, **proxied**; Configuration Rule `ssl: flexible` per host.
-* **Menghapus AMP SUBDOMAIN tidak boleh menghapus zone money site**; money site tidak boleh dihapus selama dipakai AMP.
+* **Menghapus AMP SUBDOMAIN tidak boleh menghapus zone money site.** Menghapus money site **ikut menghapus** AMP
+  SUBDOMAIN-nya (deregister AMP dulu; `409` kalau AMP masih diproses, `502` kalau AMP engine gagal). Revisi kontrak no. 10
+  (2026-11-20); sebelumnya money site ditolak dihapus.
+* Redirect money site **tidak mengenai** host AMP SUBDOMAIN (rule redirect mengecualikan host itu; kontrak no. 11).
 * Alur satu jalur: admin panel → Domain Engine → AMP `/internal/domains/{code}` (panel berhenti memanggil AMP langsung).
 * AMP `/internal/domains`: `409 hostname_taken` (host persis milik company lain), `409 parent_domain_taken` (host lain di
   keluarga domain sedang **aktif** dipakai company lain), `422 domain_reserved` (keluarga `AMP_DOMAIN`), `503 busy`
@@ -186,7 +189,8 @@ Aturan inti (kontrak lengkap: `docs/handoffs/2026-11-amp-subdomain/00-kontrak-be
 
 ### 4.4 Domain Engine: `deleteDomain()` selalu `deleteZone`
 * Untuk AMP SUBDOMAIN (memakai zone money site), alur hapus lama akan **menghapus zone money site** → situs utama mati.
-  Wajib bercabang (hapus DNS record + rule saja). Sudah masuk prompt Domain Engine; pastikan ada test regresinya.
+  Wajib bercabang (hapus DNS record + rule saja). **Selesai** di Domain Engine PR #1, dengan test regresi
+  ("Delete SUBDOMAIN tidak memanggil deleteZone"). Detail: `DOMAIN_ENGINE_RUNBOOK.md` §2.2.
 
 ### 4.5 Admin panel memegang `AMP_INTERNAL_KEY`
 * Panel memanggil AMP `/internal/domains` langsung dengan `X-Internal-Key` dan company code dari JWT yang hanya di-decode.
@@ -257,7 +261,8 @@ Log registry yang patut di-alert: `company code withheld`, `cluster poll failed`
 
 ## 6. Open Items
 * [ ] Production: pasang `cf-origin-lock-production` di backend AMP (§4.8) — butuh izin.
-* [ ] D50 Domain Engine + admin panel (prompt di §7), lalu uji ujung-ke-ujung staging dan rilis AMP production.
+* [x] D50 Domain Engine: staging (`c5898f7`), uji ujung-ke-ujung lolos 2026-11-20 (`DOMAIN_ENGINE_RUNBOOK.md`).
+* [ ] D50 admin panel (prompt di §7), lalu rilis production: AMP engine → Domain Engine → panel.
 * [ ] Panel berhenti memanggil `/internal`; rotasi `INTERNAL_KEY` (§4.5).
 * [ ] `summon-tenant` belum di git (perubahan step 3 hanya lokal).
 * [ ] Trigger PR untuk AMP (`cloudbuild.pr.yaml`) belum ada; trigger tag production belum ada.
@@ -274,3 +279,5 @@ Log registry yang patut di-alert: `company code withheld`, `cluster poll failed`
   * `docs/handoffs/2026-11-amp-subdomain/admin-panel.md`
   * `docs/handoffs/2026-11-amp-subdomain/domain-management.md`
   * `docs/handoffs/2026-11-amp-subdomain/amp-engine.md` (sudah diimplementasikan, `eec8508`)
+* Domain Engine (implementasi D50, subdomain usersite, model redirect, rilis): `DOMAIN_ENGINE_RUNBOOK.md`;
+  handoff lanjutan `docs/handoffs/2026-11-subdomain-redirect/`.
