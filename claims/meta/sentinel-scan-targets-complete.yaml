@@ -3,7 +3,7 @@ service: meta
 env: production
 claim: "Semua global HTTP LB production yang menerima traffic muncul di log http_load_balancer 7 hari terakhir (mekanisme scan 7-day sentinel hub)"
 belief_source: "Audit kode hub 2026-11-19: scan direct-IP hub bersifat log-based (Cloud Logging resource.type=http_load_balancer) — LB baru tanpa traffic tidak akan pernah terlihat"
-note: "KARTU META (kesehatan radar). 'uncovered' = LB live yang NOL entri log 7d → tidak terlihat oleh sentinel. Drift di sini = radar buta, bukan drift infra. Fix: investigasi (LB baru? traffic mati? log sink bermasalah?)."
+note: "KARTU META (kesehatan radar). 'uncovered' = LB live yang NOL entri log 7d → tidak terlihat oleh sentinel. Drift di sini = radar buta, bukan drift infra. Fix: investigasi (LB baru? traffic mati? log sink bermasalah?). 2026-11-20: engine diperbaiki (field IPAddress, segmen target, query per-rule) — sebelumnya kartu ini VERIFIED palsu (live=0). Temuan nyata: 14 LB (13 production-<tenant> + dataset) logConfig backend service TIDAK enabled → nol log → radar buta. Fix = enable logging (sampleRate rendah) di backend service tsb — perubahan PRODUCTION, butuh izin §1."
 check:
   tool: compare_lb_inventory_vs_hub_scan_targets
   args:

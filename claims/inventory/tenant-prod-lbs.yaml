@@ -1,8 +1,8 @@
 id: tenant-prod-lbs
 service: user-site
 env: production
-claim: "Ada persis 12 global HTTP LB tenant prod (nama prefix 'production-': buah5758, cinabotak, cinasuper, dutaledak, hambabet, ikn788, omsipit, pengenwd, rumushoki, tapakhoki, terbangwd, terios88)"
-belief_source: "gcloud target-http-proxies list 2026-11-15"
+claim: "Ada persis 13 global HTTP LB tenant prod (nama prefix 'production-': buah5758, cinabotak, cinasuper, dutaledak, hambabet, ikn788, omsipit, padi808, pengenwd, rumushoki, tapakhoki, terbangwd, terios88)"
+belief_source: "gcloud target-http-proxies list 2026-11-15 (12); 2026-11-20: +padi808 (onboarding via summon-tenant, proxy/forwarding-rule dibuat 2026-11-20 00:27 UTC, IP 8.232.0.117, backend serverless NEG production-padi808-neg) — dikonfirmasi user sebagai tenant baru"
 flip_note: "Tenant BARU = count naik intentional: update kartu ini + kartu meta sentinel-scan-targets-complete + bootstrap kartu surface tenant baru."
 check:
   tool: gcp_target_http_proxies_prefix_count
@@ -10,7 +10,7 @@ check:
     project: tokobuah-production
     name_prefix: "production-"
 expect:
-  count: 12
+  count: 13
 severity: warn
 recheck: 24h
 retry: 2

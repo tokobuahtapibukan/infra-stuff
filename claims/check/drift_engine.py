@@ -532,38 +532,36 @@ def chk_lb_log_coverage(args):
     frs = compute_list(f"projects/{proj}/global/forwardingRules")
     live = {f["name"] for f in frs
             if f.get("networkTier") == "PREMIUM"
-            and (f.get("target") or "").endswith("targetHttpProxies")
-            and f.get("ipAddresses")}
+            # target = URL penuh ".../targetHttpProxies/<nama>" → cek segmen, bukan endswith.
+            and "/targetHttpProxies/" in (f.get("target") or "")
+            # Compute API v1 memakai field 'IPAddress' (bukan 'ipAddresses').
+            # Dua bug filter ini dulu membuat live=0 → kartu VERIFIED palsu (ditemukan 2026-11-20).
+            and (f.get("IPAddress") or f.get("ipAddresses"))}
     # logging API
     tok = get_gcp_token()
     since = datetime.now(timezone.utc).timestamp() - 7 * 86400
     since_s = datetime.fromtimestamp(since, tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    # Query PER forwarding rule (pageSize 1). Scan global 4x1000 entri sebelumnya bias:
+    # LB ber-traffic tinggi (game-engine) memenuhi kuota → LB lain tampak "tanpa log".
     logged = set()
-    token_page = None
-    for _ in range(4):  # max 4 page x 1000
+    for fr in sorted(live):
         payload = {
             "resourceNames": [f"projects/{proj}"],
-            "filter": f'timestamp >= "{since_s}" AND resource.type="http_load_balancer"',
-            "orderBy": "timestamp desc",
-            "pageSize": 1000,
+            "filter": (f'timestamp >= "{since_s}" AND resource.type="http_load_balancer" '
+                       f'AND resource.labels.forwarding_rule_name="{fr}"'),
+            "pageSize": 1,
         }
-        if token_page:
-            payload["pageToken"] = token_page
-        body = json.dumps(payload)
         rc2, out2 = sh(["curl", "-sS", "--max-time", "60",
                         "-X", "POST", "https://logging.googleapis.com/v2/entries:list",
                         "-H", f"Authorization: Bearer {tok.strip()}",
-                        "-H", "Content-Type: application/json", "-d", body], timeout=90)
+                        "-H", "Content-Type: application/json", "-d", json.dumps(payload)], timeout=90)
         if rc2 != 0:
             raise CheckError(f"logging API gagal: {out2[:150]}")
         d = json.loads(out2)
-        for e in d.get("entries", []):
-            fn = ((e.get("resource") or {}).get("labels") or {}).get("forwarding_rule_name")
-            if fn:
-                logged.add(fn)
-        token_page = d.get("nextPageToken")
-        if not token_page:
-            break
+        if "error" in d:
+            raise CheckError(f"logging API error: {str(d['error'])[:150]}")
+        if d.get("entries"):
+            logged.add(fr)
     uncovered = sorted(live - logged)
     return {"uncovered": uncovered, "live_lb_count": len(live), "logged_lb_count": len(logged & live)}
 
