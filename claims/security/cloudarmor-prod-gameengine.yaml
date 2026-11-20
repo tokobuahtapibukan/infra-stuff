@@ -1,15 +1,16 @@
 id: cloudarmor-prod-gameengine
 service: game-engine
 env: production
-claim: "cf-origin-lock-production terpasang di persis 5 backend game-engine (all, launcher, pg, pp, transactions)"
-belief_source: "MASTER_INFRA_KNOWLEDGE_BASE.md §14 (Cloud Armor Attachment Verification)"
+claim: "cf-origin-lock-production terpasang di 7 backend (5 game-engine: all, launcher, pg, pp, transactions + 2 amp: build, serve)"
+belief_source: "MASTER_INFRA_KNOWLEDGE_BASE.md §14 (5 game-engine) → 2026-11-21: +2 amp (amp-build-service, amp-serve-service)"
+note: "2 backend amp di prod-core-cluster berbagi policy cf-origin-lock-production yang sama dengan 5 backend game-engine di game-cluster."
 check:
   tool: gcp_backend_services_policy
   args:
     project: tokobuah-production
     policy_suffix: cf-origin-lock-production
 expect:
-  count: 5
+  count: 7
 severity: critical
 recheck: 12h
 retry: 2

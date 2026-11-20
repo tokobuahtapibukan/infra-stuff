@@ -1,16 +1,15 @@
 id: amp-prod-origin-open
 service: amp
 env: production
-claim: "Open: origin AMP production (Ingress 35.227.207.207) menjawab 200 untuk request langsung non-Cloudflare — backend amp-build/amp-serve belum memakai Cloud Armor cf-origin-lock-production"
-belief_source: "Live probe 2026-11-21 dari 34.2.153.31 (non-Cloudflare): /healthz 200, Host amp-api.nkigaming.site /docs 200; backend services k8s1-537c311f-amp-amp-{build,serve}-service-8080 securityPolicy kosong"
-flip_note: "Setelah securityPolicy cf-origin-lock-production dipasang di production/core/amp/04-backendconfig.yaml (butuh izin Guardrail 1; pastikan dulu semua host AMP prod proxied Cloudflare): flip expect ke status: 403 dan rename/retire kartu ini menjadi kartu invariant origin-lock."
-note: "Admin API dan /internal tetap butuh JWT / X-Internal-Key, tapi lewat HTTP polos dan tanpa batas IP. Staging sudah terkunci (kartu cloudarmor-staging-eight)."
+claim: "Closed: probe HTTP langsung dari source non-Cloudflare ke Ingress AMP production (35.227.207.207) ditolak 403 Cloud Armor (cf-origin-lock-production di amp-build & amp-serve)"
+belief_source: "Live-verified 2026-11-21 setelah pasang cf-origin-lock-production di production/core/amp/04-backendconfig.yaml: direct /healthz & /docs = 403 dari 34.2.153.31; via Cloudflare (amp-api.nkigaming.site, ampampampazxx.store, hambabetgold.id) = 200"
+note: "Backend k8s1-537c311f-amp-amp-{build,serve}-service-8080 ter-attach ke cf-origin-lock-production (lihat juga kartu cloudarmor-prod-gameengine count=7). Source cek harus non-Cloudflare."
 check:
   tool: http_probe_status
   args:
     url: "http://35.227.207.207/healthz"
 expect:
-  status: 200
+  status: 403
 severity: critical
 recheck: 12h
 retry: 2

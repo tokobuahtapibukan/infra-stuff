@@ -72,7 +72,7 @@ Status per 2026-11-21:
 |---|---|---|
 | Ingress (GCE, HTTP :80 saja) | `136.82.0.162` (`amp-staging-ingress-ip`) | `35.227.207.207` |
 | Host admin API | `amp-api.stagingtokobuah.xyz` | `amp-api.nkigaming.site` |
-| Cloud Armor origin lock | `cf-origin-lock-staging` di 2 backend AMP ✅ | **TIDAK ADA** ⚠️ (lihat §4.8, kartu `amp-prod-origin-open`) |
+| Cloud Armor origin lock | `cf-origin-lock-staging` di 2 backend AMP ✅ | `cf-origin-lock-production` di 2 backend AMP ✅ (2026-11-21) |
 | SSL Cloudflare `amp-api` | Configuration Rule `ssl: flexible` khusus host (zone `full` sejak 2026-11-14) | — |
 
 * Origin hanya HTTP :80. Host apa pun yang lewat Cloudflare ke AMP harus **SSL Flexible** (zone atau Configuration
@@ -205,12 +205,10 @@ Aturan inti (kontrak lengkap: `docs/handoffs/2026-11-amp-subdomain/00-kontrak-be
 * `amp-page:v0.0.4` di-push tanpa catatan build (juga menimpa `latest`). Sebelum dipakai: cocokkan hash semua file
   `/app/src` di pod dengan `git show <tag>:src/...`. Rilis berikutnya sebaiknya lewat `cloudbuild.prod.yaml`.
 
-### 4.8 ⚠️ Origin AMP production tidak dikunci Cloud Armor
-* 2026-11-21: `http://35.227.207.207/healthz` dan `/docs` (Host `amp-api.nkigaming.site`) menjawab **200** dari IP
-  non-Cloudflare. Backend `amp-build`/`amp-serve` production tidak punya `securityPolicy`, padahal
-  `cf-origin-lock-production` ada. Admin API dan `/internal` bisa dijangkau langsung lewat HTTP (tetap butuh JWT /
-  `X-Internal-Key`). Dilacak kartu `amp-prod-origin-open`. Perbaikan (butuh izin, Guardrail 1): `securityPolicy` di
-  `04-backendconfig.yaml` production, setelah memastikan semua host AMP production proxied lewat Cloudflare.
+### 4.8 Origin AMP production sudah dikunci Cloud Armor (2026-11-21)
+* Sebelumnya (temuan 2026-11-21): `http://35.227.207.207/healthz` dan `/docs` (Host `amp-api.nkigaming.site`) menjawab **200** dari IP
+  non-Cloudflare karena backend `amp-build`/`amp-serve` production belum punya `securityPolicy`.
+* **Selesai (2026-11-21)**: `securityPolicy: cf-origin-lock-production` dipasang di `production/core/amp/04-backendconfig.yaml` setelah memastikan seluruh host AMP production (`ampampampazxx.store`, `hambabetgold.id`, `amp-api.nkigaming.site`) proxied lewat Cloudflare. Dilacak kartu `amp-prod-origin-open` (expect `403`) dan `cloudarmor-prod-gameengine` (`count: 7`).
 
 ### 4.9 Dependency `tldts`
 * Dikunci persis `tldts@7.4.19` + `overrides.tldts-core = 7.4.19` (rentang `^` sempat menarik `tldts-core` 7.5.5 yang
@@ -260,7 +258,7 @@ Log registry yang patut di-alert: `company code withheld`, `cluster poll failed`
 ---
 
 ## 6. Open Items
-* [ ] Production: pasang `cf-origin-lock-production` di backend AMP (§4.8) — butuh izin.
+* [x] Production: pasang `cf-origin-lock-production` di backend AMP (§4.8, 2026-11-21).
 * [x] D50 Domain Engine: staging (`c5898f7`), uji ujung-ke-ujung lolos 2026-11-20 (`DOMAIN_ENGINE_RUNBOOK.md`).
 * [ ] D50 admin panel (prompt di §7), lalu rilis production: AMP engine → Domain Engine → panel.
 * [ ] Panel berhenti memanggil `/internal`; rotasi `INTERNAL_KEY` (§4.5).
