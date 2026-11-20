@@ -1,0 +1,22 @@
+id: staging-billing-namespace-labels
+service: finops
+env: staging
+claim: "Namespace staging tripay & fruit4d membawa label atribusi billing (service=payment-gateway / service=fruit4d) — muncul di billing export sebagai k8s-namespace-labels/service"
+belief_source: "Dipasang 2026-11-20 (izin user) via kubectl apply dari company-deployment-key/staging/tripay/namespace.yaml & staging/core/fruit4d/namespace.yaml; kubectl diff setelahnya kosong"
+note: "Label ini dipakai filter Billing Console -> Reports -> Labels. Cost allocation GKE staging-gke-standard aktif sejak 2026-11-15; label namespace baru tercatat di billing sejak 2026-11-20. Secret Manager tripay-stg-rsa-* & bucket tokobuah-staging-tripay-storage sudah berlabel service=payment-gateway sebelumnya."
+requires_tools: [kubectl]
+check:
+  tool: k8s_namespace_labels
+  args:
+    context: gke_tokobuah-staging-499001_asia-southeast1-a_staging-gke-standard
+    labels:
+      tripay: {service: payment-gateway, env: staging}
+      fruit4d: {service: fruit4d, env: staging}
+expect:
+  missing: 0
+severity: info
+recheck: 7d
+retry: 1
+created: 2026-11-20
+last_verified: null
+status: active

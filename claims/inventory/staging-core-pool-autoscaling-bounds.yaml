@@ -1,0 +1,23 @@
+id: staging-core-pool-autoscaling-bounds
+service: staging-platform
+env: staging
+claim: "core-pool di staging-gke-standard: autoscaling ON dengan min >= 1 dan max >= 8 (e2-medium, on-demand). Beban saat ini butuh 6 node core + 1 client (CPU requests 77-92% per node)"
+belief_source: "Verifikasi live 2026-11-20: node-pools list (min 1 / max 8, 6 node core) + kubectl describe nodes (requests 77-92%)"
+note: "Guard anti-regresi untuk cost-scheduler: workflows/staging-startup.yaml meng-hardcode setAutoscaling(min=0, max=3) + setSize(2). Kalau workflow itu dideploy tanpa diperbaiki, kartu ini DRIFT (autoscale_hi=3) dan pod staging akan Pending. Ubah bound di sini HANYA kalau kapasitas staging memang sengaja diubah."
+check:
+  tool: gcp_gke_nodepool_autoscaling
+  args:
+    project: tokobuah-staging-499001
+    location: asia-southeast1-a
+    cluster: staging-gke-standard
+    pool: core-pool
+expect:
+  autoscaling_enabled: true
+  autoscale_lo_min: 1
+  autoscale_hi_min: 8
+severity: warn
+recheck: 12h
+retry: 1
+created: 2026-11-20
+last_verified: null
+status: active

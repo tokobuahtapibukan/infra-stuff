@@ -565,6 +565,74 @@ def chk_lb_log_coverage(args):
     return {"uncovered": uncovered, "live_lb_count": len(live), "logged_lb_count": len(logged & live)}
 
 
+def chk_gcp_gke_nodepool_autoscaling(args):
+    """Bound autoscaling + shape sebuah node pool (GKE REST, read-only).
+    Key output sengaja tidak berakhiran _min/_max/_in agar tidak bentrok dgn komparator verify()."""
+    url = (f"https://container.googleapis.com/v1/projects/{args['project']}/locations/"
+           f"{args['location']}/clusters/{args['cluster']}/nodePools/{args['pool']}")
+    d = api_get(url)
+    if not d.get("name"):
+        raise CheckError(f"node pool {args['pool']} tidak ditemukan: {str(d)[:120]}")
+    a = d.get("autoscaling") or {}
+    cfg = d.get("config") or {}
+    return {
+        "autoscaling_enabled": bool(a.get("enabled")),
+        "autoscale_lo": a.get("minNodeCount", a.get("totalMinNodeCount", 0)) if a.get("enabled") else None,
+        "autoscale_hi": a.get("maxNodeCount", a.get("totalMaxNodeCount")) if a.get("enabled") else None,
+        "machine_type": cfg.get("machineType"),
+        "spot": bool(cfg.get("spot") or cfg.get("preemptible")),
+    }
+
+
+def chk_gcp_scheduler_jobs_prefix_count(args):
+    """Hitung job Cloud Scheduler dengan prefix nama tertentu (+ berapa yang ENABLED)."""
+    url = (f"https://cloudscheduler.googleapis.com/v1/projects/{args['project']}/locations/"
+           f"{args['location']}/jobs?pageSize=500")
+    d = api_get(url)
+    if "error" in d:
+        raise CheckError(f"Cloud Scheduler API error: {str(d['error'])[:150]}")
+    jobs = [j for j in d.get("jobs", [])
+            if j.get("name", "").rsplit("/", 1)[-1].startswith(args["name_prefix"])]
+    return {
+        "count": len(jobs),
+        "enabled_count": sum(1 for j in jobs if j.get("state") == "ENABLED"),
+        "names": sorted(j["name"].rsplit("/", 1)[-1] for j in jobs),
+    }
+
+
+def chk_k8s_namespace_labels(args):
+    """Pastikan namespace membawa label tertentu (mis. label atribusi billing)."""
+    ctx = args.get("context")
+    missing = []
+    for ns, want in args["labels"].items():
+        cmd = ["kubectl"] + (["--context", ctx] if ctx else []) + ["get", "namespace", ns, "-o", "json"]
+        rc, out = sh(cmd, timeout=60)
+        if rc != 0:
+            raise CheckError(f"kubectl ns {ns} gagal: {out.strip()[:150]}")
+        have = (json.loads(out).get("metadata") or {}).get("labels") or {}
+        for k, v in want.items():
+            if have.get(k) != v:
+                missing.append(f"{ns}: {k}={v} (live: {have.get(k)!r})")
+    return {"missing": len(missing), "_detail": missing}
+
+
+def chk_gcp_instance_shape(args):
+    """Shape VM: machine type, vCPU, RAM (MB), status (Compute REST, read-only)."""
+    base = f"https://compute.googleapis.com/compute/v1/projects/{args['project']}/zones/{args['zone']}"
+    inst = api_get(f"{base}/instances/{args['instance']}")
+    if not inst.get("machineType"):
+        raise CheckError(f"instance {args['instance']} tidak ditemukan: {str(inst)[:120]}")
+    mt_name = inst["machineType"].rsplit("/", 1)[-1]
+    mt = api_get(f"{base}/machineTypes/{mt_name}")
+    return {
+        "status": inst.get("status"),
+        "machine_type": mt_name,
+        "vcpus": mt.get("guestCpus"),
+        "memory_mb": mt.get("memoryMb"),
+        "provisioning_model": (inst.get("scheduling") or {}).get("provisioningModel", "STANDARD"),
+    }
+
+
 CHECKS = {
     "gcp_backend_services_policy": chk_gcp_backend_services_policy,
     "gcp_target_proxies_no_policy": chk_gcp_target_proxies_no_policy,
@@ -586,6 +654,10 @@ CHECKS = {
     "gcp_firewall_sources": chk_gcp_firewall_sources,
     "git_commit_age": chk_git_commit_age,
     "compare_lb_inventory_vs_hub_scan_targets": chk_lb_log_coverage,
+    "gcp_gke_nodepool_autoscaling": chk_gcp_gke_nodepool_autoscaling,
+    "gcp_scheduler_jobs_prefix_count": chk_gcp_scheduler_jobs_prefix_count,
+    "k8s_namespace_labels": chk_k8s_namespace_labels,
+    "gcp_instance_shape": chk_gcp_instance_shape,
 }
 
 

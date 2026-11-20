@@ -1,0 +1,21 @@
+id: cost-scheduler-not-deployed
+service: staging-platform
+env: staging
+claim: "Open: staging cost-scheduler (company-deployment-key/cost-scheduler) BELUM dideploy — 0 job Cloud Scheduler 'staging-cost-*' (workflow juga 0). Hanya SA staging-cost-scheduler + custom role stagingCostScheduler yang sudah ada"
+belief_source: "Verifikasi live 2026-11-20: scheduler jobs list asia-southeast1 (hanya sync-db-to-bigquery-daily), workflows list = 0, iam SA/role describe"
+flip_note: "Setelah deploy (dan workflow startup sudah diperbaiki agar bound autoscaling core-pool tetap min 1 / max 8 — lihat kartu staging-core-pool-autoscaling-bounds): flip expect ke count: 2, enabled_count: 2 (atau enabled_count: 0 kalau deploy --paused), lalu pindahkan kartu ke inventory/."
+note: "Jadwal di config.env = '0 3 * * *' & '0 9 * * *' Asia/Jakarta = SETIAP HARI (bukan Senin-Jumat). Saat aktif, Hermes gcp_monitor & kartu tripay-staging-services-alive perlu mute window 20:00-02:00 UTC."
+check:
+  tool: gcp_scheduler_jobs_prefix_count
+  args:
+    project: tokobuah-staging-499001
+    location: asia-southeast1
+    name_prefix: staging-cost-
+expect:
+  count: 0
+severity: info
+recheck: 24h
+retry: 1
+created: 2026-11-20
+last_verified: null
+status: active

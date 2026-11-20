@@ -54,6 +54,10 @@ http_json_field                        # GET JSON publik → ambil nilai field
 http_header_contains                   # cek header response ada/mengandung X
 git_commit_age                         # umur commit terakhir author tertentu (dead-man's switch; repo=DRIFT_REGISTRY)
 compare_lb_inventory_vs_hub_scan_targets # meta: semua public LB muncul di log LB 7d
+gcp_gke_nodepool_autoscaling           # bound autoscaling node pool (autoscale_lo/hi, machine_type, spot)
+gcp_scheduler_jobs_prefix_count        # hitung job Cloud Scheduler per prefix (+ enabled_count)
+k8s_namespace_labels                   # namespace membawa label tertentu → missing (count)
+gcp_instance_shape                     # VM: status, machine_type, vcpus, memory_mb
 ```
 
 Kartu juga bisa membawa:
