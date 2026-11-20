@@ -1,0 +1,21 @@
+id: tenant-internal-lb-pinned
+service: tenant-registry
+env: production
+claim: "13 manifest production/client/*/service-internal.yaml mem-pin spec.loadBalancerIP ke alamat statis prod-<code>-backend-internal"
+belief_source: "Recon 2026-11-21: 13 alamat 'prod-*-backend-internal' IN_USE (gcloud compute addresses list) dan 13 manifest ber-loadBalancerIP"
+flip_note: "Tenant BARU = count naik intentional (summon-tenant step 3 me-reserve + pin otomatis). IP tidak di-pin = IP bisa berubah saat Service dibuat ulang (PGA trx_upstream & registry ikut basi)."
+check:
+  tool: repo_grep_count
+  args:
+    repo: "~/tokobuah/company-deployment-key"
+    files: "production/client/*/service-internal.yaml"
+    pattern: "^\\s*loadBalancerIP:\\s*\"?10\\.20\\."
+expect:
+  count: 13
+severity: warn
+recheck: 24h
+retry: 1
+local_only: true
+created: 2026-11-21
+last_verified: null
+status: active

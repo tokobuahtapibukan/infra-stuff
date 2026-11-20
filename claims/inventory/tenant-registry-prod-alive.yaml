@@ -1,0 +1,21 @@
+id: tenant-registry-prod-alive
+service: tenant-registry
+env: production
+claim: "tenant-registry production: 1 deployment di prod-core-cluster ns/tenant-registry available (dibutuhkan build AMP untuk backend promo per company)"
+belief_source: "kubectl recon 2026-11-21 (v0.1.0, 1 replica)"
+note: "Registry mati > 15 menit = build AMP gagal 502 tenant_registry_unavailable (halaman live tidak terdampak)."
+requires_tools: [kubectl]
+check:
+  tool: k8s_deployments_healthy
+  args:
+    context: gke_tokobuah-production_asia-southeast1_prod-core-cluster
+    namespaces: [tenant-registry]
+expect:
+  unhealthy: 0
+  deployments_total: 1
+severity: critical
+recheck: 12h
+retry: 2
+created: 2026-11-21
+last_verified: null
+status: active

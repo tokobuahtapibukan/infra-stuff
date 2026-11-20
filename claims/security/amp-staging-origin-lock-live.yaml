@@ -1,0 +1,19 @@
+id: amp-staging-origin-lock-live
+service: amp
+env: staging
+claim: "Probe HTTP langsung dari source non-Cloudflare ke Ingress AMP staging (136.82.0.162) ditolak 403 Cloud Armor"
+belief_source: "Live probe 2026-11-15 (setelah pasang cf-origin-lock-staging): /healthz, /docs, /internal/* = 403 dari 34.2.153.31"
+note: "Pasangan perilaku dari kartu cloudarmor-staging-eight (yang menghitung backend). Source cek harus non-Cloudflare."
+check:
+  tool: http_probe_status
+  args:
+    url: "http://136.82.0.162/healthz"
+    host_header: amp-api.stagingtokobuah.xyz
+expect:
+  status: 403
+severity: critical
+recheck: 12h
+retry: 2
+created: 2026-11-21
+last_verified: null
+status: active

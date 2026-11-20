@@ -1,0 +1,22 @@
+id: tenant-internal-lb-labelled
+service: tenant-registry
+env: production
+claim: "13 manifest production/client/*/service-internal.yaml membawa label tokobuah.io/company-code (satu per tenant; dibaca tenant-registry)"
+belief_source: "Recon 2026-11-21: 12 tenant dilabel 2026-11-17 + padi808 otomatis via summon-tenant 2026-11-20; live: kubectl get svc -A -l tokobuah.io/company-code = 13"
+flip_note: "Tenant BARU = count naik intentional: update bersama kartu tenant-prod-lbs dan tenant-internal-lb-pinned. Tenant tanpa label = AMP build 502 tenant_backend_unknown."
+note: "Menghitung working tree company-deployment-key (manifest = sumber kebenaran, zero drift)."
+check:
+  tool: repo_grep_count
+  args:
+    repo: "~/tokobuah/company-deployment-key"
+    files: "production/client/*/service-internal.yaml"
+    pattern: "tokobuah\\.io/company-code:"
+expect:
+  count: 13
+severity: warn
+recheck: 24h
+retry: 1
+local_only: true
+created: 2026-11-21
+last_verified: null
+status: active

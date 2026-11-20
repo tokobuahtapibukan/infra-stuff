@@ -1,0 +1,20 @@
+id: tenant-registry-staging-alive
+service: tenant-registry
+env: staging
+claim: "tenant-registry staging: 1 deployment di staging-gke-standard ns/tenant-registry available"
+belief_source: "kubectl recon 2026-11-21"
+requires_tools: [kubectl]
+check:
+  tool: k8s_deployments_healthy
+  args:
+    context: gke_tokobuah-staging-499001_asia-southeast1-a_staging-gke-standard
+    namespaces: [tenant-registry]
+expect:
+  unhealthy: 0
+  deployments_total: 1
+severity: warn
+recheck: 12h
+retry: 2
+created: 2026-11-21
+last_verified: null
+status: active

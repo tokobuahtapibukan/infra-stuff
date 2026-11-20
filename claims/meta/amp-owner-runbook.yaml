@@ -1,0 +1,20 @@
+id: amp-owner-runbook
+service: amp
+env: both
+claim: "AMP + tenant-registry punya runbook pemilik di infra-stuff/AMP_PAGE_SERVICE_AND_TENANT_REGISTRY_RUNBOOK.md (owner: DevOps/SRE)"
+belief_source: "Dibuat 2026-11-21"
+check:
+  tool: repo_grep_count
+  args:
+    repo: "~/tokobuah/infra-stuff"
+    files: "AMP_PAGE_SERVICE_AND_TENANT_REGISTRY_RUNBOOK.md"
+    pattern: "^> \\*\\*Primary Maintainers\\*\\*"
+expect:
+  count: 1
+severity: info
+recheck: 7d
+retry: 1
+local_only: true
+created: 2026-11-21
+last_verified: null
+status: active

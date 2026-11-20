@@ -1,0 +1,22 @@
+id: amp-base-image-policy
+service: amp
+env: both
+claim: "Dockerfile AMP (node:24.x) dan tenant-registry-go (golang:1.26 + distroless) tidak memakai stream base image EOL (node <=22, golang <=1.24)"
+belief_source: "Recon Dockerfile 2026-11-21"
+check:
+  tool: repo_grep_count
+  args:
+    repos:
+      - "~/tokobuah/AMP"
+      - "~/tokobuah/tenant-registry-go"
+    files: "Dockerfile*"
+    pattern: "node:(1[0-9]|2[0-2])([.:@-]|\\b)|golang:1\\.(1[0-9]|2[0-4])([.:@-]|\\b)"
+expect:
+  count: 0
+severity: warn
+recheck: 7d
+retry: 1
+local_only: true
+created: 2026-11-21
+last_verified: null
+status: active

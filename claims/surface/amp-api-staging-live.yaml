@@ -1,0 +1,18 @@
+id: amp-api-staging-live
+service: amp
+env: staging
+claim: "https://amp-api.stagingtokobuah.xyz/healthz menjawab 200 lewat Cloudflare (Configuration Rule ssl: flexible untuk host ini tetap ada)"
+belief_source: "Live 2026-11-15: 525 karena zone stagingtokobuah.xyz diubah ke full (2026-11-14 16:23Z) → Configuration Rule ssl flexible → 200"
+note: "525 lagi = rule SSL per-host hilang / berubah; jangan kembalikan seluruh zone ke flexible (host lain butuh full)."
+check:
+  tool: http_probe_status
+  args:
+    url: "https://amp-api.stagingtokobuah.xyz/healthz"
+expect:
+  status: 200
+severity: warn
+recheck: 12h
+retry: 2
+created: 2026-11-21
+last_verified: null
+status: active

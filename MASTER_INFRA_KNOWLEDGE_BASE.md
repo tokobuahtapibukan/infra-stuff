@@ -1,6 +1,7 @@
 # 🏛️ TOKOBUAH PLATFORM — MASTER INFRASTRUCTURE KNOWLEDGE BASE & OPERATIONS RUNBOOK
-> **Document Version**: 2.4.0  
-> **Last Synchronized**: 2026-11-17 (see [Changelog](#changelog))  
+> **Document Version**: 2.5.0  
+> **Last Synchronized**: 2026-11-21 (see [Changelog](#changelog))  
+> **Service runbooks**: `AMP_PAGE_SERVICE_AND_TENANT_REGISTRY_RUNBOOK.md` (AMP, tenant-registry, AMP domains), `PROVIDER_PROXY_AND_STREAMING_OPERATIONS.md`, `PARTNER_DATA_PORTAL_AND_ANALYTICS_RUNBOOK.md`, `HERMES_DEVOPS_AUTOMATION_RUNBOOK.md`, `GCP_SERVICE_CONTROL_BILLING_AND_API_ARCHITECTURE_RUNBOOK.md`.  
 > **Precedence**: Global rules in `~/AGENTS.md` apply on top of this document. If they differ, the **stricter rule wins**.  
 > **Scope**: Architecture, Kubernetes (GKE), Networking, Databases (Cloud SQL & HAProxy), Messaging (Kafka), In-Memory Caching (Redis), CI/CD (CloudBuild), Financial Cost Optimization, and Operational Guardrails.  
 > **Target Audience**: SREs, DevOps Engineers, and Autonomous AI Agents taking over this workspace.
@@ -142,7 +143,7 @@ Tokobuah operates a high-availability, multi-tenant iGaming, FinTech, Payment, a
 * Managed by GKE `loadbalancer-controller` using Ingress class `gce`.
 * **Public Static IP Inventory**:
   * `35.244.234.26` (`staging-tripay-ingress-ip`): Global external static IPv4 bound to `tripay-ingress` on `staging-gke-standard`.
-  * `136.82.0.162`: `amp-ingress`
+  * `136.82.0.162`: `amp-ingress` staging (`amp-api.stagingtokobuah.xyz` + custom domain agen), HTTP :80 saja, Cloud Armor `cf-origin-lock-staging`. Production counterpart: `35.227.207.207` (`amp-api.nkigaming.site`) **tanpa** origin lock (2026-11-21). Detail: `AMP_PAGE_SERVICE_AND_TENANT_REGISTRY_RUNBOOK.md` §2.2.
   * `136.68.233.79`: `game-engine-ingress` (`buah.iknstaging.com`)
 * **Ingress Firewall Restrictions (staging-platform-vpc, enforced 2026-11-20)**:
   * SSH (port 22) hanya dari: VPN gateway `10.10.16.10` (sg-vpn-gateway-dev-1), `10.10.16.11` (sg-vpn-gateway), `10.10.8.2` (jkt-vpn-gateway), dan range IAP `35.235.240.0/20` (gcloud compute ssh `--tunnel-through-iap`). Rules: `allow-ssh-staging-platform`, `default-allow-ssh`, `allow-partner-scp`.
@@ -316,7 +317,9 @@ All workloads were consolidated into `staging-gke-standard` under the `tripay` n
 * `auth-engine-go`: Player authentication and session management.
 * `tripay-sc`: Payment gateway microservices (`wl-be`, `wl-callback`, `wl-cron`, `wl-open`).
 * `admin-panel` & `user-site`: Next.js / React management and customer frontends.
-* `summon-tenant`: Tenant provisioning and HAProxy registration scripts.
+* `summon-tenant`: Tenant provisioning and HAProxy registration scripts. Step 3 also labels `new-backend-internal` with `tokobuah.io/company-code` and pins its IP to a reserved static address (`prod-<code>-backend-internal`) since 2026-11-17 (not yet in git).
+* `AMP`: multi-tenant AMP page build & serve service (`amp-build` / `amp-serve`). Staging deploys from `main`; production by tag + manual `cloudbuild.prod.yaml`. See `AMP_PAGE_SERVICE_AND_TENANT_REGISTRY_RUNBOOK.md`.
+* `tenant-registry-go`: read-only internal lookup company code → tenant backend internal IP (from labelled Services), used by AMP for per-company promos.
 
 ### CloudBuild Configuration Update (`tripay-sc`):
 * CloudBuild deploy trigger files located in `deploy/cloudbuild/`:
@@ -485,6 +488,8 @@ During vendor architecture explorations (e.g. Aerospike meeting, November 2026),
 * The current active staging context on the workstation is:
   `gke_tokobuah-staging-499001_asia-southeast1-a_staging-gke-standard`
 * `staging-tripay-cluster` context has been permanently removed. Never invoke commands targeting the old cluster.
+* ⚠️ **The current context can change underneath a session** (2026-11-17 it silently became `gke_tokobuah-production_asia-southeast1-c_game-cluster`, and an apply meant for staging created objects in production; caught and removed). **Always pass `--context` (kubectl) and `--project` (gcloud) explicitly**; the gcloud default project on the workstation is `tokobuah-production`.
+* Production control planes only accept the VPN egress `34.2.153.31`; off-VPN, kubectl fails with `TLS handshake timeout`. Read `kubectl diff` exit codes (0 same, 1 different, >1 error): a failed diff can look like "no drift".
 
 ### Caveat 5: Idle VPC Subnet Policy
 * GCP VPC Subnets (such as `tripay-gke-subnet`) cost **$0 / month** when idle.
@@ -554,6 +559,7 @@ The admin workstation's network transparently intercepts outbound DNS (UDP **and
 
 | Version | Date | Changes |
 | :--- | :--- | :--- |
+| 2.5.0 | 2026-11-21 | Added `AMP_PAGE_SERVICE_AND_TENANT_REGISTRY_RUNBOOK.md` (AMP service, tenant-registry, tenant internal LB labels/pins, AMP domain modes D50, incidents) and handoff prompts in `docs/handoffs/2026-11-amp-subdomain/`. Updated §3 AMP ingress IPs (production AMP origin not locked), §9 repositories (`AMP`, `tenant-registry-go`, `summon-tenant` step 3), Caveat 4 (context can switch silently; VPN egress; diff exit codes). New claim cards for AMP/tenant-registry. |
 | 2.4.0 | 2026-11-17 | **Change applied (user-approved, C4)**: deletion protection on `proxy-stg-jkt` & `proxy-stg-sg`; daily snapshot schedules `proxy-stg-jkt-daily` / `proxy-stg-sg-daily` (7-day retention) attached to their boot disks; TCP:80 uptime checks for both proxies. No restart/downtime. Added email notification channel (admin) and two uptime alert policies (>1 region failing for 2 min). |
 | 2.3.0 | 2026-11-17 | **Change applied (user-approved)**: firewall rules `proxy-ssh-allow-trusted` (prio 900) and `proxy-ssh-deny-internet` (prio 950) restrict SSH/RDP on the vendor proxies to IAP, admin workstation egress, and Hermes host. Documented verification results and rollback. Promoted `hermes-agent-host` IP `34.87.88.43` to static address `hermes-agent-host-ip` (same IP, no downtime). |
 | 2.2.0 | 2026-11-17 | Classified `proxy-stg-jkt` & `proxy-stg-sg` as **PRODUCTION-CRITICAL** (new §3 *Vendor Egress Proxy VMs*; added to Guardrail 1 scope). Documented proxy inventory, known callers and their egress IPs, network exposure, SPOF on JKT, and hardening backlog. Replaced Cloud NAT paragraph with live NAT inventory and the AUTO_ONLY (ephemeral IP) warning. Added §14 DNS interception caveat (false "open resolver" findings from the workstation). Preserved §14 Cloud Armor section added on 2026-11-15. Added read-only SSH verification results (proxy does not log client IPs; observed caller = prod NAT; SSH login sources). |

@@ -1,0 +1,20 @@
+id: amp-prod-alive
+service: amp
+env: production
+claim: "AMP production: 2 deployment di prod-core-cluster ns/amp (amp-build, amp-serve) available"
+belief_source: "kubectl recon 2026-11-21 (amp-page:v0.0.4, amp-build 1/1, amp-serve 2/2)"
+requires_tools: [kubectl]
+check:
+  tool: k8s_deployments_healthy
+  args:
+    context: gke_tokobuah-production_asia-southeast1_prod-core-cluster
+    namespaces: [amp]
+expect:
+  unhealthy: 0
+  deployments_total: 2
+severity: critical
+recheck: 12h
+retry: 2
+created: 2026-11-21
+last_verified: null
+status: active
