@@ -2,14 +2,17 @@ id: staging-ssh-firewall-scoped
 service: meta
 env: staging
 claim: "Firewall staging terkunci: 3 rule SSH hanya dari VPN gateway + IAP; TIDAK ADA rule RDP"
-belief_source: "Perubahan 2026-11-20 (izin user): SSH dari 0.0.0.0/0 → gateway 10.10.16.10/.11, 10.10.8.2 + 35.235.240.0/20; default-allow-rdp dihapus"
+belief_source: "Perubahan 2026-11-20 (izin user): SSH dari 0.0.0.0/0 → gateway 10.10.16.10/.11, 10.10.8.2 + 35.235.240.0/20; default-allow-rdp dihapus. Ditambah 34.87.88.43/32 (IP bot Hermes monitor, atas permintaan user) di allow-ssh-staging-platform & allow-partner-scp — expected_sources diperbarui 2026-11-20 (izin user)"
 note: "KARTU META (anti-regresi). Jika sourceRanges melebar lagi ke 0.0.0.0/0 atau rule RDP muncul → drift: siapa yang membuka kembali pintu?"
 check:
   tool: gcp_firewall_sources
   args:
     project: tokobuah-staging-499001
     rules: [allow-ssh-staging-platform, default-allow-ssh, allow-partner-scp]
-    expected_sources: ["10.10.16.10", "10.10.16.11", "10.10.8.2", "35.235.240.0/20"]
+    expected_sources_by_rule:
+      default-allow-ssh: ["10.10.16.10", "10.10.16.11", "10.10.8.2", "35.235.240.0/20"]
+      allow-ssh-staging-platform: ["10.10.16.10", "10.10.16.11", "10.10.8.2", "34.87.88.43/32", "35.235.240.0/20"]
+      allow-partner-scp: ["10.10.16.10", "10.10.16.11", "10.10.8.2", "34.87.88.43/32", "35.235.240.0/20"]
 expect:
   ssh_sources_ok: true
   rdp_rule_count: 0

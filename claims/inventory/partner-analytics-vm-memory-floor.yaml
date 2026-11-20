@@ -2,8 +2,8 @@ id: partner-analytics-vm-memory-floor
 service: partner-analytics
 env: staging
 claim: "partner-analytics-vm (worker BBIX ingest + MySQL) RUNNING dengan RAM >= 16 GB. Jangan downsize RAM di bawah ini tanpa memangkas innodb_buffer_pool_size + ukur ulang puncak worker"
-belief_source: "Verifikasi live 2026-11-20: custom-8-16384; systemd MemoryPeak partner-ingest 6.4 GiB (6 hari, termasuk page cache); mysqld RSS ~1.35 GB dgn innodb_buffer_pool_size 11 GiB; riwayat OOM-kill harian 13-24 Okt 2026 (python3 ~14.4 GB RSS), nihil sejak 25 Okt; CPU 30 hari p99 3.8%, puncak 5-menit 43% (job harian ~07:00 UTC, ~9 menit)"
-note: "vCPU sengaja TIDAK dikunci (kandidat downsize CPU: e2-highmem-2 = 2 vCPU / 16 GB). Kalau RAM sengaja diturunkan (mis. 12 GB setelah buffer pool dipangkas), update memory_mb_min di sini. IP eksternal static: partner-analytics-ip."
+belief_source: "Sebelum resize (live 2026-11-20): custom-8-16384; systemd MemoryPeak partner-ingest 6.4 GiB (6 hari, termasuk page cache); mysqld RSS ~1.35 GB dgn innodb_buffer_pool_size 11 GiB (data aktual ~17 MB di buffer); riwayat OOM-kill harian 13-24 Okt 2026 (python3 ~14.4 GB RSS), nihil sejak 25 Okt; CPU 30 hari p99 3.8%, puncak 5-menit 43% (job harian ~07:00 UTC, ~9 menit). Resize 2026-11-20 14:41 UTC (izin user): -> e2-highmem-2 (2 vCPU / 16 GB) + innodb_buffer_pool_size 11G -> 1G (instances 8 -> 1)"
+note: "vCPU sengaja TIDAK dikunci. Config MySQL: /etc/mysql/mysql.conf.d/99-analytics-tuning.cnf (backup lama: /var/backups/99-analytics-tuning.cnf.bak-20261120). Rollback: stop -> set-machine-type custom-8-16384 -> start. Kalau RAM sengaja diturunkan lagi (mis. 12 GB), ukur ulang puncak worker dulu lalu update memory_mb_min di sini. IP eksternal static: partner-analytics-ip. VM tanpa Ops Agent — metrik RAM dari systemd MemoryPeak + sar."
 check:
   tool: gcp_instance_shape
   args:

@@ -481,10 +481,13 @@ def chk_iam_policy_hash(args):
 def chk_gcp_firewall_sources(args):
     """Self-monitoring: sourceRanges rule firewall tetap terkunci + tidak ada rule RDP baru."""
     proj = args["project"]
-    expected = set(args["expected_sources"])
+    # expected_sources (list) berlaku utk semua rule; expected_sources_by_rule (dict) override per rule.
+    default_expected = set(args.get("expected_sources") or [])
+    by_rule = {k: set(v) for k, v in (args.get("expected_sources_by_rule") or {}).items()}
     rules = compute_list(f"projects/{proj}/global/firewalls")
     ok, detail = True, []
     for name in args["rules"]:
+        expected = by_rule.get(name, default_expected)
         r = next((x for x in rules if x["name"] == name), None)
         if r is None:
             ok = False; detail.append(f"{name}: rule hilang")
