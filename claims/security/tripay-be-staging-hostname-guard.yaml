@@ -1,0 +1,19 @@
+id: tripay-be-staging-hostname-guard
+service: tripay
+env: staging
+claim: "wl-be staging (tripay-be.iknstaging.com) menolak request panel tanpa header `hostname: api.tripay-be.iknstaging.com` dengan error 'Wrong domain' (guard di user.strategy.ts, APP_ENV != dev; API_HOSTNAME diturunkan dari env HOST)"
+belief_source: "Live probe 2026-11-21 (sesi tripay-fe): tanpa header / header salah -> 'Wrong domain'; via tripay-fe proxy (hostname benar) -> lolos ke cek JWT ('JWT invalid'). Konfigurasi: company-deployment-key staging/tripay/configmap.yaml (HOST, APP_ENV)."
+note: "Dependensi tripay-fe (backoffice vendor, Cloud Run staging): FE mengirim hostname yang diturunkan dari TRIPAY_API_URL (src/core/helper/backend-config.ts). Kartu DRIFT berarti HOST/APP_ENV wl-be atau guard-nya berubah -> sesuaikan TRIPAY_API_HOSTNAME di tripay-fe. Probe tanpa token, read-only."
+check:
+  tool: http_json_field
+  args:
+    url: "https://tripay-be.iknstaging.com/v1/user/profile"
+    field_path: error.errorMessage
+expect:
+  value: "Wrong domain"
+severity: warn
+recheck: 24h
+retry: 2
+created: 2026-11-21
+last_verified: null
+status: active
