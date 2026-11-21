@@ -1,79 +1,35 @@
 {
- "run_at": "2026-11-20T16:53:44.217788+00:00",
+ "run_at": "2026-11-21T04:56:54.884673+00:00",
  "engine": "drift_engine v1",
- "cards_total": 18,
- "skipped_total": 18,
+ "cards_total": 16,
+ "skipped_total": 34,
  "summary": {
-  "verified": 11,
-  "drifted": 1,
-  "stale": 6,
-  "skipped": 18
+  "verified": 16,
+  "drifted": 0,
+  "stale": 0,
+  "skipped": 34
  },
  "results": [
   {
-   "id": "cost-scheduler-not-deployed",
-   "service": "staging-platform",
-   "env": "staging",
-   "severity": "info",
-   "claim": "Open: staging cost-scheduler (company-deployment-key/cost-scheduler) BELUM dideploy \u2014 0 job Cloud Scheduler 'staging-cost-*' (workflow juga 0). Hanya SA staging-cost-scheduler + custom role stagingCostScheduler yang sudah ada",
-   "card_file": "claims/fix-tracking/cost-scheduler-not-deployed.yaml",
-   "status": "STALE",
-   "reason": "Cloud Scheduler API error: {'code': 403, 'message': 'The principal (user or service account) lacks IAM permission \"cloudscheduler.jobs.list\" for the resource \"projects/tokobuah-",
-   "attempts": 1,
-   "at": "2026-11-20T16:44:47.675938+00:00"
-  },
-  {
-   "id": "staging-url-in-prod-bundle",
-   "service": "user-site",
+   "id": "amp-prod-origin-open",
+   "service": "amp",
    "env": "production",
-   "severity": "warn",
-   "claim": "Open finding: JS bundle produksi dutaledak.online masih hardcode 'https://stagingtokobuah.xyz' (fallback canonical/og_url)",
-   "card_file": "claims/fix-tracking/staging-url-in-prod-bundle.yaml",
+   "severity": "critical",
+   "claim": "Closed: probe HTTP langsung dari source non-Cloudflare ke Ingress AMP production (35.227.207.207) ditolak 403 Cloud Armor (cf-origin-lock-production di amp-build & amp-serve)",
+   "card_file": "claims/fix-tracking/amp-prod-origin-open.yaml",
    "status": "VERIFIED",
    "expect": {
-    "found": true
+    "status": 403
    },
    "actual": {
-    "found": true
+    "status": 403
    },
    "_actual_full": {
-    "found": true,
-    "_chunk": "/_next/static/chunks/1hk86ssaz0j9m.js",
-    "_chunks_scanned": 14
+    "status": 403
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-20T16:45:08.713897+00:00"
-  },
-  {
-   "id": "partner-analytics-vm-memory-floor",
-   "service": "partner-analytics",
-   "env": "staging",
-   "severity": "warn",
-   "claim": "partner-analytics-vm (worker BBIX ingest + MySQL) RUNNING dengan RAM >= 16 GB. Jangan downsize RAM di bawah ini tanpa memangkas innodb_buffer_pool_size + ukur ulang puncak worker",
-   "card_file": "claims/inventory/partner-analytics-vm-memory-floor.yaml",
-   "status": "VERIFIED",
-   "expect": {
-    "status": "RUNNING",
-    "memory_mb_min": 16384
-   },
-   "actual": {
-    "status": "RUNNING",
-    "machine_type": "e2-highmem-2",
-    "vcpus": 2,
-    "memory_mb": 16384,
-    "provisioning_model": "STANDARD"
-   },
-   "_actual_full": {
-    "status": "RUNNING",
-    "machine_type": "e2-highmem-2",
-    "vcpus": 2,
-    "memory_mb": 16384,
-    "provisioning_model": "STANDARD"
-   },
-   "detail": "ok",
-   "attempts": 1,
-   "at": "2026-11-20T16:45:11.831440+00:00"
+   "at": "2026-11-21T04:56:21.686178+00:00"
   },
   {
    "id": "staging-core-pool-autoscaling-bounds",
@@ -104,198 +60,116 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-20T16:45:13.242396+00:00"
+   "at": "2026-11-21T04:56:25.081723+00:00"
   },
   {
-   "id": "staging-tripay-cluster-dead",
-   "service": "tripay",
-   "env": "staging",
-   "severity": "info",
-   "claim": "Cluster staging-tripay-cluster TIDAK ADA (dihapus 2026-11-11; workload ter-konsolidasi ke staging-gke-standard)",
-   "card_file": "claims/inventory/staging-tripay-cluster-dead.yaml",
-   "status": "VERIFIED",
-   "expect": {
-    "exists": false
-   },
-   "actual": {
-    "exists": false,
-    "live_clusters": [
-     "staging-gke-standard"
-    ]
-   },
-   "_actual_full": {
-    "exists": false,
-    "live_clusters": [
-     "staging-gke-standard"
-    ]
-   },
-   "detail": "ok",
-   "attempts": 1,
-   "at": "2026-11-20T16:45:14.992307+00:00"
-  },
-  {
-   "id": "tenant-prod-lbs",
-   "service": "user-site",
-   "env": "production",
-   "severity": "warn",
-   "claim": "Ada persis 13 global HTTP LB tenant prod (nama prefix 'production-': buah5758, cinabotak, cinasuper, dutaledak, hambabet, ikn788, omsipit, padi808, pengenwd, rumushoki, tapakhoki, terbangwd, terios88)",
-   "card_file": "claims/inventory/tenant-prod-lbs.yaml",
-   "status": "VERIFIED",
-   "expect": {
-    "count": 13
-   },
-   "actual": {
-    "count": 13,
-    "names": [
-     "production-buah5758-http-proxy",
-     "production-cinabotak-http-proxy",
-     "production-cinasuper-http-proxy",
-     "production-dutaledak-http-proxy",
-     "production-hambabet-http-proxy",
-     "production-ikn788-http-proxy",
-     "production-omsipit-http-proxy",
-     "production-padi808-http-proxy",
-     "production-pengenwd-http-proxy",
-     "production-rumushoki-http-proxy",
-     "production-tapakhoki-http-proxy",
-     "production-terbangwd-http-proxy",
-     "production-terios88-http-proxy"
-    ]
-   },
-   "_actual_full": {
-    "count": 13,
-    "names": [
-     "production-buah5758-http-proxy",
-     "production-cinabotak-http-proxy",
-     "production-cinasuper-http-proxy",
-     "production-dutaledak-http-proxy",
-     "production-hambabet-http-proxy",
-     "production-ikn788-http-proxy",
-     "production-omsipit-http-proxy",
-     "production-padi808-http-proxy",
-     "production-pengenwd-http-proxy",
-     "production-rumushoki-http-proxy",
-     "production-tapakhoki-http-proxy",
-     "production-terbangwd-http-proxy",
-     "production-terios88-http-proxy"
-    ]
-   },
-   "detail": "ok",
-   "attempts": 1,
-   "at": "2026-11-20T16:45:16.309354+00:00"
-  },
-  {
-   "id": "sentinel-scan-targets-complete",
-   "service": "meta",
-   "env": "production",
-   "severity": "critical",
-   "claim": "Semua global HTTP LB production yang menerima traffic muncul di log http_load_balancer 7 hari terakhir (mekanisme scan 7-day sentinel hub)",
-   "card_file": "claims/meta/sentinel-scan-targets-complete.yaml",
-   "status": "DRIFTED",
-   "expect": {
-    "uncovered": []
-   },
-   "actual": {
-    "uncovered": [
-     "dataset-forwarding-rule",
-     "production-buah5758-http-forwarding-rule",
-     "production-cinabotak-http-forwarding-rule",
-     "production-cinasuper-http-forwarding-rule",
-     "production-dutaledak-http-forwarding-rule",
-     "production-hambabet-http-forwarding-rule",
-     "production-ikn788-http-forwarding-rule",
-     "production-omsipit-http-forwarding-rule",
-     "production-padi808-http-forwarding-rule",
-     "production-pengenwd-http-forwarding-rule",
-     "production-rumushoki-http-forwarding-rule",
-     "production-tapakhoki-http-forwarding-rule",
-     "production-terbangwd-http-forwarding-rule",
-     "production-terios88-http-forwarding-rule"
-    ],
-    "live_lb_count": 16,
-    "logged_lb_count": 2
-   },
-   "_actual_full": {
-    "uncovered": [
-     "dataset-forwarding-rule",
-     "production-buah5758-http-forwarding-rule",
-     "production-cinabotak-http-forwarding-rule",
-     "production-cinasuper-http-forwarding-rule",
-     "production-dutaledak-http-forwarding-rule",
-     "production-hambabet-http-forwarding-rule",
-     "production-ikn788-http-forwarding-rule",
-     "production-omsipit-http-forwarding-rule",
-     "production-padi808-http-forwarding-rule",
-     "production-pengenwd-http-forwarding-rule",
-     "production-rumushoki-http-forwarding-rule",
-     "production-tapakhoki-http-forwarding-rule",
-     "production-terbangwd-http-forwarding-rule",
-     "production-terios88-http-forwarding-rule"
-    ],
-    "live_lb_count": 16,
-    "logged_lb_count": 2
-   },
-   "detail": "uncovered: expect [] got ['dataset-forwarding-rule', 'production-buah5758-http-forwarding-rule', 'production-cinabotak-http-forwarding-rule', 'production-cinasuper-http-forwarding-rule', 'production-dutaledak-http-forwarding-rule', 'production-hambabet-http-forwarding-rule', 'production-ikn788-http-forwarding-rule', 'production-omsipit-http-forwarding-rule', 'production-padi808-http-forwarding-rule', 'production-pengenwd-http-forwarding-rule', 'production-rumushoki-http-forwarding-rule', 'production-tapakhoki-http-forwarding-rule', 'production-terbangwd-http-forwarding-rule', 'production-terios88-http-forwarding-rule']",
-   "attempts": 1,
-   "at": "2026-11-20T16:45:58.060391+00:00"
-  },
-  {
-   "id": "cloudarmor-layer-fact",
+   "id": "registry-sweep-freshness",
    "service": "meta",
    "env": "both",
-   "severity": "critical",
-   "claim": "Cloud Armor ter-attach di level BackendService, BUKAN target proxy: 0 target proxy (http/https/ssl/tcp) di kedua project yang punya securityPolicy",
-   "card_file": "claims/security/cloudarmor-layer-fact.yaml",
+   "severity": "warn",
+   "claim": "Dead-man's switch: commit terakhir author 'drift-watchdog' di registry berumur < 30 jam (bukti hub masih menyapu)",
+   "card_file": "claims/meta/registry-sweep-freshness.yaml",
    "status": "VERIFIED",
    "expect": {
-    "with_policy": 0
+    "age_hours_max": 30
    },
    "actual": {
-    "with_policy": 0,
-    "details": []
+    "age_hours": 12.0,
+    "last_commit": "1795193631"
    },
    "_actual_full": {
-    "with_policy": 0,
-    "details": []
+    "age_hours": 12.0,
+    "last_commit": "1795193631"
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-20T16:46:09.871659+00:00"
+   "at": "2026-11-21T04:56:25.385873+00:00"
+  },
+  {
+   "id": "staging-ssh-firewall-scoped",
+   "service": "meta",
+   "env": "staging",
+   "severity": "warn",
+   "claim": "Firewall staging terkunci: 3 rule SSH hanya dari VPN gateway + IAP; TIDAK ADA rule RDP",
+   "card_file": "claims/meta/staging-ssh-firewall-scoped.yaml",
+   "status": "VERIFIED",
+   "expect": {
+    "ssh_sources_ok": true,
+    "rdp_rule_count": 0
+   },
+   "actual": {
+    "ssh_sources_ok": true,
+    "rdp_rule_count": 0
+   },
+   "_actual_full": {
+    "ssh_sources_ok": true,
+    "rdp_rule_count": 0,
+    "_detail": [],
+    "_rdp": []
+   },
+   "detail": "ok",
+   "attempts": 1,
+   "at": "2026-11-21T04:56:27.073299+00:00"
+  },
+  {
+   "id": "amp-staging-origin-lock-live",
+   "service": "amp",
+   "env": "staging",
+   "severity": "critical",
+   "claim": "Probe HTTP langsung dari source non-Cloudflare ke Ingress AMP staging (136.82.0.162) ditolak 403 Cloud Armor",
+   "card_file": "claims/security/amp-staging-origin-lock-live.yaml",
+   "status": "VERIFIED",
+   "expect": {
+    "status": 403
+   },
+   "actual": {
+    "status": 403
+   },
+   "_actual_full": {
+    "status": 403
+   },
+   "detail": "ok",
+   "attempts": 1,
+   "at": "2026-11-21T04:56:28.302810+00:00"
   },
   {
    "id": "cloudarmor-prod-gameengine",
    "service": "game-engine",
    "env": "production",
    "severity": "critical",
-   "claim": "cf-origin-lock-production terpasang di persis 5 backend game-engine (all, launcher, pg, pp, transactions)",
+   "claim": "cf-origin-lock-production terpasang di 7 backend (5 game-engine: all, launcher, pg, pp, transactions + 2 amp: build, serve)",
    "card_file": "claims/security/cloudarmor-prod-gameengine.yaml",
    "status": "VERIFIED",
    "expect": {
-    "count": 5
+    "count": 7
    },
    "actual": {
-    "count": 5,
+    "count": 7,
     "names": [
      "k8s1-311d3060-game-game-engine-all-service-80-619095bc",
      "k8s1-311d3060-game-game-engine-launcher-service-80-3ee569f2",
      "k8s1-311d3060-game-game-engine-pg-service-80-535ddbe6",
      "k8s1-311d3060-game-game-engine-pp-service-80-6359d5bb",
-     "k8s1-311d3060-game-game-engine-transactions-service-80-8a1c1613"
+     "k8s1-311d3060-game-game-engine-transactions-service-80-8a1c1613",
+     "k8s1-537c311f-amp-amp-build-service-8080-23acb918",
+     "k8s1-537c311f-amp-amp-serve-service-8080-cade2891"
     ]
    },
    "_actual_full": {
-    "count": 5,
+    "count": 7,
     "names": [
      "k8s1-311d3060-game-game-engine-all-service-80-619095bc",
      "k8s1-311d3060-game-game-engine-launcher-service-80-3ee569f2",
      "k8s1-311d3060-game-game-engine-pg-service-80-535ddbe6",
      "k8s1-311d3060-game-game-engine-pp-service-80-6359d5bb",
-     "k8s1-311d3060-game-game-engine-transactions-service-80-8a1c1613"
+     "k8s1-311d3060-game-game-engine-transactions-service-80-8a1c1613",
+     "k8s1-537c311f-amp-amp-build-service-8080-23acb918",
+     "k8s1-537c311f-amp-amp-serve-service-8080-cade2891"
     ]
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-20T16:46:11.635753+00:00"
+   "at": "2026-11-21T04:56:29.885723+00:00"
   },
   {
    "id": "cloudarmor-staging-eight",
@@ -340,7 +214,7 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-20T16:46:12.991196+00:00"
+   "at": "2026-11-21T04:56:31.391295+00:00"
   },
   {
    "id": "cross-tenant-isolation-holds",
@@ -368,7 +242,7 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-20T16:46:18.438313+00:00"
+   "at": "2026-11-21T04:56:36.882780+00:00"
   },
   {
    "id": "gameengine-origin-lock-live",
@@ -389,7 +263,28 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-20T16:46:19.662329+00:00"
+   "at": "2026-11-21T04:56:38.164022+00:00"
+  },
+  {
+   "id": "amp-api-staging-live",
+   "service": "amp",
+   "env": "staging",
+   "severity": "warn",
+   "claim": "https://amp-api.stagingtokobuah.xyz/healthz menjawab 200 lewat Cloudflare (Configuration Rule ssl: flexible untuk host ini tetap ada)",
+   "card_file": "claims/surface/amp-api-staging-live.yaml",
+   "status": "VERIFIED",
+   "expect": {
+    "status": 200
+   },
+   "actual": {
+    "status": 200
+   },
+   "_actual_full": {
+    "status": 200
+   },
+   "detail": "ok",
+   "attempts": 1,
+   "at": "2026-11-21T04:56:39.829419+00:00"
   },
   {
    "id": "demobuah-live",
@@ -412,31 +307,53 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-20T16:46:21.308550+00:00"
+   "at": "2026-11-21T04:56:41.356557+00:00"
   },
   {
-   "id": "dutaledak-sibling-live",
+   "id": "hsts-demobuah",
    "service": "user-site",
    "env": "production",
-   "severity": "info",
-   "claim": "dutaledak.store LIVE di balik Cloudflare dan menyajikan build app yang sama dengan dutaledak.online (domain saudara tenant dutaledak)",
-   "card_file": "claims/surface/dutaledak-sibling-live.yaml",
-   "status": "STALE",
-   "reason": "curl gagal: Command '['curl', '-sS', '--max-time', '30', 'https://dutaledak.store/']' timed out after 40 seconds",
+   "severity": "warn",
+   "claim": "demobuah.online mengirim header HSTS (preload) \u2014 proteksi downgrade TLS tetap aktif",
+   "card_file": "claims/surface/hsts-demobuah.yaml",
+   "status": "VERIFIED",
+   "expect": {
+    "header_present": true
+   },
+   "actual": {
+    "header_present": true,
+    "contains": true
+   },
+   "_actual_full": {
+    "header_present": true,
+    "contains": true
+   },
+   "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-20T16:47:02.886434+00:00"
+   "at": "2026-11-21T04:56:42.800207+00:00"
   },
   {
-   "id": "gcs-level-images-public",
+   "id": "hsts-dutaledak",
    "service": "user-site",
    "env": "production",
-   "severity": "info",
-   "claim": "Image level dari GCS bucket tokobuah-production.firebasestorage.app public-read (by design \u2014 dipakai /beapi/public/levels tanpa auth)",
-   "card_file": "claims/surface/gcs-level-images-public.yaml",
-   "status": "STALE",
-   "reason": "curl gagal: Command '['curl', '-sS', '--max-time', '30', 'https://dutaledak.online/beapi/public/levels']' timed out after 40 seconds",
-   "attempts": 2,
-   "at": "2026-11-20T16:48:43.222725+00:00"
+   "severity": "warn",
+   "claim": "dutaledak.online mengirim header HSTS (preload) \u2014 proteksi downgrade TLS tetap aktif",
+   "card_file": "claims/surface/hsts-dutaledak.yaml",
+   "status": "VERIFIED",
+   "expect": {
+    "header_present": true
+   },
+   "actual": {
+    "header_present": true,
+    "contains": true
+   },
+   "_actual_full": {
+    "header_present": true,
+    "contains": true
+   },
+   "detail": "ok",
+   "attempts": 1,
+   "at": "2026-11-21T04:56:44.272341+00:00"
   },
   {
    "id": "maintenance-off-demobuah",
@@ -445,10 +362,19 @@
    "severity": "warn",
    "claim": "Flag maintenance tenant buah5758 (demobuah.online) = false (layanan normal)",
    "card_file": "claims/surface/maintenance-off-demobuah.yaml",
-   "status": "STALE",
-   "reason": "curl gagal: Command '['curl', '-sS', '--max-time', '30', 'https://demobuah.online/api/maintenance']' timed out after 40 seconds",
-   "attempts": 2,
-   "at": "2026-11-20T16:50:23.596611+00:00"
+   "status": "VERIFIED",
+   "expect": {
+    "value": false
+   },
+   "actual": {
+    "value": false
+   },
+   "_actual_full": {
+    "value": false
+   },
+   "detail": "ok",
+   "attempts": 1,
+   "at": "2026-11-21T04:56:46.009938+00:00"
   },
   {
    "id": "maintenance-off-dutaledak",
@@ -457,10 +383,19 @@
    "severity": "warn",
    "claim": "Flag maintenance tenant dutaledak = false (layanan normal)",
    "card_file": "claims/surface/maintenance-off-dutaledak.yaml",
-   "status": "STALE",
-   "reason": "curl gagal: Command '['curl', '-sS', '--max-time', '30', 'https://dutaledak.online/api/maintenance']' timed out after 40 seconds",
-   "attempts": 2,
-   "at": "2026-11-20T16:52:03.898547+00:00"
+   "status": "VERIFIED",
+   "expect": {
+    "value": false
+   },
+   "actual": {
+    "value": false
+   },
+   "_actual_full": {
+    "value": false
+   },
+   "detail": "ok",
+   "attempts": 1,
+   "at": "2026-11-21T04:56:47.224986+00:00"
   },
   {
    "id": "partner-portal-domain-live",
@@ -469,30 +404,61 @@
    "severity": "warn",
    "claim": "Domain masking partner-data-portal (buahdatasemuammanis.net, via Cloudflare) hidup dan mengarahkan ke login (2xx/3xx, bukan 4xx/5xx)",
    "card_file": "claims/surface/partner-portal-domain-live.yaml",
-   "status": "STALE",
-   "reason": "curl gagal: Command '['curl', '-sS', '-o', '/dev/null', '-w', '%{http_code}', '--max-time', '30', 'https://buahdatasemuammanis.net/']' timed out after 40 seconds",
-   "attempts": 2,
-   "at": "2026-11-20T16:53:44.205277+00:00"
+   "status": "VERIFIED",
+   "expect": {
+    "status_in": [
+     200,
+     301,
+     302,
+     307,
+     308
+    ]
+   },
+   "actual": {
+    "status": 302
+   },
+   "_actual_full": {
+    "status": 302
+   },
+   "detail": "ok",
+   "attempts": 1,
+   "at": "2026-11-21T04:56:54.880483+00:00"
   }
  ],
  "skipped": [
+  "amp-base-image-policy",
+  "amp-repos-no-secret-tracked",
   "core-repos-no-secret-tracked",
+  "cost-scheduler-not-deployed",
   "gocrypto-x-lag",
   "gonet-x-lag",
   "no-latest-in-cdk",
   "node20-eol-dockerfiles",
   "p0-secret-yaml-tracked",
+  "staging-url-in-prod-bundle",
   "tripay-sc-secrets-tracked",
+  "amp-prod-alive",
+  "amp-staging-alive",
   "core-cluster-services-alive",
   "game-cluster-services-alive",
   "gameengine-gclb-ip",
+  "partner-analytics-vm-memory-floor",
   "staging-billing-namespace-labels",
+  "staging-tripay-cluster-dead",
+  "tenant-internal-lb-labelled",
+  "tenant-internal-lb-pinned",
+  "tenant-prod-lbs",
+  "tenant-registry-prod-alive",
+  "tenant-registry-staging-alive",
   "tripay-staging-services-alive",
+  "amp-owner-runbook",
+  "domain-engine-owner-runbook",
   "hub-sa-roles-prod",
   "hub-sa-roles-staging",
-  "registry-sweep-freshness",
-  "staging-ssh-firewall-scoped",
-  "hsts-demobuah",
-  "hsts-dutaledak"
+  "sentinel-scan-targets-complete",
+  "cloudarmor-layer-fact",
+  "domain-engine-no-entrypoint-put",
+  "dutaledak-sibling-live",
+  "gcs-level-images-public"
  ]
 }
