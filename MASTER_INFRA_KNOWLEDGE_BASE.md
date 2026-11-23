@@ -356,17 +356,16 @@ All workloads were consolidated into `staging-gke-standard` under the `tripay` n
 | **Cluster Consolidation** | Deleted `staging-tripay-cluster` (GKE Mgmt Fee + VM node) | ~$121.50 – $170.00 | ~Rp 1.950.000 – 2.720.000 | ~Rp 3.900.000 – 5.440.000 |
 | **Cloud Run Min-Scale** | `production-admin-ikn788` scaled from min 1 to 0 | ~$35.00 | ~Rp 560.000 | ~Rp 1.120.000 |
 | **GKE Node Modernization (2026-11-24)** | `prod-client-cluster` n1-standard-2 → e2-standard-2 (3 node, autoscaler min 1 max 3); migrasi rolling nol downtime, pool n1 dihapus | ~$135.00 | ~Rp 2.160.000 | ~Rp 4.320.000 |
-| **TOTAL REALIZED** | | **~$291.50 – $340.00 / mo** | **~Rp 4.670.000 – 5.440.000 / mo** | **~Rp 9.340.000 – 10.880.000** |
+| **Cloud SQL Tenant Rightsizing (2026-11-24)** | Downgrade `hambabet`, `ikn788`, `rumushoki` (`db-custom-2-7680` → `db-custom-1-4096`, hapus drift) | ~$176.50 | ~Rp 2.860.000 | ~Rp 5.720.000 |
+| **TOTAL REALIZED** | | **~$468.00 – $516.50 / mo** | **~Rp 7.530.000 – 8.300.000 / mo** | **~Rp 15.060.000 – 16.600.000** |
 
 ### Next-in-Line Optimization Pipeline (Low Traffic Window):
 1. **Memorystore Redis Consolidation**:
    * Merge 10 Basic 1GB instances (~88MB total data) into 1-2 instances.
    * Potential Savings: **~$280 – $320 / month (~Rp 4.5 – 5.1 jt/bln)**.
-2. **Cloud SQL Tenant Rightsizing**:
-   * Downscale tenants `hambabet`, `ikn788`, and `rumushoki` from `db-custom-2-7680` to `db-custom-1-4096`.
-   * Potential Savings: **~$160 – $300 / month (~Rp 2.5 – 4.8 jt/bln)**.
+2. ~~**Cloud SQL Tenant Rightsizing**~~ — **DONE 2026-11-24** (masuk tabel realized): `hambabet`, `ikn788`, `rumushoki` di-downgrade ke `db-custom-1-4096`. Drift konfigurasi nol.
 3. ~~**GKE `prod-client-cluster` Node Modernization**~~ — **DONE 2026-11-24** (masuk tabel realized): n1-standard-2 → e2-standard-2 ×3 (autoscaler min 1 max 3), migrasi rolling nol downtime (blue-green: patch nodeSelector 13 tenant + drain per-node), pool n1 dihapus. Autoscaler otomatis turun ke 1–2 node saat sepi.
-* **Cumulative Maximum Potential (tersisa)**: **~$645 – $825 / month (~Rp 10.3 – 13.2 juta / bulan)**.
+* **Cumulative Maximum Potential (tersisa)**: **~$280 – $320 / month (~Rp 4.5 – 5.1 juta / bulan)**.
 
 ---
 
