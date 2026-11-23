@@ -1,5 +1,5 @@
 {
- "run_at": "2026-11-23T16:43:14.447157+00:00",
+ "run_at": "2026-11-23T16:45:03.055352+00:00",
  "engine": "drift_engine v1",
  "cards_total": 1,
  "skipped_total": 0,
@@ -11,12 +11,12 @@
  },
  "results": [
   {
-   "id": "artifact-registry-staging-private",
+   "id": "artifact-registry-prod-private",
    "service": "meta",
-   "env": "staging",
-   "severity": "warn",
-   "claim": "Artifact Registry staging (asia-southeast2/tokobuah) tetap PRIVAT: probe anonim /v2/ ditolak (redirect ke auth GCP, bukan 200)",
-   "card_file": "claims/meta/artifact-registry-staging-private.yaml",
+   "env": "production",
+   "severity": "critical",
+   "claim": "Artifact Registry production (asia-southeast1/tokobuah) tetap PRIVAT: probe anonim /v2/ ditolak (redirect ke auth GCP, bukan 200)",
+   "card_file": "claims/meta/artifact-registry-prod-private.yaml",
    "status": "VERIFIED",
    "expect": {
     "header_present": true
@@ -31,7 +31,7 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-23T16:43:14.446439+00:00"
+   "at": "2026-11-23T16:45:03.055192+00:00"
   }
  ],
  "skipped": []
