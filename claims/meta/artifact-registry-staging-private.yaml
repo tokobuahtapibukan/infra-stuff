@@ -1,0 +1,18 @@
+id: artifact-registry-staging-private
+service: meta
+env: staging
+claim: "Artifact Registry staging (asia-southeast2/tokobuah) tetap PRIVAT: probe anonim /v2/ ditolak (redirect ke auth GCP, bukan 200)"
+belief_source: "Verifikasi 3-lapis 2026-11-23"
+check:
+  tool: http_header_contains
+  args:
+    url: "https://asia-southeast2-docker.pkg.dev/tokobuah-staging-499001/tokobuah/v2/"
+    header: "location"
+expect:
+  header_present: true
+severity: warn
+recheck: 7d
+retry: 2
+created: 2026-11-23
+last_verified: null
+status: active

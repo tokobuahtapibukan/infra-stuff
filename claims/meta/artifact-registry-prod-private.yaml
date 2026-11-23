@@ -1,0 +1,19 @@
+id: artifact-registry-prod-private
+service: meta
+env: production
+claim: "Artifact Registry production (asia-southeast1/tokobuah) tetap PRIVAT: probe anonim /v2/ ditolak (redirect ke auth GCP, bukan 200)"
+belief_source: "Verifikasi 3-lapis 2026-11-23 (probe anonim + IAM + config)"
+note: "Jika berubah 200/anonim bisa pull = gambar produksi (16GB, berisi kode+secret runtime) terbuka ke publik. Kartu perilaku: cek header Location respons anonim."
+check:
+  tool: http_header_contains
+  args:
+    url: "https://asia-southeast1-docker.pkg.dev/tokobuah-production/tokobuah/v2/"
+    header: "location"
+expect:
+  header_present: true
+severity: critical
+recheck: 7d
+retry: 2
+created: 2026-11-23
+last_verified: null
+status: active
