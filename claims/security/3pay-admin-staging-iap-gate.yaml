@@ -1,0 +1,21 @@
+id: 3pay-admin-staging-iap-gate
+service: 3pay-panel
+env: staging
+claim: "Panel superadmin staging (https://3pay-admin.stagingtokobuah.xyz, Cloud Run fe-3pay-superadmin) dilindungi IAP: request tanpa login Google diarahkan ke accounts.google.com"
+belief_source: "Diaktifkan & diverifikasi 2026-11-23: annotation run.googleapis.com/iap-enabled=true; roles/iap.httpsResourceAccessor = domain:tokobuah.xyz; run.invoker hanya service-258862287268@gcp-sa-iap (allUsers dicabut). GET / → 302 accounts.google.com (domain mapping & run.app); POST /api/auth/login tanpa token → 401 x-goog-iap-generated-response."
+note: "Superadmin memanggil /v1/admin/* wl-be lewat LB internal (melewati allowlist Cloudflare), jadi IAP adalah gerbang 'hanya tim' pengganti allowlist itu. Drift (tidak ada redirect ke Google) = superadmin terbuka publik → review segera. Rollback IAP: gcloud run services update fe-3pay-superadmin --no-iap + pasang lagi allUsers run.invoker (hanya dengan izin)."
+check:
+  tool: http_header_contains
+  args:
+    url: "https://3pay-admin.stagingtokobuah.xyz/"
+    header: "location"
+    contains: "accounts.google.com"
+expect:
+  header_present: true
+  contains: true
+severity: critical
+recheck: 12h
+retry: 2
+created: 2026-11-23
+last_verified: null
+status: active

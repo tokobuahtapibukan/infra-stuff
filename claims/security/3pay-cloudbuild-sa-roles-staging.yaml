@@ -1,9 +1,9 @@
 id: 3pay-cloudbuild-sa-roles-staging
 service: 3pay-panel
 env: staging
-claim: "Build SA sa-3pay-cloudbuild (trigger fe-3pay-*-staging) hanya punya roles/logging.logWriter di level project tokobuah-staging-499001; hak lain diikat sempit di level resource"
-belief_source: "Dibuat & diverifikasi live 2026-11-23 (sesi 3pay-panel staging setup): get-iam-policy project → [roles/logging.logWriter]. Binding resource-level (tidak tercakup hash ini): roles/run.developer pada service fe-3pay-superadmin|reseller|merchant (asia-southeast1), roles/artifactregistry.writer pada repo tokobuah (asia-southeast2), roles/iam.serviceAccountUser pada sa-3pay-panel-run."
-note: "Hash 6382b2a3ade5ce80 = [roles/logging.logWriter]. Drift = ada role project-level baru (mis. run.admin/editor) → review. Bandingkan dengan default compute SA yang dipakai trigger lain (artifactregistry.admin, run.admin, secretmanager.secretAccessor, container.developer, dst.). Pair: 3pay-panel-run-sa-no-roles."
+claim: "Build SA sa-3pay-cloudbuild (trigger fe-3pay-*-staging) hanya punya roles/logging.logWriter + roles/vpcaccess.user di level project tokobuah-staging-499001; hak lain diikat sempit di level resource"
+belief_source: "Dibuat & diverifikasi live 2026-11-23 (sesi 3pay-panel staging setup): get-iam-policy project → [roles/logging.logWriter]. 2026-11-23 (izin user): + roles/vpcaccess.user (project-level; connector tidak mendukung IAM per-resource) agar deploy dengan connector vpc-run-bridge diizinkan. Binding resource-level (tidak tercakup hash ini): roles/run.developer pada service fe-3pay-superadmin|reseller|merchant (asia-southeast1), roles/artifactregistry.writer pada repo tokobuah (asia-southeast2), roles/iam.serviceAccountUser pada sa-3pay-panel-run."
+note: "Hash f892577822f2307f = [roles/logging.logWriter, roles/vpcaccess.user] (sebelumnya 6382b2a3ade5ce80 = logWriter saja). Drift = ada role project-level baru (mis. run.admin/editor) → review. Bandingkan dengan default compute SA yang dipakai trigger lain (artifactregistry.admin, run.admin, secretmanager.secretAccessor, container.developer, dst.). Pair: 3pay-panel-run-sa-no-roles."
 requires_tools: [gcloud]
 check:
   tool: iam_policy_hash
@@ -11,7 +11,7 @@ check:
     project: tokobuah-staging-499001
     member_contains: "sa-3pay-cloudbuild@"
 expect:
-  hash: "6382b2a3ade5ce80"
+  hash: "f892577822f2307f"
 severity: warn
 recheck: 24h
 retry: 1
