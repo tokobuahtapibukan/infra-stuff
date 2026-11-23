@@ -1,0 +1,20 @@
+id: 3pay-panel-run-sa-no-roles
+service: 3pay-panel
+env: staging
+claim: "Runtime SA sa-3pay-panel-run (identitas Cloud Run fe-3pay-superadmin/reseller/merchant) TIDAK punya role apa pun di level project tokobuah-staging-499001"
+belief_source: "Dibuat & diverifikasi live 2026-11-23 (sesi 3pay-panel staging setup): gcloud projects get-iam-policy → 0 role untuk member sa-3pay-panel-run. Panel hanya memanggil wl-be lewat HTTP, tidak butuh API GCP."
+note: "Least privilege. Token metadata server dari panel yang kebobolan (RCE/SSRF) tidak bisa dipakai ke API GCP. Hash e3b0c44298fc1c14 = set role kosong. Hash berubah = ada yang menambah role ke SA runtime → review & cabut. Hanya level project; binding di level resource lain tidak tercakup kartu ini. Pair: 3pay-cloudbuild-sa-roles-staging."
+requires_tools: [gcloud]
+check:
+  tool: iam_policy_hash
+  args:
+    project: tokobuah-staging-499001
+    member_contains: "sa-3pay-panel-run@"
+expect:
+  hash: "e3b0c44298fc1c14"
+severity: warn
+recheck: 24h
+retry: 1
+created: 2026-11-23
+last_verified: null
+status: active
