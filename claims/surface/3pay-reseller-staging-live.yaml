@@ -3,14 +3,13 @@ service: 3pay-panel
 env: staging
 claim: "Panel 3Pay reseller staging hidup di https://3pay-reseller.stagingtokobuah.xyz (Cloud Run fe-3pay-reseller via domain mapping, sertifikat Google-managed) — 2xx/3xx, bukan 4xx/5xx/TLS error"
 belief_source: "Dibuat 2026-11-23 (sesi 3pay-panel staging setup): domain mapping 3pay-reseller.stagingtokobuah.xyz → fe-3pay-reseller (asia-southeast1, project tokobuah-staging-499001), CNAME Cloudflare 3pay-reseller → ghs.googlehosted.com (DNS-only). Probe live 16:49 WIB: HTTP 200, cert CN=3pay-reseller.stagingtokobuah.xyz issuer Google Trust Services WR3."
-note: "Surface baru (input radar sentinel). Tanpa LB/Cloud Armor — staging memakai Cloud Run domain mapping (pola tripay-fe/poweronepay). Deploy otomatis dari push ke dev-reseller (trigger fe-3pay-reseller-staging). Saat dibuat masih image placeholder; setelah deploy pertama '/' = halaman login (200). DNS-only wajib: proxied (orange) dapat memblokir penerbitan/perpanjangan sertifikat Google. TLS error / 000 = cek domain mapping & CNAME; 404 Google = mapping hilang."
-flip_note: "SEMENTARA 403 diterima: akses publik (allUsers run.invoker) sengaja dicabut 2026-11-23 17:06 WIB agar halaman placeholder Google (memuat project ID/nama service/region) tidak tampil. Setelah deploy pertama panel asli dan allUsers dipasang lagi: hapus 403 dari status_in."
+note: "Surface baru (input radar sentinel). Tanpa LB/Cloud Armor — staging memakai Cloud Run domain mapping (pola tripay-fe/poweronepay). Deploy otomatis dari push ke dev-reseller (trigger fe-3pay-reseller-staging). Sampai deploy pertama: image placeholder kosong tokobuah/3pay-panel-placeholder:v1 (busybox, halaman 139 byte tanpa info project); setelah deploy pertama '/' = halaman login (200). DNS-only wajib: proxied (orange) dapat memblokir penerbitan/perpanjangan sertifikat Google. TLS error / 000 = cek domain mapping & CNAME; 404 Google = mapping hilang."
 check:
   tool: http_probe_status
   args:
     url: "https://3pay-reseller.stagingtokobuah.xyz/"
 expect:
-  status_in: [200, 301, 302, 307, 308, 403]
+  status_in: [200, 301, 302, 307, 308]
 severity: warn
 recheck: 12h
 retry: 2
