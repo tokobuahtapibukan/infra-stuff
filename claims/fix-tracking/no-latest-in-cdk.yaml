@@ -2,7 +2,7 @@ id: no-latest-in-cdk
 service: company-deployment-key
 env: both
 claim: "Open (P2): 52 baris manifest di working tree company-deployment-key masih memakai tag image :latest (prod+staging)"
-belief_source: "Recon git grep 2026-11-20 (51 baris / 26 file); naik ke 52 di hari yang sama oleh production/client/padi808/pgbouncer.yaml (tenant baru via summon-tenant). Template summon-tenant/templates/client/pgbouncer.yaml di-pin ke digest edoburu/pgbouncer@sha256:8638aa56... (= :latest per 2026-10-19, identik dgn 13 tenant prod) pada 2026-11-20 → tenant baru tidak menambah hitungan lagi"
+belief_source: "Recon git grep 2026-11-20 (51 baris / 26 file); naik ke 52 di hari yang sama oleh production/client/padi808/pgbouncer.yaml (tenant baru via summon-tenant). Template summon-tenant/templates/client/pgbouncer.yaml di-pin ke digest edoburu/pgbouncer@sha256:8638aa56... (= :latest per 2026-10-19, identik dgn 13 tenant prod) pada 2026-11-20 → tenant baru tidak menambah hitungan lagi. Observasi 2026-11-24: count naik ke 59 (+7 :latest baru di working tree, file yang termodifikasi antara lain production/client/cinasuper/*, staging/core/game-engine/*, staging/tripay/* — tampak WIP belum di-commit; investigasi ongoing)"
 flip_note: "Setelah pin digest/tag: flip expect menjadi count: 0. Naik di atas 52 = ada :latest BARU (cek template summon-tenant / manifest baru)."
 note: "Menghitung working tree (termasuk file untracked), bukan HEAD. Langkah B (pin pgbouncer di 13 tenant prod) = rollout restart pgbouncer per tenant → butuh izin §1."
 check:

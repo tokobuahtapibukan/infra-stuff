@@ -102,9 +102,12 @@ Dokumentasi ini merangkum seluruh evolusi, keputusan arsitektur, dan instruksi o
 
 ### 2.2 Confluent Cloud Kafka Streaming Layer
 
+* **Biaya & Tipe Cluster (audit billing API 2026-11-24)**: prod `lkc-38r9y82` **STANDARD / high availability / ~2 eCKU** ≈ **$1.313/bln**; staging `lkc-2227jno` **BASIC / low / 1 eCKU** ≈ **$118/bln**; 2× BigQuery connector (task $0.125/jam) ≈ **$182/bln**; network+storage ≈ $25/bln. **Run-rate total ≈ $1.641/bln (~$19.7k/tahun)**. Kedua cluster bertipe elastic (eCKU) — tidak bisa "resize manual"; 2 eCKU prod = floor SLA 99.99% (high avail). Lever: pause connector staging (≈$91/bln, reversible); turunkan prod ke 1 eCKU = migrasi ke STANDARD 99.9% single-zone (recreate, bukan resize).
+
 * **Production Environment**: `env-5d9zj2`
 * **Production Kafka Cluster**: `lkc-38r9y82`
-* **Staging Environment**: `env-q11880`
+* **Staging Environment**: `env-zw1k1z` *(dikoreksi 2026-11-24 — live; sebelumnya tercatat `env-q11880` = env lama)*
+* **Staging Kafka Cluster**: `lkc-2227jno` (`tokobuah-development`)
 * **Service Account / Admin API**:
   * SA ID: `sa-63v669j` (`ai-assistant`)
   * API Key: `PI2TJVYG********` *(masked)*
