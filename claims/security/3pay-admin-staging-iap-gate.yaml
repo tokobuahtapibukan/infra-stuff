@@ -3,7 +3,7 @@ service: 3pay-panel
 env: staging
 claim: "Panel superadmin staging (https://3pay-admin.stagingtokobuah.xyz, Cloud Run fe-3pay-superadmin) dilindungi IAP: request tanpa login Google diarahkan ke accounts.google.com"
 belief_source: "Diaktifkan & diverifikasi 2026-11-23: annotation run.googleapis.com/iap-enabled=true; roles/iap.httpsResourceAccessor = domain:tokobuah.xyz; run.invoker hanya service-258862287268@gcp-sa-iap (allUsers dicabut). GET / → 302 accounts.google.com (domain mapping & run.app); POST /api/auth/login tanpa token → 401 x-goog-iap-generated-response."
-note: "Superadmin memanggil /v1/admin/* wl-be lewat LB internal (melewati allowlist Cloudflare), jadi IAP adalah gerbang 'hanya tim' pengganti allowlist itu. Drift (tidak ada redirect ke Google) = superadmin terbuka publik → review segera. Rollback IAP: gcloud run services update fe-3pay-superadmin --no-iap + pasang lagi allUsers run.invoker (hanya dengan izin)."
+note: "RETIRED 2026-11-23 (keputusan user, kebutuhan testing): IAP dilepas (--no-iap, allUsers dipasang lagi, binding domain:tokobuah.xyz dicabut) karena login gagal dengan IAP error 604 — terjadi di domain mapping MAUPUN URL run.app, penyebab belum diketahui. Superadmin staging kini hanya dijaga login aplikasi. Aktifkan lagi kartu ini bila IAP/LB+IAP dipasang. Superadmin memanggil /v1/admin/* wl-be lewat LB internal (melewati allowlist Cloudflare), jadi IAP adalah gerbang 'hanya tim' pengganti allowlist itu. Drift (tidak ada redirect ke Google) = superadmin terbuka publik → review segera. Rollback IAP: gcloud run services update fe-3pay-superadmin --no-iap + pasang lagi allUsers run.invoker (hanya dengan izin)."
 check:
   tool: http_header_contains
   args:
@@ -18,4 +18,4 @@ recheck: 12h
 retry: 2
 created: 2026-11-23
 last_verified: null
-status: active
+status: retired
