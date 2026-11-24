@@ -1,9 +1,8 @@
 id: cloudarmor-cf-ranges-staging
 service: game-engine
 env: staging
-claim: "Policy cf-origin-lock-staging mencakup semua range Cloudflare (missing=0); 1 range lebih lebar dari daftar resmi (104.16.0.0/12 menggantikan 104.16.0.0/13 + 104.24.0.0/14) — diketahui, belum dirapikan"
-belief_source: "Live 2026-11-24: v4 tercakup penuh via /12, v6 7/7; /12 juga mengizinkan 104.28.0.0–104.31.255.255 yang tidak ada di daftar origin Cloudflare"
-flip_note: "Setelah rule IPv4 staging diganti ke range resmi (scripts/cloudarmor_cf_sync.py, izin §3): flip expect extra: 1 → 0. Naik di atas 1 = ada range non-Cloudflare BARU."
+claim: "Policy cf-origin-lock-staging mengizinkan TEPAT daftar IP proxy Cloudflare resmi: missing=0, extra=0"
+belief_source: "Live 2026-11-24: semula 104.16.0.0/12 (ikut mengizinkan 104.28–104.31); dirapikan 2026-11-24 (izin user) via scripts/cloudarmor_cf_sync.py → rule 1010 = 104.16.0.0/13 + 104.24.0.0/14; dry-run ulang: sinkron"
 note: "missing>0 = Cloudflare menambah range dan policy belum diupdate → 403 untuk pengunjung dari range baru. Cloudflare API gagal → STALE."
 check:
   tool: cloudarmor_cloudflare_coverage
@@ -12,7 +11,7 @@ check:
     policy: cf-origin-lock-staging
 expect:
   missing: 0
-  extra: 1
+  extra: 0
 severity: critical
 recheck: 24h
 retry: 2

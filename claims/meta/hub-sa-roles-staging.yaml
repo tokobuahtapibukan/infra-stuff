@@ -2,7 +2,7 @@ id: hub-sa-roles-staging
 service: meta
 env: staging
 claim: "Set role hermes-monitor-sa di tokobuah-staging-499001 TIDAK berubah (self-monitoring: hash role)"
-belief_source: "Audit IAM 2026-11-20: artifactregistry.admin, compute.instanceAdmin.v1, container.developer, run.admin, storage.viewer, dll. 2026-11-21: + roles/cloudscheduler.viewer (izin user) agar kartu cost-scheduler-not-deployed bisa dicek dari hub (sebelumnya STALE 403 jobs.list). Identitas engine di hub = /app/gcp_key.json container tokobuah-agentic-hub = hermes-monitor-sa (diverifikasi). Rollback: remove-iam-policy-binding role tsb + kembalikan hash a5d4657029397abe"
+belief_source: "Audit IAM 2026-11-20: artifactregistry.admin, compute.instanceAdmin.v1, container.developer, run.admin, storage.viewer, dll. 2026-11-21: + roles/cloudscheduler.viewer (izin user) agar kartu cost-scheduler-not-deployed bisa dicek dari hub (sebelumnya STALE 403 jobs.list). Identitas engine di hub = /app/gcp_key.json container tokobuah-agentic-hub = hermes-monitor-sa (diverifikasi). 2026-11-24: + roles/compute.viewer (izin user, read-only) agar kartu cloudarmor-cf-ranges-staging bisa dicek dari hub (STALE 403 securityPolicies.get). Rollback compute.viewer → hash 042cfd977c4d0e94; rollback keduanya → a5d4657029397abe"
 note: "KARTU META. Hash berubah = izin SA hub berubah → review. Pair dengan hub-sa-roles-prod."
 requires_tools: [gcloud]
 check:
@@ -11,7 +11,7 @@ check:
     project: tokobuah-staging-499001
     member_contains: hermes-monitor-sa
 expect:
-  hash: "042cfd977c4d0e94"
+  hash: "fb6728270ca5f746"
 severity: warn
 recheck: 24h
 retry: 1
