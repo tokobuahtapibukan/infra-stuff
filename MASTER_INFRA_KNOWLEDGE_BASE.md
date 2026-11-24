@@ -357,7 +357,8 @@ All workloads were consolidated into `staging-gke-standard` under the `tripay` n
 | **Cloud Run Min-Scale** | `production-admin-ikn788` scaled from min 1 to 0 | ~$35.00 | ~Rp 560.000 | ~Rp 1.120.000 |
 | **GKE Node Modernization (2026-11-24)** | `prod-client-cluster` n1-standard-2 → e2-standard-2 (3 node, autoscaler min 1 max 3); migrasi rolling nol downtime, pool n1 dihapus | ~$135.00 | ~Rp 2.160.000 | ~Rp 4.320.000 |
 | **Cloud SQL Tenant Rightsizing (2026-11-24)** | Downgrade `hambabet`, `ikn788`, `rumushoki` (`db-custom-2-7680` → `db-custom-1-4096`, hapus drift) | ~$176.50 | ~Rp 2.860.000 | ~Rp 5.720.000 |
-| **TOTAL REALIZED** | | **~$468.00 – $516.50 / mo** | **~Rp 7.530.000 – 8.300.000 / mo** | **~Rp 15.060.000 – 16.600.000** |
+| **Tenant Hibernation (2026-11-24)** | Hibernasi `pengenwd` via `lifecycle.py` (stop DB, scale pod 0, lepas LB IP, deactive Auth & PGA) | ~$76.00 | ~Rp 1.230.000 | ~Rp 2.460.000 |
+| **TOTAL REALIZED** | | **~$544.00 – $592.50 / mo** | **~Rp 8.760.000 – 9.530.000 / mo** | **~Rp 17.520.000 – 19.060.000** |
 
 ### Next-in-Line Optimization Pipeline (Low Traffic Window):
 1. **Memorystore Redis Consolidation**:
