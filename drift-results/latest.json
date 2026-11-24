@@ -1,38 +1,15 @@
 {
- "run_at": "2026-11-23T19:38:51.878038+00:00",
+ "run_at": "2026-11-24T05:17:23.535768+00:00",
  "engine": "drift_engine v1",
- "cards_total": 60,
- "skipped_total": 0,
+ "cards_total": 19,
+ "skipped_total": 41,
  "summary": {
-  "verified": 59,
-  "drifted": 1,
+  "verified": 19,
+  "drifted": 0,
   "stale": 0,
-  "skipped": 0
+  "skipped": 41
  },
  "results": [
-  {
-   "id": "amp-base-image-policy",
-   "service": "amp",
-   "env": "both",
-   "severity": "warn",
-   "claim": "Dockerfile AMP (node:24.x) dan tenant-registry-go (golang:1.26 + distroless) tidak memakai stream base image EOL (node <=22, golang <=1.24)",
-   "card_file": "claims/fix-tracking/amp-base-image-policy.yaml",
-   "status": "VERIFIED",
-   "expect": {
-    "count": 0
-   },
-   "actual": {
-    "count": 0,
-    "hits": []
-   },
-   "_actual_full": {
-    "count": 0,
-    "hits": []
-   },
-   "detail": "ok",
-   "attempts": 1,
-   "at": "2026-11-23T19:37:44.918722+00:00"
-  },
   {
    "id": "amp-prod-origin-open",
    "service": "amp",
@@ -52,556 +29,7 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-23T19:37:45.084093+00:00"
-  },
-  {
-   "id": "amp-repos-no-secret-tracked",
-   "service": "amp",
-   "env": "both",
-   "severity": "critical",
-   "claim": "Repo AMP dan tenant-registry-go TIDAK mem-track berkas secret (0 file)",
-   "card_file": "claims/fix-tracking/amp-repos-no-secret-tracked.yaml",
-   "status": "VERIFIED",
-   "expect": {
-    "count": 0
-   },
-   "actual": {
-    "count": 0,
-    "files": []
-   },
-   "_actual_full": {
-    "count": 0,
-    "files": []
-   },
-   "detail": "ok",
-   "attempts": 1,
-   "at": "2026-11-23T19:37:45.130697+00:00"
-  },
-  {
-   "id": "core-repos-no-secret-tracked",
-   "service": "multi",
-   "env": "both",
-   "severity": "critical",
-   "claim": "Repo inti (auth/transactional/backend-pg/game-engine/user-site/dataset/content/domain) TIDAK mem-track berkas secret (0 file)",
-   "card_file": "claims/fix-tracking/core-repos-no-secret-tracked.yaml",
-   "status": "VERIFIED",
-   "expect": {
-    "count": 0
-   },
-   "actual": {
-    "count": 0,
-    "files": []
-   },
-   "_actual_full": {
-    "count": 0,
-    "files": []
-   },
-   "detail": "ok",
-   "attempts": 1,
-   "at": "2026-11-23T19:37:46.463560+00:00"
-  },
-  {
-   "id": "cost-scheduler-not-deployed",
-   "service": "staging-platform",
-   "env": "staging",
-   "severity": "info",
-   "claim": "Open: staging cost-scheduler (company-deployment-key/cost-scheduler) BELUM dideploy \u2014 0 job Cloud Scheduler 'staging-cost-*' (workflow juga 0). Hanya SA staging-cost-scheduler + custom role stagingCostScheduler yang sudah ada",
-   "card_file": "claims/fix-tracking/cost-scheduler-not-deployed.yaml",
-   "status": "VERIFIED",
-   "expect": {
-    "count": 0
-   },
-   "actual": {
-    "count": 0,
-    "enabled_count": 0,
-    "names": []
-   },
-   "_actual_full": {
-    "count": 0,
-    "enabled_count": 0,
-    "names": []
-   },
-   "detail": "ok",
-   "attempts": 1,
-   "at": "2026-11-23T19:37:47.235016+00:00"
-  },
-  {
-   "id": "gocrypto-x-lag",
-   "service": "all-go",
-   "env": "both",
-   "severity": "warn",
-   "claim": "P1 (masih OPEN): golang.org/x/crypto masih < 0.58.1 di 7 dari 8 repo Go (devops-engine jauh di v0.25.0; whitelist-engine tidak memakai x/crypto)",
-   "card_file": "claims/fix-tracking/gocrypto-x-lag.yaml",
-   "status": "VERIFIED",
-   "expect": {
-    "count_below": 7
-   },
-   "actual": {
-    "count_below": 7,
-    "details": {
-     "~/tokobuah/audit-engine-go": "v0.58.0",
-     "~/tokobuah/auth-engine-go": "v0.58.0",
-     "~/tokobuah/connector-engine-go": "v0.58.0",
-     "~/tokobuah/devops-engine": "v0.25.0",
-     "~/tokobuah/gamelist-engine-go": "v0.58.0",
-     "~/tokobuah/spinwheel-engine-go": "v0.58.0",
-     "~/tokobuah/transactional-engine-go": "v0.58.0",
-     "~/tokobuah/whitelist-engine-go": "not-declared"
-    }
-   },
-   "_actual_full": {
-    "count_below": 7,
-    "details": {
-     "~/tokobuah/audit-engine-go": "v0.58.0",
-     "~/tokobuah/auth-engine-go": "v0.58.0",
-     "~/tokobuah/connector-engine-go": "v0.58.0",
-     "~/tokobuah/devops-engine": "v0.25.0",
-     "~/tokobuah/gamelist-engine-go": "v0.58.0",
-     "~/tokobuah/spinwheel-engine-go": "v0.58.0",
-     "~/tokobuah/transactional-engine-go": "v0.58.0",
-     "~/tokobuah/whitelist-engine-go": "not-declared"
-    }
-   },
-   "detail": "ok",
-   "attempts": 1,
-   "at": "2026-11-23T19:37:47.326069+00:00"
-  },
-  {
-   "id": "gonet-x-lag",
-   "service": "all-go",
-   "env": "both",
-   "severity": "warn",
-   "claim": "P1 (masih OPEN): golang.org/x/net versi deklarasinya masih < 0.62.0 di 7 dari 8 repo Go (audit, auth, connector, devops, gamelist, spinwheel, transactional \u2014 whitelist-engine bersih)",
-   "card_file": "claims/fix-tracking/gonet-x-lag.yaml",
-   "status": "VERIFIED",
-   "expect": {
-    "count_below": 7
-   },
-   "actual": {
-    "count_below": 7,
-    "details": {
-     "~/tokobuah/audit-engine-go": "v0.61.0",
-     "~/tokobuah/auth-engine-go": "v0.61.0",
-     "~/tokobuah/connector-engine-go": "v0.61.0",
-     "~/tokobuah/devops-engine": "v0.27.0",
-     "~/tokobuah/gamelist-engine-go": "v0.61.0",
-     "~/tokobuah/spinwheel-engine-go": "v0.61.0",
-     "~/tokobuah/transactional-engine-go": "v0.61.0",
-     "~/tokobuah/whitelist-engine-go": "not-declared"
-    }
-   },
-   "_actual_full": {
-    "count_below": 7,
-    "details": {
-     "~/tokobuah/audit-engine-go": "v0.61.0",
-     "~/tokobuah/auth-engine-go": "v0.61.0",
-     "~/tokobuah/connector-engine-go": "v0.61.0",
-     "~/tokobuah/devops-engine": "v0.27.0",
-     "~/tokobuah/gamelist-engine-go": "v0.61.0",
-     "~/tokobuah/spinwheel-engine-go": "v0.61.0",
-     "~/tokobuah/transactional-engine-go": "v0.61.0",
-     "~/tokobuah/whitelist-engine-go": "not-declared"
-    }
-   },
-   "detail": "ok",
-   "attempts": 1,
-   "at": "2026-11-23T19:37:47.349364+00:00"
-  },
-  {
-   "id": "no-latest-in-cdk",
-   "service": "company-deployment-key",
-   "env": "both",
-   "severity": "warn",
-   "claim": "Open (P2): 52 baris manifest di working tree company-deployment-key masih memakai tag image :latest (prod+staging)",
-   "card_file": "claims/fix-tracking/no-latest-in-cdk.yaml",
-   "status": "DRIFTED",
-   "expect": {
-    "count": 52
-   },
-   "actual": {
-    "count": 59,
-    "hits": [
-     "company-deployment-key/deployment.yaml:47: image: asia-southeast2-docker.pkg.dev/tokobuah-staging-499001/tokobuah/spinwheel-engine:la",
-     "company-deployment-key/deployment.yaml:39: image: asia-southeast2-docker.pkg.dev/tokobuah-staging-499001/tokobuah/whitelist-engine:la",
-     "company-deployment-key/deployment.yaml:25: image: asia-southeast2-docker.pkg.dev/tokobuah-staging-499001/tokobuah/auth-engine:latest",
-     "company-deployment-key/deployment.yaml:21: image: asia-southeast2-docker.pkg.dev/tokobuah-staging-499001/tokobuah/domain-management:l",
-     "company-deployment-key/deployment-internal.yaml:27: image: asia-southeast2-docker.pkg.dev/tokobuah-staging-499001/tokobuah/game-engine:latest",
-     "company-deployment-key/deployment-pp.yaml:25: image: asia-southeast2-docker.pkg.dev/tokobuah-staging-499001/tokobuah/game-engine:latest",
-     "company-deployment-key/deployment-lottery.yaml:27: image: asia-southeast2-docker.pkg.dev/tokobuah-staging-499001/tokobuah/game-engine:latest",
-     "company-deployment-key/deployment-all.yaml:25: image: asia-southeast2-docker.pkg.dev/tokobuah-staging-499001/tokobuah/game-engine:latest",
-     "company-deployment-key/deployment-transactions.yaml:25: image: asia-southeast2-docker.pkg.dev/tokobuah-staging-499001/tokobuah/game-engine:latest",
-     "company-deployment-key/deployment-pg.yaml:25: image: asia-southeast2-docker.pkg.dev/tokobuah-staging-499001/tokobuah/game-engine:latest"
-    ]
-   },
-   "_actual_full": {
-    "count": 59,
-    "hits": [
-     "company-deployment-key/deployment.yaml:47: image: asia-southeast2-docker.pkg.dev/tokobuah-staging-499001/tokobuah/spinwheel-engine:la",
-     "company-deployment-key/deployment.yaml:39: image: asia-southeast2-docker.pkg.dev/tokobuah-staging-499001/tokobuah/whitelist-engine:la",
-     "company-deployment-key/deployment.yaml:25: image: asia-southeast2-docker.pkg.dev/tokobuah-staging-499001/tokobuah/auth-engine:latest",
-     "company-deployment-key/deployment.yaml:21: image: asia-southeast2-docker.pkg.dev/tokobuah-staging-499001/tokobuah/domain-management:l",
-     "company-deployment-key/deployment-internal.yaml:27: image: asia-southeast2-docker.pkg.dev/tokobuah-staging-499001/tokobuah/game-engine:latest",
-     "company-deployment-key/deployment-pp.yaml:25: image: asia-southeast2-docker.pkg.dev/tokobuah-staging-499001/tokobuah/game-engine:latest",
-     "company-deployment-key/deployment-lottery.yaml:27: image: asia-southeast2-docker.pkg.dev/tokobuah-staging-499001/tokobuah/game-engine:latest",
-     "company-deployment-key/deployment-all.yaml:25: image: asia-southeast2-docker.pkg.dev/tokobuah-staging-499001/tokobuah/game-engine:latest",
-     "company-deployment-key/deployment-transactions.yaml:25: image: asia-southeast2-docker.pkg.dev/tokobuah-staging-499001/tokobuah/game-engine:latest",
-     "company-deployment-key/deployment-pg.yaml:25: image: asia-southeast2-docker.pkg.dev/tokobuah-staging-499001/tokobuah/game-engine:latest"
-    ]
-   },
-   "detail": "count: expect 52 got 59",
-   "attempts": 1,
-   "at": "2026-11-23T19:37:47.417861+00:00"
-  },
-  {
-   "id": "node20-eol-dockerfiles",
-   "service": "multi",
-   "env": "both",
-   "severity": "warn",
-   "claim": "Open (P2): base image node:20 (EOL April 2026) masih dipakai di 8 baris Dockerfile lintas 4 repo (backend-pg, domain-management, dashboard-pga-mock, super-agent)",
-   "card_file": "claims/fix-tracking/node20-eol-dockerfiles.yaml",
-   "status": "VERIFIED",
-   "expect": {
-    "count": 8
-   },
-   "actual": {
-    "count": 8,
-    "hits": [
-     "backend-pg/Dockerfile:2: FROM node:20-alpine AS builder",
-     "backend-pg/Dockerfile:22: FROM node:20-alpine AS runner",
-     "backend-pg/Dockerfile:2: FROM node:20-alpine AS builder",
-     "backend-pg/Dockerfile:22: FROM node:20-alpine AS runner",
-     "domain-management/Dockerfile:2: FROM node:20-alpine AS builder",
-     "domain-management/Dockerfile:14: FROM node:20-alpine",
-     "dashboard-pga-mock/Dockerfile:3: FROM node:20-alpine AS base",
-     "super-agent/Dockerfile:3: FROM node:20-alpine AS base"
-    ]
-   },
-   "_actual_full": {
-    "count": 8,
-    "hits": [
-     "backend-pg/Dockerfile:2: FROM node:20-alpine AS builder",
-     "backend-pg/Dockerfile:22: FROM node:20-alpine AS runner",
-     "backend-pg/Dockerfile:2: FROM node:20-alpine AS builder",
-     "backend-pg/Dockerfile:22: FROM node:20-alpine AS runner",
-     "domain-management/Dockerfile:2: FROM node:20-alpine AS builder",
-     "domain-management/Dockerfile:14: FROM node:20-alpine",
-     "dashboard-pga-mock/Dockerfile:3: FROM node:20-alpine AS base",
-     "super-agent/Dockerfile:3: FROM node:20-alpine AS base"
-    ]
-   },
-   "detail": "ok",
-   "attempts": 1,
-   "at": "2026-11-23T19:37:48.381123+00:00"
-  },
-  {
-   "id": "p0-secret-yaml-tracked",
-   "service": "company-deployment-key",
-   "env": "both",
-   "severity": "critical",
-   "claim": "P0 (masih OPEN): 26 file 'secret.yaml*' masih ter-track di git repo company-deployment-key (12 production + 14 staging)",
-   "card_file": "claims/fix-tracking/p0-secret-yaml-tracked.yaml",
-   "status": "VERIFIED",
-   "expect": {
-    "count": 26
-   },
-   "actual": {
-    "count": 26,
-    "files": [
-     "company-deployment-key:production/client/cinasuper/secret.yaml",
-     "company-deployment-key:production/client/transactional-engine/secret.yaml",
-     "company-deployment-key:production/core/amp/03-secret.yaml",
-     "company-deployment-key:production/core/audit-engine/secret.yaml",
-     "company-deployment-key:production/core/auth-engine/secret.yaml",
-     "company-deployment-key:production/core/backend-pg/secret.yaml",
-     "company-deployment-key:production/core/connector-engine/secret.yaml",
-     "company-deployment-key:production/core/content-management/secret.yaml",
-     "company-deployment-key:production/core/domain-management/secret.yaml",
-     "company-deployment-key:production/core/gamelist-engine/secret.yaml",
-     "company-deployment-key:production/core/spinwheel-engine/secret.yaml",
-     "company-deployment-key:production/game/game-engine/secret.yaml",
-     "company-deployment-key:staging/core/amp/03-secret.yaml",
-     "company-deployment-key:staging/core/audit-engine/secret.yaml",
-     "company-deployment-key:staging/core/auth-engine/secret.yaml",
-     "company-deployment-key:staging/core/backend-pg/secret.yaml",
-     "company-deployment-key:staging/core/connector-engine/secret.yaml",
-     "company-deployment-key:staging/core/content-management/secret.yaml",
-     "company-deployment-key:staging/core/domain-management/secret.yaml",
-     "company-deployment-key:staging/core/fruit4d/secret.yaml",
-     "company-deployment-key:staging/core/fruit4d/secret.yaml.template",
-     "company-deployment-key:staging/core/game-engine/secret.yaml",
-     "company-deployment-key:staging/core/gamelist-engine/secret.yaml",
-     "company-deployment-key:staging/core/spinwheel-engine/secret.yaml",
-     "company-deployment-key:staging/tripay/secret.yaml",
-     "company-deployment-key:staging/tripay/secret.yaml.template"
-    ]
-   },
-   "_actual_full": {
-    "count": 26,
-    "files": [
-     "company-deployment-key:production/client/cinasuper/secret.yaml",
-     "company-deployment-key:production/client/transactional-engine/secret.yaml",
-     "company-deployment-key:production/core/amp/03-secret.yaml",
-     "company-deployment-key:production/core/audit-engine/secret.yaml",
-     "company-deployment-key:production/core/auth-engine/secret.yaml",
-     "company-deployment-key:production/core/backend-pg/secret.yaml",
-     "company-deployment-key:production/core/connector-engine/secret.yaml",
-     "company-deployment-key:production/core/content-management/secret.yaml",
-     "company-deployment-key:production/core/domain-management/secret.yaml",
-     "company-deployment-key:production/core/gamelist-engine/secret.yaml",
-     "company-deployment-key:production/core/spinwheel-engine/secret.yaml",
-     "company-deployment-key:production/game/game-engine/secret.yaml",
-     "company-deployment-key:staging/core/amp/03-secret.yaml",
-     "company-deployment-key:staging/core/audit-engine/secret.yaml",
-     "company-deployment-key:staging/core/auth-engine/secret.yaml",
-     "company-deployment-key:staging/core/backend-pg/secret.yaml",
-     "company-deployment-key:staging/core/connector-engine/secret.yaml",
-     "company-deployment-key:staging/core/content-management/secret.yaml",
-     "company-deployment-key:staging/core/domain-management/secret.yaml",
-     "company-deployment-key:staging/core/fruit4d/secret.yaml",
-     "company-deployment-key:staging/core/fruit4d/secret.yaml.template",
-     "company-deployment-key:staging/core/game-engine/secret.yaml",
-     "company-deployment-key:staging/core/gamelist-engine/secret.yaml",
-     "company-deployment-key:staging/core/spinwheel-engine/secret.yaml",
-     "company-deployment-key:staging/tripay/secret.yaml",
-     "company-deployment-key:staging/tripay/secret.yaml.template"
-    ]
-   },
-   "detail": "ok",
-   "attempts": 1,
-   "at": "2026-11-23T19:37:48.396448+00:00"
-  },
-  {
-   "id": "staging-url-in-prod-bundle",
-   "service": "user-site",
-   "env": "production",
-   "severity": "warn",
-   "claim": "Open finding: JS bundle produksi dutaledak.online masih hardcode 'https://stagingtokobuah.xyz' (fallback canonical/og_url)",
-   "card_file": "claims/fix-tracking/staging-url-in-prod-bundle.yaml",
-   "status": "VERIFIED",
-   "expect": {
-    "found": true
-   },
-   "actual": {
-    "found": true
-   },
-   "_actual_full": {
-    "found": true,
-    "_chunk": "/_next/static/chunks/1hk86ssaz0j9m.js",
-    "_chunks_scanned": 14
-   },
-   "detail": "ok",
-   "attempts": 1,
-   "at": "2026-11-23T19:37:49.894928+00:00"
-  },
-  {
-   "id": "tripay-sc-secrets-tracked",
-   "service": "tripay-sc",
-   "env": "both",
-   "severity": "critical",
-   "claim": "Open finding (P0-related): 4 berkas secret ter-track di git repo tripay-sc (secret.ts wl-be, wl-callback, wl-cron + 1 lainnya)",
-   "card_file": "claims/fix-tracking/tripay-sc-secrets-tracked.yaml",
-   "status": "VERIFIED",
-   "expect": {
-    "count": 4
-   },
-   "actual": {
-    "count": 4,
-    "files": [
-     "tripay-sc:app/wl-be/src/common/config/secret.ts",
-     "tripay-sc:app/wl-callback/src/common/config/secret.ts",
-     "tripay-sc:app/wl-cron/config/constant/secret.ts",
-     "tripay-sc:app/wl-open/src/common/config/secret.ts"
-    ]
-   },
-   "_actual_full": {
-    "count": 4,
-    "files": [
-     "tripay-sc:app/wl-be/src/common/config/secret.ts",
-     "tripay-sc:app/wl-callback/src/common/config/secret.ts",
-     "tripay-sc:app/wl-cron/config/constant/secret.ts",
-     "tripay-sc:app/wl-open/src/common/config/secret.ts"
-    ]
-   },
-   "detail": "ok",
-   "attempts": 1,
-   "at": "2026-11-23T19:37:49.919147+00:00"
-  },
-  {
-   "id": "amp-prod-alive",
-   "service": "amp",
-   "env": "production",
-   "severity": "critical",
-   "claim": "AMP production: 2 deployment di prod-core-cluster ns/amp (amp-build, amp-serve) available",
-   "card_file": "claims/inventory/amp-prod-alive.yaml",
-   "status": "VERIFIED",
-   "expect": {
-    "unhealthy": 0,
-    "deployments_total": 2
-   },
-   "actual": {
-    "deployments_total": 2,
-    "unhealthy": 0,
-    "unhealthy_list": []
-   },
-   "_actual_full": {
-    "deployments_total": 2,
-    "unhealthy": 0,
-    "unhealthy_list": []
-   },
-   "detail": "ok",
-   "attempts": 1,
-   "at": "2026-11-23T19:37:50.220905+00:00"
-  },
-  {
-   "id": "amp-staging-alive",
-   "service": "amp",
-   "env": "staging",
-   "severity": "warn",
-   "claim": "AMP staging: 2 deployment di staging-gke-standard ns/amp (amp-build, amp-serve) available",
-   "card_file": "claims/inventory/amp-staging-alive.yaml",
-   "status": "VERIFIED",
-   "expect": {
-    "unhealthy": 0,
-    "deployments_total": 2
-   },
-   "actual": {
-    "deployments_total": 2,
-    "unhealthy": 0,
-    "unhealthy_list": []
-   },
-   "_actual_full": {
-    "deployments_total": 2,
-    "unhealthy": 0,
-    "unhealthy_list": []
-   },
-   "detail": "ok",
-   "attempts": 1,
-   "at": "2026-11-23T19:37:50.438950+00:00"
-  },
-  {
-   "id": "core-cluster-services-alive",
-   "service": "multi",
-   "env": "production",
-   "severity": "critical",
-   "claim": "9 deployment di prod-core-cluster ns/core semuanya available (audit, auth, backend-pg, connector, content-management, domain-management, gamelist, spinwheel, whitelist)",
-   "card_file": "claims/inventory/core-cluster-services-alive.yaml",
-   "status": "VERIFIED",
-   "expect": {
-    "unhealthy": 0,
-    "deployments_total": 9
-   },
-   "actual": {
-    "deployments_total": 9,
-    "unhealthy": 0,
-    "unhealthy_list": []
-   },
-   "_actual_full": {
-    "deployments_total": 9,
-    "unhealthy": 0,
-    "unhealthy_list": []
-   },
-   "detail": "ok",
-   "attempts": 1,
-   "at": "2026-11-23T19:37:50.692582+00:00"
-  },
-  {
-   "id": "game-cluster-services-alive",
-   "service": "game-engine",
-   "env": "production",
-   "severity": "critical",
-   "claim": "5 deployment game-engine di game-cluster ns/game semuanya available",
-   "card_file": "claims/inventory/game-cluster-services-alive.yaml",
-   "status": "VERIFIED",
-   "expect": {
-    "unhealthy": 0,
-    "deployments_total": 5
-   },
-   "actual": {
-    "deployments_total": 5,
-    "unhealthy": 0,
-    "unhealthy_list": []
-   },
-   "_actual_full": {
-    "deployments_total": 5,
-    "unhealthy": 0,
-    "unhealthy_list": []
-   },
-   "detail": "ok",
-   "attempts": 1,
-   "at": "2026-11-23T19:37:50.949951+00:00"
-  },
-  {
-   "id": "gameengine-gclb-ip",
-   "service": "game-engine",
-   "env": "production",
-   "severity": "warn",
-   "claim": "GCLB IP game-engine-ingress (prod, game-cluster, ns game) = 34.110.211.59",
-   "card_file": "claims/inventory/gameengine-gclb-ip.yaml",
-   "status": "VERIFIED",
-   "expect": {
-    "ip": "34.110.211.59"
-   },
-   "actual": {
-    "ip": "34.110.211.59"
-   },
-   "_actual_full": {
-    "ip": "34.110.211.59"
-   },
-   "detail": "ok",
-   "attempts": 1,
-   "at": "2026-11-23T19:37:51.095113+00:00"
-  },
-  {
-   "id": "partner-analytics-vm-memory-floor",
-   "service": "partner-analytics",
-   "env": "staging",
-   "severity": "warn",
-   "claim": "partner-analytics-vm (worker BBIX ingest + MySQL) RUNNING dengan RAM >= 16 GB. Jangan downsize RAM di bawah ini tanpa memangkas innodb_buffer_pool_size + ukur ulang puncak worker",
-   "card_file": "claims/inventory/partner-analytics-vm-memory-floor.yaml",
-   "status": "VERIFIED",
-   "expect": {
-    "status": "RUNNING",
-    "memory_mb_min": 16384
-   },
-   "actual": {
-    "status": "RUNNING",
-    "machine_type": "e2-highmem-2",
-    "vcpus": 2,
-    "memory_mb": 16384,
-    "provisioning_model": "STANDARD"
-   },
-   "_actual_full": {
-    "status": "RUNNING",
-    "machine_type": "e2-highmem-2",
-    "vcpus": 2,
-    "memory_mb": 16384,
-    "provisioning_model": "STANDARD"
-   },
-   "detail": "ok",
-   "attempts": 1,
-   "at": "2026-11-23T19:37:51.598638+00:00"
-  },
-  {
-   "id": "staging-billing-namespace-labels",
-   "service": "finops",
-   "env": "staging",
-   "severity": "info",
-   "claim": "Namespace staging tripay & fruit4d membawa label atribusi billing (service=payment-gateway / service=fruit4d) \u2014 muncul di billing export sebagai k8s-namespace-labels/service",
-   "card_file": "claims/inventory/staging-billing-namespace-labels.yaml",
-   "status": "VERIFIED",
-   "expect": {
-    "missing": 0
-   },
-   "actual": {
-    "missing": 0
-   },
-   "_actual_full": {
-    "missing": 0,
-    "_detail": []
-   },
-   "detail": "ok",
-   "attempts": 1,
-   "at": "2026-11-23T19:37:51.917024+00:00"
+   "at": "2026-11-24T05:17:11.387543+00:00"
   },
   {
    "id": "staging-core-pool-autoscaling-bounds",
@@ -632,451 +60,7 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-23T19:37:52.090724+00:00"
-  },
-  {
-   "id": "staging-tripay-cluster-dead",
-   "service": "tripay",
-   "env": "staging",
-   "severity": "info",
-   "claim": "Cluster staging-tripay-cluster TIDAK ADA (dihapus 2026-11-11; workload ter-konsolidasi ke staging-gke-standard)",
-   "card_file": "claims/inventory/staging-tripay-cluster-dead.yaml",
-   "status": "VERIFIED",
-   "expect": {
-    "exists": false
-   },
-   "actual": {
-    "exists": false,
-    "live_clusters": [
-     "staging-gke-standard"
-    ]
-   },
-   "_actual_full": {
-    "exists": false,
-    "live_clusters": [
-     "staging-gke-standard"
-    ]
-   },
-   "detail": "ok",
-   "attempts": 1,
-   "at": "2026-11-23T19:37:52.714560+00:00"
-  },
-  {
-   "id": "tenant-internal-lb-labelled",
-   "service": "tenant-registry",
-   "env": "production",
-   "severity": "warn",
-   "claim": "13 manifest production/client/*/service-internal.yaml membawa label tokobuah.io/company-code (satu per tenant; dibaca tenant-registry)",
-   "card_file": "claims/inventory/tenant-internal-lb-labelled.yaml",
-   "status": "VERIFIED",
-   "expect": {
-    "count": 13
-   },
-   "actual": {
-    "count": 13,
-    "hits": [
-     "company-deployment-key/service-internal.yaml:9: tokobuah.io/company-code: \"terios88\"",
-     "company-deployment-key/service-internal.yaml:9: tokobuah.io/company-code: \"terbangwd\"",
-     "company-deployment-key/service-internal.yaml:8: tokobuah.io/company-code: \"padi808\"",
-     "company-deployment-key/service-internal.yaml:9: tokobuah.io/company-code: \"cinasuper\"",
-     "company-deployment-key/service-internal.yaml:9: tokobuah.io/company-code: \"cinabotak\"",
-     "company-deployment-key/service-internal.yaml:9: tokobuah.io/company-code: \"hambabet\"",
-     "company-deployment-key/service-internal.yaml:9: tokobuah.io/company-code: \"ikn788\"",
-     "company-deployment-key/service-internal.yaml:9: tokobuah.io/company-code: \"rumushoki\"",
-     "company-deployment-key/service-internal.yaml:9: tokobuah.io/company-code: \"pengenwd\"",
-     "company-deployment-key/service-internal.yaml:9: tokobuah.io/company-code: \"omsipit\""
-    ]
-   },
-   "_actual_full": {
-    "count": 13,
-    "hits": [
-     "company-deployment-key/service-internal.yaml:9: tokobuah.io/company-code: \"terios88\"",
-     "company-deployment-key/service-internal.yaml:9: tokobuah.io/company-code: \"terbangwd\"",
-     "company-deployment-key/service-internal.yaml:8: tokobuah.io/company-code: \"padi808\"",
-     "company-deployment-key/service-internal.yaml:9: tokobuah.io/company-code: \"cinasuper\"",
-     "company-deployment-key/service-internal.yaml:9: tokobuah.io/company-code: \"cinabotak\"",
-     "company-deployment-key/service-internal.yaml:9: tokobuah.io/company-code: \"hambabet\"",
-     "company-deployment-key/service-internal.yaml:9: tokobuah.io/company-code: \"ikn788\"",
-     "company-deployment-key/service-internal.yaml:9: tokobuah.io/company-code: \"rumushoki\"",
-     "company-deployment-key/service-internal.yaml:9: tokobuah.io/company-code: \"pengenwd\"",
-     "company-deployment-key/service-internal.yaml:9: tokobuah.io/company-code: \"omsipit\""
-    ]
-   },
-   "detail": "ok",
-   "attempts": 1,
-   "at": "2026-11-23T19:37:52.717140+00:00"
-  },
-  {
-   "id": "tenant-internal-lb-pinned",
-   "service": "tenant-registry",
-   "env": "production",
-   "severity": "warn",
-   "claim": "13 manifest production/client/*/service-internal.yaml mem-pin spec.loadBalancerIP ke alamat statis prod-<code>-backend-internal",
-   "card_file": "claims/inventory/tenant-internal-lb-pinned.yaml",
-   "status": "VERIFIED",
-   "expect": {
-    "count": 13
-   },
-   "actual": {
-    "count": 13,
-    "hits": [
-     "company-deployment-key/service-internal.yaml:15: loadBalancerIP: \"10.20.16.36\"",
-     "company-deployment-key/service-internal.yaml:15: loadBalancerIP: \"10.20.16.108\"",
-     "company-deployment-key/service-internal.yaml:14: loadBalancerIP: \"10.20.16.138\"",
-     "company-deployment-key/service-internal.yaml:15: loadBalancerIP: \"10.20.16.43\"",
-     "company-deployment-key/service-internal.yaml:15: loadBalancerIP: \"10.20.16.56\"",
-     "company-deployment-key/service-internal.yaml:15: loadBalancerIP: \"10.20.16.68\"",
-     "company-deployment-key/service-internal.yaml:14: loadBalancerIP: \"10.20.16.78\"",
-     "company-deployment-key/service-internal.yaml:15: loadBalancerIP: \"10.20.16.11\"",
-     "company-deployment-key/service-internal.yaml:15: loadBalancerIP: \"10.20.16.40\"",
-     "company-deployment-key/service-internal.yaml:15: loadBalancerIP: \"10.20.16.54\""
-    ]
-   },
-   "_actual_full": {
-    "count": 13,
-    "hits": [
-     "company-deployment-key/service-internal.yaml:15: loadBalancerIP: \"10.20.16.36\"",
-     "company-deployment-key/service-internal.yaml:15: loadBalancerIP: \"10.20.16.108\"",
-     "company-deployment-key/service-internal.yaml:14: loadBalancerIP: \"10.20.16.138\"",
-     "company-deployment-key/service-internal.yaml:15: loadBalancerIP: \"10.20.16.43\"",
-     "company-deployment-key/service-internal.yaml:15: loadBalancerIP: \"10.20.16.56\"",
-     "company-deployment-key/service-internal.yaml:15: loadBalancerIP: \"10.20.16.68\"",
-     "company-deployment-key/service-internal.yaml:14: loadBalancerIP: \"10.20.16.78\"",
-     "company-deployment-key/service-internal.yaml:15: loadBalancerIP: \"10.20.16.11\"",
-     "company-deployment-key/service-internal.yaml:15: loadBalancerIP: \"10.20.16.40\"",
-     "company-deployment-key/service-internal.yaml:15: loadBalancerIP: \"10.20.16.54\""
-    ]
-   },
-   "detail": "ok",
-   "attempts": 1,
-   "at": "2026-11-23T19:37:52.718592+00:00"
-  },
-  {
-   "id": "tenant-prod-lbs",
-   "service": "user-site",
-   "env": "production",
-   "severity": "warn",
-   "claim": "Ada persis 13 global HTTP LB tenant prod (nama prefix 'production-': buah5758, cinabotak, cinasuper, dutaledak, hambabet, ikn788, omsipit, padi808, pengenwd, rumushoki, tapakhoki, terbangwd, terios88)",
-   "card_file": "claims/inventory/tenant-prod-lbs.yaml",
-   "status": "VERIFIED",
-   "expect": {
-    "count": 13
-   },
-   "actual": {
-    "count": 13,
-    "names": [
-     "production-buah5758-http-proxy",
-     "production-cinabotak-http-proxy",
-     "production-cinasuper-http-proxy",
-     "production-dutaledak-http-proxy",
-     "production-hambabet-http-proxy",
-     "production-ikn788-http-proxy",
-     "production-omsipit-http-proxy",
-     "production-padi808-http-proxy",
-     "production-pengenwd-http-proxy",
-     "production-rumushoki-http-proxy",
-     "production-tapakhoki-http-proxy",
-     "production-terbangwd-http-proxy",
-     "production-terios88-http-proxy"
-    ]
-   },
-   "_actual_full": {
-    "count": 13,
-    "names": [
-     "production-buah5758-http-proxy",
-     "production-cinabotak-http-proxy",
-     "production-cinasuper-http-proxy",
-     "production-dutaledak-http-proxy",
-     "production-hambabet-http-proxy",
-     "production-ikn788-http-proxy",
-     "production-omsipit-http-proxy",
-     "production-padi808-http-proxy",
-     "production-pengenwd-http-proxy",
-     "production-rumushoki-http-proxy",
-     "production-tapakhoki-http-proxy",
-     "production-terbangwd-http-proxy",
-     "production-terios88-http-proxy"
-    ]
-   },
-   "detail": "ok",
-   "attempts": 1,
-   "at": "2026-11-23T19:37:53.118094+00:00"
-  },
-  {
-   "id": "tenant-registry-prod-alive",
-   "service": "tenant-registry",
-   "env": "production",
-   "severity": "critical",
-   "claim": "tenant-registry production: 1 deployment di prod-core-cluster ns/tenant-registry available (dibutuhkan build AMP untuk backend promo per company)",
-   "card_file": "claims/inventory/tenant-registry-prod-alive.yaml",
-   "status": "VERIFIED",
-   "expect": {
-    "unhealthy": 0,
-    "deployments_total": 1
-   },
-   "actual": {
-    "deployments_total": 1,
-    "unhealthy": 0,
-    "unhealthy_list": []
-   },
-   "_actual_full": {
-    "deployments_total": 1,
-    "unhealthy": 0,
-    "unhealthy_list": []
-   },
-   "detail": "ok",
-   "attempts": 1,
-   "at": "2026-11-23T19:37:53.292930+00:00"
-  },
-  {
-   "id": "tenant-registry-staging-alive",
-   "service": "tenant-registry",
-   "env": "staging",
-   "severity": "warn",
-   "claim": "tenant-registry staging: 1 deployment di staging-gke-standard ns/tenant-registry available",
-   "card_file": "claims/inventory/tenant-registry-staging-alive.yaml",
-   "status": "VERIFIED",
-   "expect": {
-    "unhealthy": 0,
-    "deployments_total": 1
-   },
-   "actual": {
-    "deployments_total": 1,
-    "unhealthy": 0,
-    "unhealthy_list": []
-   },
-   "_actual_full": {
-    "deployments_total": 1,
-    "unhealthy": 0,
-    "unhealthy_list": []
-   },
-   "detail": "ok",
-   "attempts": 1,
-   "at": "2026-11-23T19:37:53.482488+00:00"
-  },
-  {
-   "id": "tripay-staging-services-alive",
-   "service": "tripay-sc",
-   "env": "staging",
-   "severity": "warn",
-   "claim": "4 deployment tripay (be, callback, cron, open) di staging-gke-standard ns/tripay semuanya available",
-   "card_file": "claims/inventory/tripay-staging-services-alive.yaml",
-   "status": "VERIFIED",
-   "expect": {
-    "unhealthy": 0,
-    "deployments_total": 4
-   },
-   "actual": {
-    "deployments_total": 4,
-    "unhealthy": 0,
-    "unhealthy_list": []
-   },
-   "_actual_full": {
-    "deployments_total": 4,
-    "unhealthy": 0,
-    "unhealthy_list": []
-   },
-   "detail": "ok",
-   "attempts": 1,
-   "at": "2026-11-23T19:37:53.695810+00:00"
-  },
-  {
-   "id": "amp-owner-runbook",
-   "service": "amp",
-   "env": "both",
-   "severity": "info",
-   "claim": "AMP + tenant-registry punya runbook pemilik di infra-stuff/AMP_PAGE_SERVICE_AND_TENANT_REGISTRY_RUNBOOK.md (owner: DevOps/SRE)",
-   "card_file": "claims/meta/amp-owner-runbook.yaml",
-   "status": "VERIFIED",
-   "expect": {
-    "count": 1
-   },
-   "actual": {
-    "count": 1,
-    "hits": [
-     "infra-stuff/AMP_PAGE_SERVICE_AND_TENANT_REGISTRY_RUNBOOK.md:6: > **Primary Maintainers**: DevOps, SRE, and AI Autonomous Agents"
-    ]
-   },
-   "_actual_full": {
-    "count": 1,
-    "hits": [
-     "infra-stuff/AMP_PAGE_SERVICE_AND_TENANT_REGISTRY_RUNBOOK.md:6: > **Primary Maintainers**: DevOps, SRE, and AI Autonomous Agents"
-    ]
-   },
-   "detail": "ok",
-   "attempts": 1,
-   "at": "2026-11-23T19:37:53.696722+00:00"
-  },
-  {
-   "id": "artifact-registry-prod-private",
-   "service": "meta",
-   "env": "production",
-   "severity": "critical",
-   "claim": "Artifact Registry production (asia-southeast1/tokobuah) tetap PRIVAT: probe anonim /v2/ ditolak (redirect ke auth GCP, bukan 200)",
-   "card_file": "claims/meta/artifact-registry-prod-private.yaml",
-   "status": "VERIFIED",
-   "expect": {
-    "header_present": true
-   },
-   "actual": {
-    "header_present": true,
-    "contains": true
-   },
-   "_actual_full": {
-    "header_present": true,
-    "contains": true
-   },
-   "detail": "ok",
-   "attempts": 1,
-   "at": "2026-11-23T19:37:53.852323+00:00"
-  },
-  {
-   "id": "artifact-registry-staging-private",
-   "service": "meta",
-   "env": "staging",
-   "severity": "warn",
-   "claim": "Artifact Registry staging (asia-southeast2/tokobuah) tetap PRIVAT: probe anonim /v2/ ditolak (redirect ke auth GCP, bukan 200)",
-   "card_file": "claims/meta/artifact-registry-staging-private.yaml",
-   "status": "VERIFIED",
-   "expect": {
-    "header_present": true
-   },
-   "actual": {
-    "header_present": true,
-    "contains": true
-   },
-   "_actual_full": {
-    "header_present": true,
-    "contains": true
-   },
-   "detail": "ok",
-   "attempts": 1,
-   "at": "2026-11-23T19:37:54.070231+00:00"
-  },
-  {
-   "id": "domain-engine-owner-runbook",
-   "service": "domain-management",
-   "env": "both",
-   "severity": "info",
-   "claim": "Domain Engine (repo domain-management) punya runbook pemilik di infra-stuff/DOMAIN_ENGINE_RUNBOOK.md (owner: DevOps/SRE)",
-   "card_file": "claims/meta/domain-engine-owner-runbook.yaml",
-   "status": "VERIFIED",
-   "expect": {
-    "count": 1
-   },
-   "actual": {
-    "count": 1,
-    "hits": [
-     "infra-stuff/DOMAIN_ENGINE_RUNBOOK.md:6: > **Primary Maintainers**: DevOps, SRE, and AI Autonomous Agents"
-    ]
-   },
-   "_actual_full": {
-    "count": 1,
-    "hits": [
-     "infra-stuff/DOMAIN_ENGINE_RUNBOOK.md:6: > **Primary Maintainers**: DevOps, SRE, and AI Autonomous Agents"
-    ]
-   },
-   "detail": "ok",
-   "attempts": 1,
-   "at": "2026-11-23T19:37:54.076419+00:00"
-  },
-  {
-   "id": "hub-sa-roles-prod",
-   "service": "meta",
-   "env": "production",
-   "severity": "warn",
-   "claim": "Set role hermes-monitor-sa di tokobuah-production TIDAK berubah (self-monitoring: hash role)",
-   "card_file": "claims/meta/hub-sa-roles-prod.yaml",
-   "status": "VERIFIED",
-   "expect": {
-    "hash": "22cc52a9221ee0ff"
-   },
-   "actual": {
-    "roles": [
-     "roles/artifactregistry.reader",
-     "roles/bigquery.dataViewer",
-     "roles/cloudsql.viewer",
-     "roles/compute.viewer",
-     "roles/container.editor",
-     "roles/iam.serviceAccountUser",
-     "roles/logging.privateLogViewer",
-     "roles/logging.viewAccessor",
-     "roles/logging.viewer",
-     "roles/monitoring.metricWriter",
-     "roles/run.admin",
-     "roles/run.developer"
-    ],
-    "hash": "22cc52a9221ee0ff"
-   },
-   "_actual_full": {
-    "roles": [
-     "roles/artifactregistry.reader",
-     "roles/bigquery.dataViewer",
-     "roles/cloudsql.viewer",
-     "roles/compute.viewer",
-     "roles/container.editor",
-     "roles/iam.serviceAccountUser",
-     "roles/logging.privateLogViewer",
-     "roles/logging.viewAccessor",
-     "roles/logging.viewer",
-     "roles/monitoring.metricWriter",
-     "roles/run.admin",
-     "roles/run.developer"
-    ],
-    "hash": "22cc52a9221ee0ff"
-   },
-   "detail": "ok",
-   "attempts": 1,
-   "at": "2026-11-23T19:37:55.749721+00:00"
-  },
-  {
-   "id": "hub-sa-roles-staging",
-   "service": "meta",
-   "env": "staging",
-   "severity": "warn",
-   "claim": "Set role hermes-monitor-sa di tokobuah-staging-499001 TIDAK berubah (self-monitoring: hash role)",
-   "card_file": "claims/meta/hub-sa-roles-staging.yaml",
-   "status": "VERIFIED",
-   "expect": {
-    "hash": "042cfd977c4d0e94"
-   },
-   "actual": {
-    "roles": [
-     "roles/artifactregistry.admin",
-     "roles/bigquery.dataViewer",
-     "roles/bigquery.jobUser",
-     "roles/cloudscheduler.viewer",
-     "roles/cloudsql.viewer",
-     "roles/compute.instanceAdmin.v1",
-     "roles/container.developer",
-     "roles/iam.serviceAccountUser",
-     "roles/iap.tunnelResourceAccessor",
-     "roles/logging.viewer",
-     "roles/run.admin",
-     "roles/storage.viewer"
-    ],
-    "hash": "042cfd977c4d0e94"
-   },
-   "_actual_full": {
-    "roles": [
-     "roles/artifactregistry.admin",
-     "roles/bigquery.dataViewer",
-     "roles/bigquery.jobUser",
-     "roles/cloudscheduler.viewer",
-     "roles/cloudsql.viewer",
-     "roles/compute.instanceAdmin.v1",
-     "roles/container.developer",
-     "roles/iam.serviceAccountUser",
-     "roles/iap.tunnelResourceAccessor",
-     "roles/logging.viewer",
-     "roles/run.admin",
-     "roles/storage.viewer"
-    ],
-    "hash": "042cfd977c4d0e94"
-   },
-   "detail": "ok",
-   "attempts": 1,
-   "at": "2026-11-23T19:37:57.235390+00:00"
+   "at": "2026-11-24T05:17:14.381384+00:00"
   },
   {
    "id": "registry-sweep-freshness",
@@ -1090,41 +74,16 @@
     "age_hours_max": 30
    },
    "actual": {
-    "age_hours": 2.4,
+    "age_hours": 12.0,
     "last_commit": "1795454188"
    },
    "_actual_full": {
-    "age_hours": 2.4,
+    "age_hours": 12.0,
     "last_commit": "1795454188"
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-23T19:37:57.246008+00:00"
-  },
-  {
-   "id": "sentinel-scan-targets-complete",
-   "service": "meta",
-   "env": "production",
-   "severity": "critical",
-   "claim": "Semua global HTTP LB production yang menerima traffic muncul di log http_load_balancer 7 hari terakhir (mekanisme scan 7-day sentinel hub)",
-   "card_file": "claims/meta/sentinel-scan-targets-complete.yaml",
-   "status": "VERIFIED",
-   "expect": {
-    "uncovered": []
-   },
-   "actual": {
-    "uncovered": [],
-    "live_lb_count": 16,
-    "logged_lb_count": 16
-   },
-   "_actual_full": {
-    "uncovered": [],
-    "live_lb_count": 16,
-    "logged_lb_count": 16
-   },
-   "detail": "ok",
-   "attempts": 1,
-   "at": "2026-11-23T19:38:32.010073+00:00"
+   "at": "2026-11-24T05:17:14.503143+00:00"
   },
   {
    "id": "staging-ssh-firewall-scoped",
@@ -1150,82 +109,7 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-23T19:38:32.625455+00:00"
-  },
-  {
-   "id": "3pay-cloudbuild-sa-roles-staging",
-   "service": "3pay-panel",
-   "env": "staging",
-   "severity": "warn",
-   "claim": "Build SA sa-3pay-cloudbuild (trigger fe-3pay-*-staging) hanya punya roles/logging.logWriter + roles/vpcaccess.user di level project tokobuah-staging-499001; hak lain diikat sempit di level resource",
-   "card_file": "claims/security/3pay-cloudbuild-sa-roles-staging.yaml",
-   "status": "VERIFIED",
-   "expect": {
-    "hash": "f892577822f2307f"
-   },
-   "actual": {
-    "roles": [
-     "roles/logging.logWriter",
-     "roles/vpcaccess.user"
-    ],
-    "hash": "f892577822f2307f"
-   },
-   "_actual_full": {
-    "roles": [
-     "roles/logging.logWriter",
-     "roles/vpcaccess.user"
-    ],
-    "hash": "f892577822f2307f"
-   },
-   "detail": "ok",
-   "attempts": 1,
-   "at": "2026-11-23T19:38:34.277732+00:00"
-  },
-  {
-   "id": "3pay-panel-no-secret-tracked",
-   "service": "3pay-panel",
-   "env": "both",
-   "severity": "critical",
-   "claim": "Repo 3pay-panel TIDAK mem-track berkas secret (.env selain .env.example, secret.yaml/ts, .pem, .key, .p12) \u2014 0 file",
-   "card_file": "claims/security/3pay-panel-no-secret-tracked.yaml",
-   "status": "VERIFIED",
-   "expect": {
-    "count": 0
-   },
-   "actual": {
-    "count": 0,
-    "files": []
-   },
-   "_actual_full": {
-    "count": 0,
-    "files": []
-   },
-   "detail": "ok",
-   "attempts": 1,
-   "at": "2026-11-23T19:38:34.292942+00:00"
-  },
-  {
-   "id": "3pay-panel-run-sa-no-roles",
-   "service": "3pay-panel",
-   "env": "staging",
-   "severity": "warn",
-   "claim": "Runtime SA sa-3pay-panel-run (identitas Cloud Run fe-3pay-superadmin/reseller/merchant) TIDAK punya role apa pun di level project tokobuah-staging-499001",
-   "card_file": "claims/security/3pay-panel-run-sa-no-roles.yaml",
-   "status": "VERIFIED",
-   "expect": {
-    "hash": "e3b0c44298fc1c14"
-   },
-   "actual": {
-    "roles": [],
-    "hash": "e3b0c44298fc1c14"
-   },
-   "_actual_full": {
-    "roles": [],
-    "hash": "e3b0c44298fc1c14"
-   },
-   "detail": "ok",
-   "attempts": 1,
-   "at": "2026-11-23T19:38:35.840979+00:00"
+   "at": "2026-11-24T05:17:15.092694+00:00"
   },
   {
    "id": "amp-staging-origin-lock-live",
@@ -1246,30 +130,7 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-23T19:38:36.002200+00:00"
-  },
-  {
-   "id": "cloudarmor-layer-fact",
-   "service": "meta",
-   "env": "both",
-   "severity": "critical",
-   "claim": "Cloud Armor ter-attach di level BackendService, BUKAN target proxy: 0 target proxy (http/https/ssl/tcp) di kedua project yang punya securityPolicy",
-   "card_file": "claims/security/cloudarmor-layer-fact.yaml",
-   "status": "VERIFIED",
-   "expect": {
-    "with_policy": 0
-   },
-   "actual": {
-    "with_policy": 0,
-    "details": []
-   },
-   "_actual_full": {
-    "with_policy": 0,
-    "details": []
-   },
-   "detail": "ok",
-   "attempts": 1,
-   "at": "2026-11-23T19:38:39.748631+00:00"
+   "at": "2026-11-24T05:17:15.277416+00:00"
   },
   {
    "id": "cloudarmor-prod-gameengine",
@@ -1308,7 +169,7 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-23T19:38:40.628085+00:00"
+   "at": "2026-11-24T05:17:16.045293+00:00"
   },
   {
    "id": "cloudarmor-staging-eight",
@@ -1353,7 +214,7 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-23T19:38:42.258568+00:00"
+   "at": "2026-11-24T05:17:16.592418+00:00"
   },
   {
    "id": "cross-tenant-isolation-holds",
@@ -1381,30 +242,7 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-23T19:38:43.865289+00:00"
-  },
-  {
-   "id": "domain-engine-no-entrypoint-put",
-   "service": "domain-management",
-   "env": "both",
-   "severity": "warn",
-   "claim": "Domain Engine tidak pernah melakukan PUT ke ruleset entrypoint Cloudflare (PUT menimpa semua rule redirect/config milik tenant di zone); rule diubah per rule (POST/PATCH/DELETE .../rules/{id})",
-   "card_file": "claims/security/domain-engine-no-entrypoint-put.yaml",
-   "status": "VERIFIED",
-   "expect": {
-    "count": 0
-   },
-   "actual": {
-    "count": 0,
-    "hits": []
-   },
-   "_actual_full": {
-    "count": 0,
-    "hits": []
-   },
-   "detail": "ok",
-   "attempts": 1,
-   "at": "2026-11-23T19:38:43.867006+00:00"
+   "at": "2026-11-24T05:17:17.621411+00:00"
   },
   {
    "id": "gameengine-origin-lock-live",
@@ -1425,57 +263,7 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-23T19:38:44.036580+00:00"
-  },
-  {
-   "id": "tripay-be-internal-lb-restricted",
-   "service": "tripay",
-   "env": "staging",
-   "severity": "warn",
-   "claim": "LB internal wl-be staging (Service tripay/tripay-be-internal) di-pin ke 10.10.16.52 dengan loadBalancerSourceRanges 10.10.32.0/28 (connector vpc-run-bridge, dipakai Cloud Run fe-3pay-*); jalur BARU ke wl-be hanya dari connector itu",
-   "card_file": "claims/security/tripay-be-internal-lb-restricted.yaml",
-   "status": "VERIFIED",
-   "expect": {
-    "count": 2
-   },
-   "actual": {
-    "count": 2,
-    "hits": [
-     "company-deployment-key/service-internal.yaml:25: loadBalancerIP: 10.10.16.52",
-     "company-deployment-key/service-internal.yaml:27: - 10.10.32.0/28 # vpc-run-bridge connector (Cloud Run fe-3pay-*)"
-    ]
-   },
-   "_actual_full": {
-    "count": 2,
-    "hits": [
-     "company-deployment-key/service-internal.yaml:25: loadBalancerIP: 10.10.16.52",
-     "company-deployment-key/service-internal.yaml:27: - 10.10.32.0/28 # vpc-run-bridge connector (Cloud Run fe-3pay-*)"
-    ]
-   },
-   "detail": "ok",
-   "attempts": 1,
-   "at": "2026-11-23T19:38:44.038583+00:00"
-  },
-  {
-   "id": "tripay-be-staging-hostname-guard",
-   "service": "tripay",
-   "env": "staging",
-   "severity": "warn",
-   "claim": "wl-be staging (tripay-be.iknstaging.com) menolak request panel tanpa header `hostname: api.tripay-be.iknstaging.com` dengan error 'Wrong domain' (guard di user.strategy.ts, APP_ENV != dev; API_HOSTNAME diturunkan dari env HOST)",
-   "card_file": "claims/security/tripay-be-staging-hostname-guard.yaml",
-   "status": "VERIFIED",
-   "expect": {
-    "value": "Wrong domain"
-   },
-   "actual": {
-    "value": "Wrong domain"
-   },
-   "_actual_full": {
-    "value": "Wrong domain"
-   },
-   "detail": "ok",
-   "attempts": 1,
-   "at": "2026-11-23T19:38:44.378716+00:00"
+   "at": "2026-11-24T05:17:17.775448+00:00"
   },
   {
    "id": "3pay-admin-staging-live",
@@ -1502,7 +290,7 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-23T19:38:44.564762+00:00"
+   "at": "2026-11-24T05:17:17.925774+00:00"
   },
   {
    "id": "3pay-merchant-staging-live",
@@ -1529,7 +317,7 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-23T19:38:44.783657+00:00"
+   "at": "2026-11-24T05:17:18.127376+00:00"
   },
   {
    "id": "3pay-reseller-staging-live",
@@ -1556,7 +344,7 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-23T19:38:44.998786+00:00"
+   "at": "2026-11-24T05:17:20.582997+00:00"
   },
   {
    "id": "amp-api-staging-live",
@@ -1577,7 +365,7 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-23T19:38:45.208528+00:00"
+   "at": "2026-11-24T05:17:20.861547+00:00"
   },
   {
    "id": "demobuah-live",
@@ -1600,66 +388,7 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-23T19:38:45.573660+00:00"
-  },
-  {
-   "id": "dutaledak-sibling-live",
-   "service": "user-site",
-   "env": "production",
-   "severity": "info",
-   "claim": "dutaledak.store LIVE di balik Cloudflare dan menyajikan build app yang sama dengan dutaledak.online (domain saudara tenant dutaledak)",
-   "card_file": "claims/surface/dutaledak-sibling-live.yaml",
-   "status": "VERIFIED",
-   "expect": {
-    "sibling_live": true,
-    "same_app": true
-   },
-   "actual": {
-    "sibling_live": true,
-    "same_app": true
-   },
-   "_actual_full": {
-    "sibling_live": true,
-    "same_app": true,
-    "_fingerprint_s": [
-     "0a7740363b4d4863-s.3ji57o093q1kd.woff2",
-     "0c89a48fa5027cee-s.p.2cyn07wtgehh0.woff2",
-     "0da9c7f357bd9d4d-s.1975l3y3401x_.woff2",
-     "14e23f9b59180572-s.0t8ljjjn9wtsx.woff2",
-     "1747e1908d2352d2-s.0sf3h4u8we0x1.woff2"
-    ],
-    "_fingerprint_p": [
-     "0a7740363b4d4863-s.3ji57o093q1kd.woff2",
-     "0c89a48fa5027cee-s.p.2cyn07wtgehh0.woff2",
-     "0da9c7f357bd9d4d-s.1975l3y3401x_.woff2",
-     "14e23f9b59180572-s.0t8ljjjn9wtsx.woff2",
-     "1747e1908d2352d2-s.0sf3h4u8we0x1.woff2"
-    ]
-   },
-   "detail": "ok",
-   "attempts": 1,
-   "at": "2026-11-23T19:38:46.346616+00:00"
-  },
-  {
-   "id": "gcs-level-images-public",
-   "service": "user-site",
-   "env": "production",
-   "severity": "info",
-   "claim": "Image level dari GCS bucket tokobuah-production.firebasestorage.app public-read (by design \u2014 dipakai /beapi/public/levels tanpa auth)",
-   "card_file": "claims/surface/gcs-level-images-public.yaml",
-   "status": "VERIFIED",
-   "expect": {
-    "status": 200
-   },
-   "actual": {
-    "status": 200
-   },
-   "_actual_full": {
-    "status": 200
-   },
-   "detail": "ok",
-   "attempts": 1,
-   "at": "2026-11-23T19:38:46.714543+00:00"
+   "at": "2026-11-24T05:17:21.216201+00:00"
   },
   {
    "id": "hsts-demobuah",
@@ -1682,7 +411,7 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-23T19:38:47.073025+00:00"
+   "at": "2026-11-24T05:17:21.491989+00:00"
   },
   {
    "id": "hsts-dutaledak",
@@ -1705,7 +434,7 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-23T19:38:47.426615+00:00"
+   "at": "2026-11-24T05:17:21.950964+00:00"
   },
   {
    "id": "maintenance-off-demobuah",
@@ -1726,7 +455,7 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-23T19:38:48.077464+00:00"
+   "at": "2026-11-24T05:17:22.618207+00:00"
   },
   {
    "id": "maintenance-off-dutaledak",
@@ -1747,7 +476,7 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-23T19:38:48.909687+00:00"
+   "at": "2026-11-24T05:17:23.359070+00:00"
   },
   {
    "id": "partner-portal-domain-live",
@@ -1774,8 +503,50 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-23T19:38:51.878001+00:00"
+   "at": "2026-11-24T05:17:23.535692+00:00"
   }
  ],
- "skipped": []
+ "skipped": [
+  "amp-base-image-policy",
+  "amp-repos-no-secret-tracked",
+  "core-repos-no-secret-tracked",
+  "cost-scheduler-not-deployed",
+  "gocrypto-x-lag",
+  "gonet-x-lag",
+  "no-latest-in-cdk",
+  "node20-eol-dockerfiles",
+  "p0-secret-yaml-tracked",
+  "staging-url-in-prod-bundle",
+  "tripay-sc-secrets-tracked",
+  "amp-prod-alive",
+  "amp-staging-alive",
+  "core-cluster-services-alive",
+  "game-cluster-services-alive",
+  "gameengine-gclb-ip",
+  "partner-analytics-vm-memory-floor",
+  "staging-billing-namespace-labels",
+  "staging-tripay-cluster-dead",
+  "tenant-internal-lb-labelled",
+  "tenant-internal-lb-pinned",
+  "tenant-prod-lbs",
+  "tenant-registry-prod-alive",
+  "tenant-registry-staging-alive",
+  "tripay-staging-services-alive",
+  "amp-owner-runbook",
+  "artifact-registry-prod-private",
+  "artifact-registry-staging-private",
+  "domain-engine-owner-runbook",
+  "hub-sa-roles-prod",
+  "hub-sa-roles-staging",
+  "sentinel-scan-targets-complete",
+  "3pay-cloudbuild-sa-roles-staging",
+  "3pay-panel-no-secret-tracked",
+  "3pay-panel-run-sa-no-roles",
+  "cloudarmor-layer-fact",
+  "domain-engine-no-entrypoint-put",
+  "tripay-be-internal-lb-restricted",
+  "tripay-be-staging-hostname-guard",
+  "dutaledak-sibling-live",
+  "gcs-level-images-public"
+ ]
 }
