@@ -1,0 +1,20 @@
+id: cloudarmor-cf-ranges-prod
+service: game-engine
+env: production
+claim: "Policy cf-origin-lock-production mengizinkan TEPAT daftar IP proxy Cloudflare resmi: semua range Cloudflare tercakup (missing=0) dan tidak ada range non-Cloudflare (extra=0)"
+belief_source: "Live 2026-11-24: 15/15 IPv4 + 7/7 IPv6 sama persis dengan api.cloudflare.com/client/v4/ips (etag 38f79d05…); rule allow prio 1000/1010 (IPv4) + 1020 (IPv6), default deny(403)"
+note: "missing>0 = Cloudflare menambah range dan policy belum diupdate → pengunjung dari range baru kena 403 (terlihat seperti site down). extra>0 = ada range non-Cloudflare yang bisa melewati origin-lock. Perbaikan: scripts/cloudarmor_cf_sync.py (dry-run default; apply butuh izin §3). Cloudflare API gagal → STALE, bukan VERIFIED."
+check:
+  tool: cloudarmor_cloudflare_coverage
+  args:
+    project: tokobuah-production
+    policy: cf-origin-lock-production
+expect:
+  missing: 0
+  extra: 0
+severity: critical
+recheck: 24h
+retry: 2
+created: 2026-11-24
+last_verified: null
+status: active

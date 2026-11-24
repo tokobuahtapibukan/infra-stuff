@@ -58,6 +58,7 @@ gcp_gke_nodepool_autoscaling           # bound autoscaling node pool (autoscale_
 gcp_scheduler_jobs_prefix_count        # hitung job Cloud Scheduler per prefix (+ enabled_count)
 k8s_namespace_labels                   # namespace membawa label tertentu → missing (count)
 gcp_instance_shape                     # VM: status, machine_type, vcpus, memory_mb
+cloudarmor_cloudflare_coverage         # policy Cloud Armor vs api.cloudflare.com/client/v4/ips → missing/extra (subnet-aware)
 ```
 
 Kartu juga bisa membawa:

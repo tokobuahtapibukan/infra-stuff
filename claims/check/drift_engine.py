@@ -634,6 +634,52 @@ def chk_gcp_instance_shape(args):
     }
 
 
+CLOUDFLARE_IPS_URL = "https://api.cloudflare.com/client/v4/ips"
+
+
+def fetch_cloudflare_ranges():
+    """Daftar resmi IP proxy Cloudflare (endpoint publik, tanpa kredensial).
+    Divalidasi ketat: respons gagal/kosong/aneh → CheckError (STALE), BUKAN 'semua aman'."""
+    out = curl_get(CLOUDFLARE_IPS_URL, timeout=30)
+    try:
+        d = json.loads(out)
+        res = d["result"] if d.get("success") else None
+        v4 = [ipaddress.ip_network(c) for c in res["ipv4_cidrs"]]
+        v6 = [ipaddress.ip_network(c) for c in res["ipv6_cidrs"]]
+    except Exception as e:
+        raise CheckError(f"daftar IP Cloudflare tidak valid: {str(e)[:100]}")
+    if len(v4) < 5 or len(v6) < 3:  # sanity: daftar terpotong / respons palsu
+        raise CheckError(f"daftar IP Cloudflare mencurigakan (v4={len(v4)}, v6={len(v6)})")
+    return v4 + v6, res.get("etag", "")
+
+
+def chk_cloudarmor_cloudflare_coverage(args):
+    """Policy Cloud Armor origin-lock harus mencakup SEMUA range Cloudflare (missing=0) dan tidak
+    mengizinkan range non-Cloudflare (extra=0). Perbandingan subnet (bukan string): /12 yang
+    mencakup /13+/14 dihitung tercakup, tapi sisa /12 di luar daftar Cloudflare dihitung 'extra'."""
+    cf, etag = fetch_cloudflare_ranges()
+    pol = api_get(f"https://compute.googleapis.com/compute/v1/projects/{args['project']}"
+                  f"/global/securityPolicies/{args['policy']}")
+    if not pol.get("rules"):
+        raise CheckError(f"policy {args['policy']} tidak terbaca: {str(pol)[:120]}")
+    allowed = []
+    for r in pol["rules"]:
+        if r.get("action") != "allow" or r.get("preview"):
+            continue
+        srcs = ((r.get("match") or {}).get("config") or {}).get("srcIpRanges") or []
+        srcs += re.findall(r"'([0-9a-fA-F:.]+/\d+)'", ((r.get("match") or {}).get("expr") or {}).get("expression", ""))
+        for s in srcs:
+            if s == "*":
+                raise CheckError(f"rule allow prio {r.get('priority')} memakai '*' — origin-lock tidak berlaku")
+            allowed.append(ipaddress.ip_network(s, strict=False))
+    covered = lambda n, pool: any(n.version == p.version and n.subnet_of(p) for p in pool)
+    missing = [str(c) for c in cf if not covered(c, allowed)]
+    extra = [str(a) for a in allowed if not covered(a, cf)]
+    return {"missing": len(missing), "extra": len(extra),
+            "_missing": missing, "_extra": extra, "_cloudflare_etag": etag,
+            "_cloudflare_count": len(cf), "_policy_ranges": len(allowed)}
+
+
 CHECKS = {
     "gcp_backend_services_policy": chk_gcp_backend_services_policy,
     "gcp_target_proxies_no_policy": chk_gcp_target_proxies_no_policy,
@@ -659,6 +705,7 @@ CHECKS = {
     "gcp_scheduler_jobs_prefix_count": chk_gcp_scheduler_jobs_prefix_count,
     "k8s_namespace_labels": chk_k8s_namespace_labels,
     "gcp_instance_shape": chk_gcp_instance_shape,
+    "cloudarmor_cloudflare_coverage": chk_cloudarmor_cloudflare_coverage,
 }
 
 
