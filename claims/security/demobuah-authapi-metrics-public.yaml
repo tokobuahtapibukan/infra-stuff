@@ -1,0 +1,19 @@
+id: demobuah-authapi-metrics-public
+service: all-go
+env: production
+claim: "Prometheus metrics /authapi/metrics pada PRODUCTION demobuah.online DIBLOKIR di edge Cloudflare (HTTP 403 via WAF Custom Rule 'tbk_block_metrics'). Sebelumnya terbuka 200."
+belief_source: "Verifikasi live 2026-11-26 (read-only): curl https://demobuah.online/authapi/metrics -> HTTP 200, 37002 bytes, ct text/plain."
+flip_note: "FIX DITERAPKAN 2026-11-26 (tbk_block_metrics). KARTU MEMANTAU REGRESI: 403 = aman; kembali 200 = exposure bocor lagi."
+check:
+  tool: http_probe_status
+  args:
+    url: "https://demobuah.online/authapi/metrics"
+expect:
+  status: 403
+severity: warn
+recheck: 12h
+retry: 2
+note: "Sama keluarga dengan demobuah-beapi-metrics-public; blokir barengan di edge."
+created: 2026-11-26
+last_verified: 2026-11-26
+status: active

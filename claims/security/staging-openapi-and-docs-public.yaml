@@ -1,0 +1,19 @@
+id: staging-openapi-and-docs-public
+service: all-go
+env: staging
+claim: "Dokumentasi OpenAPI backend staging terbuka tanpa auth di https://dev.stagingtokobuah.xyz: /beapi/openapi.yaml (1,4 MB, 200), /authapi/openapi.yaml (150 KB, 200), /beapi/docs (200). Berisi route internal/admin, schema seluruh tabel DB live, model role (SUPERADMIN/ADMIN), skema HMAC, arsitektur (Kafka/Redis/backend-pg), kontak dev. Prod demobuah.online TIDAK terekspos (404 untuk /beapi/openapi.yaml, /authapi/openapi.yaml, /beapi/docs)."
+belief_source: "Verifikasi live 2026-11-26 (read-only): curl dev.stagingtokobuah.xyz/beapi/openapi.yaml -> 200 1417533 bytes ct application/yaml; /authapi/openapi.yaml -> 200 150423; /beapi/docs -> 200 1283. Kontrol prod demobuah.online: ketiganya -> 404."
+flip_note: "Setelah dokumentasi dinonaktifkan di build staging atau terlindungi (auth/IP allowlist): ubah expect status ketiganya menjadi 401/403/404, lalu pindahkan ke inventory/."
+check:
+  tool: http_probe_status
+  args:
+    url: "https://dev.stagingtokobuah.xyz/beapi/openapi.yaml"
+expect:
+  status: 200
+severity: warn
+recheck: 12h
+retry: 2
+note: "Scope staging saja (prod aman). Server: Google Frontend (langsung GCLB/Cloud Run), TIDAK lewat Cloudflare -> boundary staging publik; ini garis devops."
+created: 2026-11-26
+last_verified: 2026-11-26
+status: active

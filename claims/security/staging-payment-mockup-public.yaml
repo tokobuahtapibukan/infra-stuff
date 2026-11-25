@@ -1,0 +1,19 @@
+id: staging-payment-mockup-public
+service: all-go
+env: staging
+claim: "Payment provider mockup 'PayPay' (vendor NOBU) publik & tanpa auth di https://pg-mockup.stagingtokobuah.xyz: GET /api/mock/state -> 200 (baca semua transaksi & balance), dan dapat generate transaksi QRIS nominal bebas, set callback URL, tandai success (F1 CRITICAL forge notifikasi deposit unsigned)."
+belief_source: "Verifikasi live 2026-11-26 (read-only): curl https://pg-mockup.stagingtokobuah.xyz/api/mock/state -> 200 (state kosong: transactions:[] balance 0 — env belum terkotori). Server: Google Frontend (langsung, TANPA Cloudflare). Detil eksploitasi pada pentest report Round 2."
+flip_note: "Setelah mockup dipindah ke internal/diberi auth (Cloud IAM/VPN/IP allowlist) atau dimatikan: ubah expect status menjadi 403/404/521, lalu pindahkan ke inventory/."
+check:
+  tool: http_probe_status
+  args:
+    url: "https://pg-mockup.stagingtokobuah.xyz/api/mock/state"
+expect:
+  status: 200
+severity: critical
+recheck: 12h
+retry: 2
+note: "CRITICAL FINANCIAL (F1) — menyasar settlement/kredit saldo; callback unsigned. Masih hidup saat verifikasi. Tidak memuat secret; hanya proba status."
+created: 2026-11-26
+last_verified: 2026-11-26
+status: active

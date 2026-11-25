@@ -1,0 +1,19 @@
+id: demobuah-beapi-metrics-public
+service: user-site
+env: production
+claim: "Prometheus metrics /beapi/metrics pada PRODUCTION demobuah.online DIBLOKIR di edge Cloudflare (HTTP 403 via WAF Custom Rule 'tbk_block_metrics'). Sebelumnya terbuka 200 & membocorkan label route= termasuk /admin/* (121+ pasangan method+route)."
+belief_source: "Verifikasi live 2026-11-26 (read-only): curl https://demobuah.online/beapi/metrics -> HTTP 200, 132064 bytes, ct text/plain; grep route= = 121; contoh route: /admin/company-balance, /admin/deposits, /admin/kyc/documents, /admin/manual-transactions."
+flip_note: "FIX DITERAPKAN 2026-11-26 (WAF Custom Rule tbk_block_metrics di zone demobuah.online). KARTU INI MEMANTAU REGRESI: jika status kembali 200 (rule dihapus/dianggkap publik), alarm = exposure bocor lagi. 403/401/404 = aman."
+check:
+  tool: http_probe_status
+  args:
+    url: "https://demobuah.online/beapi/metrics"
+expect:
+  status: 403
+severity: critical
+recheck: 12h
+retry: 2
+note: "Exposure PROD, bukan hanya staging (laporan awalnya menyebut staging). Ini kesalahan boundary konfigurasi (devops), bukan kode. Metrics juga membocorkan metrik internal balance_drift_open, kafka_dlq_depth."
+created: 2026-11-26
+last_verified: 2026-11-26
+status: active

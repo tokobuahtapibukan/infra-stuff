@@ -235,6 +235,10 @@ record DNS, rule `http_request_dynamic_redirect`, dan `http_config_settings` per
 ---
 
 ## 6. Open Items
+* [x] **Invariant WAF block `/metrics` (P0-1)** — 2026-11-26: rule `tbk_block_metrics` (block `/beapi/metrics` + `/authapi/metrics`)
+      dipasang manual ke **91 zone STANDARD aktif**. **OTW: jadikan invariant provisioning** agar zona STANDARD baru auto-kena
+      (`ensureMetricsBlockRule` di provisioning + rekonsiliasi berkala). Lihat `docs/handoffs/2026-11-block-metrics-on-new-domains/`.
+      Kartu regression: `claims/security/demobuah-beapi-metrics-public.yaml`, `demobuah-authapi-metrics-public.yaml`.
 * [ ] Rilis production PR #1 + #2 (§5.2), setelah AMP engine production menerima subdomain (D50).
 * [ ] Admin panel: UI AMP SUBDOMAIN, subdomain usersite, dropdown target redirect, dialog hapus dengan
       `redirect-sources` (handoff §7).
