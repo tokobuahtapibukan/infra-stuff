@@ -1,0 +1,20 @@
+id: gmp-no-app-metrics-scrape
+service: meta
+env: production
+claim: "Google Managed Prometheus (GMP) di klaster prod (prod-core/game/prod-client) TIDAK men-scrape '/beapi/metrics' maupun '/authapi/metrics'. Config collector GMP hanya berisi ClusterNodeMonitoring cadvisor/kubelet + ClusterPodMonitoring 'gke-managed-dcgm-exporter' dan 'kube-state-metrics' — tidak ada PodMonitoring app-level untuk endpoint metrics BFF. Karena itu blokir WAF 'tbk_block_metrics' (P0-1, /beapi|/authapi/metrics -> 403) TIDAK memutus observability apa pun."
+belief_source: "Verifikasi live 2026-11-26 (read-only, multi-sumber): (1) kubectl get podmonitoring -A di 3 klaster prod -> hanya gke-managed-dcgm-exporter & kube-state-metrics; (2) kubectl -n gke-gmp-system get cm collector -> scrape_configs hanya cadvisor, kubelet, dcgm, kube-state; (3) get crd -> tidak ada 'prometheus' CRD custom; (4) grep seluruh repo -> tidak ada kode/scripts yang curl /beapi/metrics via hostname public (satu-satunya referensi /metrics adalah Kafka via internal-LB)."
+check:
+  tool: repo_grep_count
+  args:
+    path: "docs/claims"
+    regex: "(scrape_configs|metrics_path|job_name).*(beapi|authapi)"
+expect:
+  count: 0
+severity: info
+recheck: 24h
+retry: 2
+flip_note: "Jika count > 0 (ada konfigurasi scrape yang menyebut /beapi|/authapi metrics di repo) -> ada scraper eksternal/baru yang kemungkinan bergantung pada endpoint yang sekarang 403; investigasi: pindahkan scrape ke internal/VPC endpoint atau tambah allowlist IP scraper. Selama count = 0, konfigurasi ini konsisten dengan kebenaran GMP tidak mengscrape app metrics."
+note: "Hasil ini berarti PERINGATAN yang sempat muncul di sesi (monitoring scrape /metrics prod bisa ikut mati setelah P0-1 block) TIDAK terjadi: tidak ada yang menscrape endpoint itu. Untuk bean-count GMP: collector daemonset 8 pod + gmp-operator + rule-evaluator aktif di gke-gmp-system (prod-core-cluster), dan Telegram/Kafka metrics di-scrape dari internal (bukan lewat Cloudflare). Kredensial GMP tidak relevan; kartu ini cek config-scrape via repo (deterministik, read-only)."
+created: 2026-11-26
+last_verified: 2026-11-26
+status: active
