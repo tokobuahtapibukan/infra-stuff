@@ -1,15 +1,15 @@
 id: demobuah-anon-api-css-wcd
 service: user-site
 env: production
-claim: "Anonymous GET /beapi/player/me%3F<rand>.css pada demobuah.online TANPA cookie → 401 Jwt is missing (artinya tidak sedang menyajikan data korban ter-cache ke publik). WCD masih berpotensi (route API di-cache di bawah ext .css), pending fix edge+origin."
+claim: "Anonymous GET /beapi/player/me%3F<rand>.css pada demobuah.online DIBLOKIR di edge Cloudflare (HTTP 403 WAF Custom Rule 'tbk_block_encoded_delim' + Cache Rule bypass API 'tbk_bypass_api_cache'). WCD tidak mungkin lagi: encoded delimiter ditolak di edge dan response API tidak di-cache."
 belief_source: "Pentest report WCD-001 (demobuah.online_pentest (1).html) + verifikasi live 2026-11-26 read-only: GET /beapi/player/me%3Fprobe99.css tanpa auth → 401 {code:401,message:\"Jwt is missing\"}, cf-cache-status: BYPASS. Konfirmasi struktural terpenuhi: HEAD /beapi/player/me%3Fx.css → cache-control: max-age=14400 + MISS, vary hanya next-router-* (tanpa Cookie/Authorization) di route API terautentikasi."
-flip_note: "Kartu ini memantau jalur ANONYMOUS. 401 = aman (tidak ada data korban ter-cache yang disajikan). BERBAHAYA jika status menjadi 200 (server menyajikan data member ter-cache tanpa auth -> WCD aktif/mereproduksi). SANITAS jika setelah fix, status anon menjadi 400 (WAF/rule blokir %3F) ATAU request berakhir 401/BYPASS secara konsisten tanpa pernah masuk cache. Flip_happy target: add 'Cache-Control: private,no-store,max-age=0' + 'Vary: Cookie, Authorization' di origin API, dan Cache Rule edge bypass /beapi|/spinapi|/authapi|/launchapi|/pga; lalu pastikan anon tetap 401/400 dan tak ada max-age pada response API."
+flip_note: "FIX EDGE DITERAPKAN 2026-11-26 (Langkah 1+2 bypass cache tbk_bypass_api_cache + Langkah 3 WAF tbk_block_encoded_delim). KARTU MEMANTAU REGRESI: 403 = WAF block aktif (aman); 401 = WAF rule hilang TAPI cache bypass masih jalan (sebagian aman, WAJIB investigasi); 200 = WCD kembali aktif (data member ter-cache) — KRITIS. Sisi origin (dev): Cache-Control: private,no-store + Vary: Cookie,Authorization + jangan decode %3F di BFF — tetap wajib dikerjakan."
 check:
   tool: http_probe_status
   args:
     url: "https://demobuah.online/beapi/player/me%3Fwcd_probe.css"
 expect:
-  status: 401
+  status: 403
 severity: critical
 recheck: 12h
 retry: 2
