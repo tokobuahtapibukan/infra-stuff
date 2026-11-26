@@ -71,7 +71,7 @@ Tokobuah operates a high-availability, multi-tenant iGaming, FinTech, Payment, a
 * `client-gke-subnet` (`10.10.16.0/20` in `asia-southeast1`): Client tenant pods.
 * `tripay-gke-subnet` (`10.10.48.0/20` in `asia-southeast1`):
   * Secondary ranges: `tripay-pods` (`10.244.0.0/17`), `tripay-services` (`10.244.128.0/20`).
-  * *Status*: **Idle** (0 resources bound) after Tripay cluster consolidation. Safe to delete.
+  * *Status*: **Deleted** on 2026-11-26 after cluster consolidation and verification (0 resources bound).
 * `taiwan-subnet` (`10.10.40.0/24` in `asia-east1`)
 * `jakarta-subnet` (`10.10.8.0/24` in `asia-southeast2`)
 
