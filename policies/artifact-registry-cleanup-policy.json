@@ -1,0 +1,20 @@
+[
+  {
+    "name": "keep-minimum-5-versions",
+    "action": {
+      "type": "Keep"
+    },
+    "mostRecentVersions": {
+      "keepCount": 5
+    }
+  },
+  {
+    "name": "delete-older-than-7d",
+    "action": {
+      "type": "Delete"
+    },
+    "condition": {
+      "olderThan": "604800s"
+    }
+  }
+]
