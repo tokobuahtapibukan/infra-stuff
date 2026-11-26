@@ -1,13 +1,13 @@
 {
- "run_at": "2026-11-25T17:21:37.550855+00:00",
+ "run_at": "2026-11-26T05:23:48.380086+00:00",
  "engine": "drift_engine v1",
- "cards_total": 29,
- "skipped_total": 33,
+ "cards_total": 25,
+ "skipped_total": 43,
  "summary": {
-  "verified": 29,
+  "verified": 23,
   "drifted": 0,
-  "stale": 0,
-  "skipped": 33
+  "stale": 2,
+  "skipped": 43
  },
  "results": [
   {
@@ -29,85 +29,7 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-25T17:20:43.587649+00:00"
-  },
-  {
-   "id": "cost-scheduler-not-deployed",
-   "service": "staging-platform",
-   "env": "staging",
-   "severity": "info",
-   "claim": "Open: staging cost-scheduler (company-deployment-key/cost-scheduler) BELUM dideploy \u2014 0 job Cloud Scheduler 'staging-cost-*' (workflow juga 0). Hanya SA staging-cost-scheduler + custom role stagingCostScheduler yang sudah ada",
-   "card_file": "claims/fix-tracking/cost-scheduler-not-deployed.yaml",
-   "status": "VERIFIED",
-   "expect": {
-    "count": 0
-   },
-   "actual": {
-    "count": 0,
-    "enabled_count": 0,
-    "names": []
-   },
-   "_actual_full": {
-    "count": 0,
-    "enabled_count": 0,
-    "names": []
-   },
-   "detail": "ok",
-   "attempts": 1,
-   "at": "2026-11-25T17:20:46.247814+00:00"
-  },
-  {
-   "id": "staging-url-in-prod-bundle",
-   "service": "user-site",
-   "env": "production",
-   "severity": "warn",
-   "claim": "Open finding: JS bundle produksi dutaledak.online masih hardcode 'https://stagingtokobuah.xyz' (fallback canonical/og_url)",
-   "card_file": "claims/fix-tracking/staging-url-in-prod-bundle.yaml",
-   "status": "VERIFIED",
-   "expect": {
-    "found": true
-   },
-   "actual": {
-    "found": true
-   },
-   "_actual_full": {
-    "found": true,
-    "_chunk": "/_next/static/chunks/1hk86ssaz0j9m.js",
-    "_chunks_scanned": 14
-   },
-   "detail": "ok",
-   "attempts": 1,
-   "at": "2026-11-25T17:20:47.654062+00:00"
-  },
-  {
-   "id": "partner-analytics-vm-memory-floor",
-   "service": "partner-analytics",
-   "env": "staging",
-   "severity": "warn",
-   "claim": "partner-analytics-vm (worker BBIX ingest + MySQL) RUNNING dengan RAM >= 16 GB. Jangan downsize RAM di bawah ini tanpa memangkas innodb_buffer_pool_size + ukur ulang puncak worker",
-   "card_file": "claims/inventory/partner-analytics-vm-memory-floor.yaml",
-   "status": "VERIFIED",
-   "expect": {
-    "status": "RUNNING",
-    "memory_mb_min": 16384
-   },
-   "actual": {
-    "status": "RUNNING",
-    "machine_type": "e2-highmem-2",
-    "vcpus": 2,
-    "memory_mb": 16384,
-    "provisioning_model": "STANDARD"
-   },
-   "_actual_full": {
-    "status": "RUNNING",
-    "machine_type": "e2-highmem-2",
-    "vcpus": 2,
-    "memory_mb": 16384,
-    "provisioning_model": "STANDARD"
-   },
-   "detail": "ok",
-   "attempts": 1,
-   "at": "2026-11-25T17:20:48.129636+00:00"
+   "at": "2026-11-26T05:22:44.203701+00:00"
   },
   {
    "id": "staging-core-pool-autoscaling-bounds",
@@ -138,156 +60,56 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-25T17:20:48.264303+00:00"
+   "at": "2026-11-26T05:22:45.858153+00:00"
   },
   {
-   "id": "staging-tripay-cluster-dead",
-   "service": "tripay",
-   "env": "staging",
-   "severity": "info",
-   "claim": "Cluster staging-tripay-cluster TIDAK ADA (dihapus 2026-11-11; workload ter-konsolidasi ke staging-gke-standard)",
-   "card_file": "claims/inventory/staging-tripay-cluster-dead.yaml",
-   "status": "VERIFIED",
-   "expect": {
-    "exists": false
-   },
-   "actual": {
-    "exists": false,
-    "live_clusters": [
-     "staging-gke-standard"
-    ]
-   },
-   "_actual_full": {
-    "exists": false,
-    "live_clusters": [
-     "staging-gke-standard"
-    ]
-   },
-   "detail": "ok",
-   "attempts": 1,
-   "at": "2026-11-25T17:20:48.911644+00:00"
-  },
-  {
-   "id": "tenant-prod-lbs",
-   "service": "user-site",
-   "env": "production",
-   "severity": "warn",
-   "claim": "Ada persis 13 global HTTP LB tenant prod (nama prefix 'production-': buah5758, cinabotak, cinasuper, dutaledak, hambabet, ikn788, omsipit, padi808, pengenwd, rumushoki, tapakhoki, terbangwd, terios88)",
-   "card_file": "claims/inventory/tenant-prod-lbs.yaml",
-   "status": "VERIFIED",
-   "expect": {
-    "count": 13
-   },
-   "actual": {
-    "count": 13,
-    "names": [
-     "production-buah5758-http-proxy",
-     "production-cinabotak-http-proxy",
-     "production-cinasuper-http-proxy",
-     "production-dutaledak-http-proxy",
-     "production-hambabet-http-proxy",
-     "production-ikn788-http-proxy",
-     "production-omsipit-http-proxy",
-     "production-padi808-http-proxy",
-     "production-pengenwd-http-proxy",
-     "production-rumushoki-http-proxy",
-     "production-tapakhoki-http-proxy",
-     "production-terbangwd-http-proxy",
-     "production-terios88-http-proxy"
-    ]
-   },
-   "_actual_full": {
-    "count": 13,
-    "names": [
-     "production-buah5758-http-proxy",
-     "production-cinabotak-http-proxy",
-     "production-cinasuper-http-proxy",
-     "production-dutaledak-http-proxy",
-     "production-hambabet-http-proxy",
-     "production-ikn788-http-proxy",
-     "production-omsipit-http-proxy",
-     "production-padi808-http-proxy",
-     "production-pengenwd-http-proxy",
-     "production-rumushoki-http-proxy",
-     "production-tapakhoki-http-proxy",
-     "production-terbangwd-http-proxy",
-     "production-terios88-http-proxy"
-    ]
-   },
-   "detail": "ok",
-   "attempts": 1,
-   "at": "2026-11-25T17:20:49.450635+00:00"
-  },
-  {
-   "id": "artifact-registry-prod-private",
+   "id": "registry-sweep-freshness",
    "service": "meta",
-   "env": "production",
-   "severity": "critical",
-   "claim": "Artifact Registry production (asia-southeast1/tokobuah) tetap PRIVAT: probe anonim /v2/ ditolak (redirect ke auth GCP, bukan 200)",
-   "card_file": "claims/meta/artifact-registry-prod-private.yaml",
+   "env": "both",
+   "severity": "warn",
+   "claim": "Dead-man's switch: commit terakhir author 'drift-watchdog' di registry berumur < 30 jam (bukti hub masih menyapu)",
+   "card_file": "claims/meta/registry-sweep-freshness.yaml",
    "status": "VERIFIED",
    "expect": {
-    "header_present": true
+    "age_hours_max": 30
    },
    "actual": {
-    "header_present": true,
-    "contains": true
+    "age_hours": 12.0,
+    "last_commit": "1795627298"
    },
    "_actual_full": {
-    "header_present": true,
-    "contains": true
+    "age_hours": 12.0,
+    "last_commit": "1795627298"
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-25T17:20:49.603353+00:00"
+   "at": "2026-11-26T05:22:45.909968+00:00"
   },
   {
-   "id": "artifact-registry-staging-private",
+   "id": "staging-ssh-firewall-scoped",
    "service": "meta",
    "env": "staging",
    "severity": "warn",
-   "claim": "Artifact Registry staging (asia-southeast2/tokobuah) tetap PRIVAT: probe anonim /v2/ ditolak (redirect ke auth GCP, bukan 200)",
-   "card_file": "claims/meta/artifact-registry-staging-private.yaml",
+   "claim": "Firewall staging terkunci: 3 rule SSH hanya dari VPN gateway + IAP; TIDAK ADA rule RDP",
+   "card_file": "claims/meta/staging-ssh-firewall-scoped.yaml",
    "status": "VERIFIED",
    "expect": {
-    "header_present": true
+    "ssh_sources_ok": true,
+    "rdp_rule_count": 0
    },
    "actual": {
-    "header_present": true,
-    "contains": true
+    "ssh_sources_ok": true,
+    "rdp_rule_count": 0
    },
    "_actual_full": {
-    "header_present": true,
-    "contains": true
+    "ssh_sources_ok": true,
+    "rdp_rule_count": 0,
+    "_detail": [],
+    "_rdp": []
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-25T17:20:49.815597+00:00"
-  },
-  {
-   "id": "sentinel-scan-targets-complete",
-   "service": "meta",
-   "env": "production",
-   "severity": "critical",
-   "claim": "Semua global HTTP LB production yang menerima traffic muncul di log http_load_balancer 7 hari terakhir (mekanisme scan 7-day sentinel hub)",
-   "card_file": "claims/meta/sentinel-scan-targets-complete.yaml",
-   "status": "VERIFIED",
-   "expect": {
-    "uncovered": []
-   },
-   "actual": {
-    "uncovered": [],
-    "live_lb_count": 16,
-    "logged_lb_count": 16
-   },
-   "_actual_full": {
-    "uncovered": [],
-    "live_lb_count": 16,
-    "logged_lb_count": 16
-   },
-   "detail": "ok",
-   "attempts": 1,
-   "at": "2026-11-25T17:21:20.242618+00:00"
+   "at": "2026-11-26T05:22:46.378448+00:00"
   },
   {
    "id": "amp-staging-origin-lock-live",
@@ -308,88 +130,7 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-25T17:21:20.366365+00:00"
-  },
-  {
-   "id": "cloudarmor-cf-ranges-prod",
-   "service": "game-engine",
-   "env": "production",
-   "severity": "critical",
-   "claim": "Policy cf-origin-lock-production mengizinkan TEPAT daftar IP proxy Cloudflare resmi: semua range Cloudflare tercakup (missing=0) dan tidak ada range non-Cloudflare (extra=0)",
-   "card_file": "claims/security/cloudarmor-cf-ranges-prod.yaml",
-   "status": "VERIFIED",
-   "expect": {
-    "missing": 0,
-    "extra": 0
-   },
-   "actual": {
-    "missing": 0,
-    "extra": 0
-   },
-   "_actual_full": {
-    "missing": 0,
-    "extra": 0,
-    "_missing": [],
-    "_extra": [],
-    "_cloudflare_etag": "38f79d050aa027e3be3865e495dcc9bc",
-    "_cloudflare_count": 22,
-    "_policy_ranges": 22
-   },
-   "detail": "ok",
-   "attempts": 1,
-   "at": "2026-11-25T17:21:20.927364+00:00"
-  },
-  {
-   "id": "cloudarmor-cf-ranges-staging",
-   "service": "game-engine",
-   "env": "staging",
-   "severity": "critical",
-   "claim": "Policy cf-origin-lock-staging mengizinkan TEPAT daftar IP proxy Cloudflare resmi: missing=0, extra=0",
-   "card_file": "claims/security/cloudarmor-cf-ranges-staging.yaml",
-   "status": "VERIFIED",
-   "expect": {
-    "missing": 0,
-    "extra": 0
-   },
-   "actual": {
-    "missing": 0,
-    "extra": 0
-   },
-   "_actual_full": {
-    "missing": 0,
-    "extra": 0,
-    "_missing": [],
-    "_extra": [],
-    "_cloudflare_etag": "38f79d050aa027e3be3865e495dcc9bc",
-    "_cloudflare_count": 22,
-    "_policy_ranges": 22
-   },
-   "detail": "ok",
-   "attempts": 1,
-   "at": "2026-11-25T17:21:21.696353+00:00"
-  },
-  {
-   "id": "cloudarmor-layer-fact",
-   "service": "meta",
-   "env": "both",
-   "severity": "critical",
-   "claim": "Cloud Armor ter-attach di level BackendService, BUKAN target proxy: 0 target proxy (http/https/ssl/tcp) di kedua project yang punya securityPolicy",
-   "card_file": "claims/security/cloudarmor-layer-fact.yaml",
-   "status": "VERIFIED",
-   "expect": {
-    "with_policy": 0
-   },
-   "actual": {
-    "with_policy": 0,
-    "details": []
-   },
-   "_actual_full": {
-    "with_policy": 0,
-    "details": []
-   },
-   "detail": "ok",
-   "attempts": 1,
-   "at": "2026-11-25T17:21:25.479133+00:00"
+   "at": "2026-11-26T05:22:46.515229+00:00"
   },
   {
    "id": "cloudarmor-prod-gameengine",
@@ -428,7 +169,7 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-25T17:21:26.025886+00:00"
+   "at": "2026-11-26T05:22:47.066757+00:00"
   },
   {
    "id": "cloudarmor-staging-eight",
@@ -473,7 +214,7 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-25T17:21:26.556757+00:00"
+   "at": "2026-11-26T05:22:47.555315+00:00"
   },
   {
    "id": "cross-tenant-isolation-holds",
@@ -501,7 +242,70 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-25T17:21:27.781413+00:00"
+   "at": "2026-11-26T05:22:55.982831+00:00"
+  },
+  {
+   "id": "demobuah-anon-api-css-wcd",
+   "service": "user-site",
+   "env": "production",
+   "severity": "critical",
+   "claim": "Anonymous GET /beapi/player/me%3F<rand>.css pada demobuah.online DIBLOKIR di edge Cloudflare (HTTP 403 WAF Custom Rule 'tbk_block_encoded_delim' + Cache Rule bypass API 'tbk_bypass_api_cache'). WCD tidak mungkin lagi: encoded delimiter ditolak di edge dan response API tidak di-cache.",
+   "card_file": "claims/security/demobuah-anon-api-css-wcd.yaml",
+   "status": "VERIFIED",
+   "expect": {
+    "status": 403
+   },
+   "actual": {
+    "status": 403
+   },
+   "_actual_full": {
+    "status": 403
+   },
+   "detail": "ok",
+   "attempts": 1,
+   "at": "2026-11-26T05:22:56.097413+00:00"
+  },
+  {
+   "id": "demobuah-authapi-metrics-public",
+   "service": "all-go",
+   "env": "production",
+   "severity": "warn",
+   "claim": "Prometheus metrics /authapi/metrics pada PRODUCTION demobuah.online DIBLOKIR di edge Cloudflare (HTTP 403 via WAF Custom Rule 'tbk_block_metrics'). Sebelumnya terbuka 200.",
+   "card_file": "claims/security/demobuah-authapi-metrics-public.yaml",
+   "status": "VERIFIED",
+   "expect": {
+    "status": 403
+   },
+   "actual": {
+    "status": 403
+   },
+   "_actual_full": {
+    "status": 403
+   },
+   "detail": "ok",
+   "attempts": 1,
+   "at": "2026-11-26T05:22:56.295303+00:00"
+  },
+  {
+   "id": "demobuah-beapi-metrics-public",
+   "service": "user-site",
+   "env": "production",
+   "severity": "critical",
+   "claim": "Prometheus metrics /beapi/metrics pada PRODUCTION demobuah.online DIBLOKIR di edge Cloudflare (HTTP 403 via WAF Custom Rule 'tbk_block_metrics'). Sebelumnya terbuka 200 & membocorkan label route= termasuk /admin/* (121+ pasangan method+route).",
+   "card_file": "claims/security/demobuah-beapi-metrics-public.yaml",
+   "status": "VERIFIED",
+   "expect": {
+    "status": 403
+   },
+   "actual": {
+    "status": 403
+   },
+   "_actual_full": {
+    "status": 403
+   },
+   "detail": "ok",
+   "attempts": 1,
+   "at": "2026-11-26T05:22:56.436925+00:00"
   },
   {
    "id": "gameengine-origin-lock-live",
@@ -522,28 +326,52 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-25T17:21:27.919611+00:00"
+   "at": "2026-11-26T05:22:56.614212+00:00"
   },
   {
-   "id": "tripay-be-staging-hostname-guard",
-   "service": "tripay",
+   "id": "gmp-no-app-metrics-scrape",
+   "service": "meta",
+   "env": "production",
+   "severity": "info",
+   "claim": "Google Managed Prometheus (GMP) di klaster prod (prod-core/game/prod-client) TIDAK men-scrape '/beapi/metrics' maupun '/authapi/metrics'. Config collector GMP hanya berisi ClusterNodeMonitoring cadvisor/kubelet + ClusterPodMonitoring 'gke-managed-dcgm-exporter' dan 'kube-state-metrics' \u2014 tidak ada PodMonitoring app-level untuk endpoint metrics BFF. Karena itu blokir WAF 'tbk_block_metrics' (P0-1, /beapi|/authapi/metrics -> 403) TIDAK memutus observability apa pun.",
+   "card_file": "claims/security/gmp-no-app-metrics-scrape.yaml",
+   "status": "STALE",
+   "reason": "error tak terduga: 'pattern'",
+   "attempts": 2,
+   "at": "2026-11-26T05:23:16.614643+00:00"
+  },
+  {
+   "id": "staging-openapi-and-docs-public",
+   "service": "all-go",
    "env": "staging",
    "severity": "warn",
-   "claim": "wl-be staging (tripay-be.iknstaging.com) menolak request panel tanpa header `hostname: api.tripay-be.iknstaging.com` dengan error 'Wrong domain' (guard di user.strategy.ts, APP_ENV != dev; API_HOSTNAME diturunkan dari env HOST)",
-   "card_file": "claims/security/tripay-be-staging-hostname-guard.yaml",
+   "claim": "Dokumentasi OpenAPI backend staging terbuka tanpa auth di https://dev.stagingtokobuah.xyz: /beapi/openapi.yaml (1,4 MB, 200), /authapi/openapi.yaml (150 KB, 200), /beapi/docs (200). Berisi route internal/admin, schema seluruh tabel DB live, model role (SUPERADMIN/ADMIN), skema HMAC, arsitektur (Kafka/Redis/backend-pg), kontak dev. Prod demobuah.online TIDAK terekspos (404 untuk /beapi/openapi.yaml, /authapi/openapi.yaml, /beapi/docs).",
+   "card_file": "claims/security/staging-openapi-and-docs-public.yaml",
    "status": "VERIFIED",
    "expect": {
-    "value": "Wrong domain"
+    "status": 200
    },
    "actual": {
-    "value": "Wrong domain"
+    "status": 200
    },
    "_actual_full": {
-    "value": "Wrong domain"
+    "status": 200
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-25T17:21:28.061791+00:00"
+   "at": "2026-11-26T05:23:17.160795+00:00"
+  },
+  {
+   "id": "staging-payment-mockup-public",
+   "service": "all-go",
+   "env": "staging",
+   "severity": "critical",
+   "claim": "Payment provider mockup 'PayPay' (vendor NOBU) publik & tanpa auth di https://pg-mockup.stagingtokobuah.xyz: GET /api/mock/state -> 200 (baca semua transaksi & balance), dan dapat generate transaksi QRIS nominal bebas, set callback URL, tandai success (F1 CRITICAL forge notifikasi deposit unsigned).",
+   "card_file": "claims/security/staging-payment-mockup-public.yaml",
+   "status": "STALE",
+   "reason": "curl gagal: 000curl: (35) TLS connect error: error:0A000126:SSL routines::unexpected eof while reading",
+   "attempts": 2,
+   "at": "2026-11-26T05:23:37.499153+00:00"
   },
   {
    "id": "3pay-admin-staging-live",
@@ -570,7 +398,7 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-25T17:21:28.260935+00:00"
+   "at": "2026-11-26T05:23:40.067926+00:00"
   },
   {
    "id": "3pay-merchant-staging-live",
@@ -597,7 +425,7 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-25T17:21:28.473055+00:00"
+   "at": "2026-11-26T05:23:43.147697+00:00"
   },
   {
    "id": "3pay-reseller-staging-live",
@@ -624,7 +452,7 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-25T17:21:29.083097+00:00"
+   "at": "2026-11-26T05:23:45.770592+00:00"
   },
   {
    "id": "amp-api-staging-live",
@@ -645,7 +473,7 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-25T17:21:29.285022+00:00"
+   "at": "2026-11-26T05:23:45.951597+00:00"
   },
   {
    "id": "demobuah-live",
@@ -668,66 +496,53 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-25T17:21:29.570446+00:00"
+   "at": "2026-11-26T05:23:46.219414+00:00"
   },
   {
-   "id": "dutaledak-sibling-live",
+   "id": "hsts-demobuah",
    "service": "user-site",
    "env": "production",
-   "severity": "info",
-   "claim": "dutaledak.store LIVE di balik Cloudflare dan menyajikan build app yang sama dengan dutaledak.online (domain saudara tenant dutaledak)",
-   "card_file": "claims/surface/dutaledak-sibling-live.yaml",
+   "severity": "warn",
+   "claim": "demobuah.online mengirim header HSTS (preload) \u2014 proteksi downgrade TLS tetap aktif",
+   "card_file": "claims/surface/hsts-demobuah.yaml",
    "status": "VERIFIED",
    "expect": {
-    "sibling_live": true,
-    "same_app": true
+    "header_present": true
    },
    "actual": {
-    "sibling_live": true,
-    "same_app": true
+    "header_present": true,
+    "contains": true
    },
    "_actual_full": {
-    "sibling_live": true,
-    "same_app": true,
-    "_fingerprint_s": [
-     "0a7740363b4d4863-s.3ji57o093q1kd.woff2",
-     "0c89a48fa5027cee-s.p.2cyn07wtgehh0.woff2",
-     "0da9c7f357bd9d4d-s.1975l3y3401x_.woff2",
-     "14e23f9b59180572-s.0t8ljjjn9wtsx.woff2",
-     "1747e1908d2352d2-s.0sf3h4u8we0x1.woff2"
-    ],
-    "_fingerprint_p": [
-     "0a7740363b4d4863-s.3ji57o093q1kd.woff2",
-     "0c89a48fa5027cee-s.p.2cyn07wtgehh0.woff2",
-     "0da9c7f357bd9d4d-s.1975l3y3401x_.woff2",
-     "14e23f9b59180572-s.0t8ljjjn9wtsx.woff2",
-     "1747e1908d2352d2-s.0sf3h4u8we0x1.woff2"
-    ]
+    "header_present": true,
+    "contains": true
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-25T17:21:30.079714+00:00"
+   "at": "2026-11-26T05:23:46.470296+00:00"
   },
   {
-   "id": "gcs-level-images-public",
+   "id": "hsts-dutaledak",
    "service": "user-site",
    "env": "production",
-   "severity": "info",
-   "claim": "Image level dari GCS bucket tokobuah-production.firebasestorage.app public-read (by design \u2014 dipakai /beapi/public/levels tanpa auth)",
-   "card_file": "claims/surface/gcs-level-images-public.yaml",
+   "severity": "warn",
+   "claim": "dutaledak.online mengirim header HSTS (preload) \u2014 proteksi downgrade TLS tetap aktif",
+   "card_file": "claims/surface/hsts-dutaledak.yaml",
    "status": "VERIFIED",
    "expect": {
-    "status": 200
+    "header_present": true
    },
    "actual": {
-    "status": 200
+    "header_present": true,
+    "contains": true
    },
    "_actual_full": {
-    "status": 200
+    "header_present": true,
+    "contains": true
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-25T17:21:30.425859+00:00"
+   "at": "2026-11-26T05:23:46.692404+00:00"
   },
   {
    "id": "maintenance-off-demobuah",
@@ -748,7 +563,7 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-25T17:21:31.058146+00:00"
+   "at": "2026-11-26T05:23:47.356130+00:00"
   },
   {
    "id": "maintenance-off-dutaledak",
@@ -769,7 +584,7 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-25T17:21:31.756527+00:00"
+   "at": "2026-11-26T05:23:48.244649+00:00"
   },
   {
    "id": "partner-portal-domain-live",
@@ -796,42 +611,52 @@
    },
    "detail": "ok",
    "attempts": 1,
-   "at": "2026-11-25T17:21:37.550733+00:00"
+   "at": "2026-11-26T05:23:48.380007+00:00"
   }
  ],
  "skipped": [
   "amp-base-image-policy",
   "amp-repos-no-secret-tracked",
   "core-repos-no-secret-tracked",
+  "cost-scheduler-not-deployed",
   "gocrypto-x-lag",
   "gonet-x-lag",
   "no-latest-in-cdk",
   "node20-eol-dockerfiles",
   "p0-secret-yaml-tracked",
+  "staging-url-in-prod-bundle",
   "tripay-sc-secrets-tracked",
   "amp-prod-alive",
   "amp-staging-alive",
   "core-cluster-services-alive",
   "game-cluster-services-alive",
   "gameengine-gclb-ip",
+  "partner-analytics-vm-memory-floor",
   "staging-billing-namespace-labels",
+  "staging-tripay-cluster-dead",
   "tenant-internal-lb-labelled",
   "tenant-internal-lb-pinned",
+  "tenant-prod-lbs",
   "tenant-registry-prod-alive",
   "tenant-registry-staging-alive",
   "tripay-staging-services-alive",
   "amp-owner-runbook",
+  "artifact-registry-prod-private",
+  "artifact-registry-staging-private",
   "domain-engine-owner-runbook",
   "hub-sa-roles-prod",
   "hub-sa-roles-staging",
-  "registry-sweep-freshness",
-  "staging-ssh-firewall-scoped",
+  "sentinel-scan-targets-complete",
   "3pay-cloudbuild-sa-roles-staging",
   "3pay-panel-no-secret-tracked",
   "3pay-panel-run-sa-no-roles",
+  "cloudarmor-cf-ranges-prod",
+  "cloudarmor-cf-ranges-staging",
+  "cloudarmor-layer-fact",
   "domain-engine-no-entrypoint-put",
   "tripay-be-internal-lb-restricted",
-  "hsts-demobuah",
-  "hsts-dutaledak"
+  "tripay-be-staging-hostname-guard",
+  "dutaledak-sibling-live",
+  "gcs-level-images-public"
  ]
 }
