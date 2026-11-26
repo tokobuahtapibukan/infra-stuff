@@ -358,7 +358,10 @@ All workloads were consolidated into `staging-gke-standard` under the `tripay` n
 | **GKE Node Modernization (2026-11-24)** | `prod-client-cluster` n1-standard-2 → e2-standard-2 (3 node, autoscaler min 1 max 3); migrasi rolling nol downtime, pool n1 dihapus | ~$135.00 | ~Rp 2.160.000 | ~Rp 4.320.000 |
 | **Cloud SQL Tenant Rightsizing (2026-11-24)** | Downgrade `hambabet`, `ikn788`, `rumushoki` (`db-custom-2-7680` → `db-custom-1-4096`, hapus drift) | ~$176.50 | ~Rp 2.860.000 | ~Rp 5.720.000 |
 | **Tenant Hibernation (2026-11-24)** | Hibernasi `pengenwd` via `lifecycle.py` (stop DB, scale pod 0, lepas LB IP, deactive Auth & PGA) | ~$76.00 | ~Rp 1.230.000 | ~Rp 2.460.000 |
-| **TOTAL REALIZED** | | **~$544.00 – $592.50 / mo** | **~Rp 8.760.000 – 9.530.000 / mo** | **~Rp 17.520.000 – 19.060.000** |
+| **Artifact Registry Cleanup Policy (2026-11-26)** | Pasang retention policy (keep 5 recent versions, delete older than 7d) di staging & production | ~$5.00 – $10.00 | ~Rp 80.000 – 160.000 | ~Rp 160.000 – 320.000 |
+| **Cloud Build Rightsizing (2026-11-26)** | Downgrade build worker machineType staging `E2_HIGHCPU_8` → `E2_HIGHCPU_4` across 5 repos | ~$10.00 – $15.00 | ~Rp 160.000 – 240.000 | ~Rp 320.000 – 480.000 |
+| **Cloud Monitoring Kardinalitas Fix (2026-11-26)** | Collapse high-cardinality label extractors (`game_code`, `event_type`) pada `client_inbound_game_spins` | ~$85.00 – $95.00 | ~Rp 1.360.000 – 1.520.000 | ~Rp 2.720.000 – 3.040.000 |
+| **TOTAL REALIZED** | | **~$644.00 – $712.50 / mo** | **~Rp 10.360.000 – 11.450.000 / mo** | **~Rp 20.720.000 – 22.900.000** |
 
 ### Next-in-Line Optimization Pipeline (Low Traffic Window):
 1. **Memorystore Redis Consolidation**:
