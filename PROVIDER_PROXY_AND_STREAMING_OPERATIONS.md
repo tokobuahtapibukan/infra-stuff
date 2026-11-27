@@ -78,12 +78,12 @@ Dokumentasi ini merangkum seluruh evolusi, keputusan arsitektur, dan instruksi o
 * **Server 1: Jakarta (`proxy-stg-jkt`)**:
   * **Public Static IP**: `34.101.110.121`
   * **OS / User**: Linux Ubuntu / `adminbuah`
-  * **Auth**: SSH Key (`/Users/avocado/.ssh/id_rsa`), passwordless sudoers
+  * **Auth**: SSH Key (`/Users/avocado/.ssh/id_ed25519`), passwordless sudoers
   * **Firewall Tag**: Khusus mengizinkan port 80 HTTP traffic masuk tanpa membuka VM lain di VPC.
 * **Server 2: Singapore (`proxy-stg-sg`)**:
   * **Public Static IP**: `34.21.136.141`
   * **OS / User**: Linux Ubuntu / `adminbuah`
-  * **Auth**: SSH Key (`/Users/avocado/.ssh/id_rsa`), passwordless sudoers
+  * **Auth**: SSH Key (`/Users/avocado/.ssh/id_ed25519`), passwordless sudoers
 * **Supervisor Configuration (`/etc/supervisor/conf.d/` atau `/etc/supervisord.conf`)**:
   ```ini
   [program:proxy_root]
@@ -302,7 +302,7 @@ flowchart TD
 #### Langkah Operasional (Command Shell):
 ```bash
 # 1. Download konfigurasi terbaru dari Jakarta Proxy
-scp -i /Users/avocado/.ssh/id_rsa -o StrictHostKeyChecking=no \
+scp -i /Users/avocado/.ssh/id_ed25519 -o StrictHostKeyChecking=no \
   adminbuah@34.101.110.121:/home/adminbuah/config-new.json \
   /Users/avocado/.gemini/antigravity/scratch/config-new.json
 
@@ -317,19 +317,19 @@ scp -i /Users/avocado/.ssh/id_rsa -o StrictHostKeyChecking=no \
 python3 -m json.tool /Users/avocado/.gemini/antigravity/scratch/config-new.json > /dev/null
 
 # 4. Upload ke kedua proxy server (Jakarta dan Singapore)
-scp -i /Users/avocado/.ssh/id_rsa -o StrictHostKeyChecking=no \
+scp -i /Users/avocado/.ssh/id_ed25519 -o StrictHostKeyChecking=no \
   /Users/avocado/.gemini/antigravity/scratch/config-new.json \
   adminbuah@34.101.110.121:/home/adminbuah/config-new.json
 
-scp -i /Users/avocado/.ssh/id_rsa -o StrictHostKeyChecking=no \
+scp -i /Users/avocado/.ssh/id_ed25519 -o StrictHostKeyChecking=no \
   /Users/avocado/.gemini/antigravity/scratch/config-new.json \
   adminbuah@34.21.136.141:/home/adminbuah/config-new.json
 
 # 5. Restart service proxy_root di kedua server
-ssh -i /Users/avocado/.ssh/id_rsa -o StrictHostKeyChecking=no \
+ssh -i /Users/avocado/.ssh/id_ed25519 -o StrictHostKeyChecking=no \
   adminbuah@34.101.110.121 "sudo supervisorctl restart proxy_root"
 
-ssh -i /Users/avocado/.ssh/id_rsa -o StrictHostKeyChecking=no \
+ssh -i /Users/avocado/.ssh/id_ed25519 -o StrictHostKeyChecking=no \
   adminbuah@34.21.136.141 "sudo supervisorctl restart proxy_root"
 
 # 6. Bersihkan file konfigurasi sementara di lokal
@@ -378,13 +378,13 @@ confluent connect cluster update lcc-nvy9oqz \
 #### 1. Verifikasi Status Proxy & Log Service:
 ```bash
 # Cek status proses supervisor di Jakarta
-ssh -i /Users/avocado/.ssh/id_rsa -o StrictHostKeyChecking=no adminbuah@34.101.110.121 "sudo supervisorctl status proxy_root"
+ssh -i /Users/avocado/.ssh/id_ed25519 -o StrictHostKeyChecking=no adminbuah@34.101.110.121 "sudo supervisorctl status proxy_root"
 
 # Cek 30 baris log terakhir proxy
-ssh -i /Users/avocado/.ssh/id_rsa -o StrictHostKeyChecking=no adminbuah@34.101.110.121 "tail -n 30 /var/log/proxy.out.log"
+ssh -i /Users/avocado/.ssh/id_ed25519 -o StrictHostKeyChecking=no adminbuah@34.101.110.121 "tail -n 30 /var/log/proxy.out.log"
 
 # Test request lokal ke port 80
-ssh -i /Users/avocado/.ssh/id_rsa -o StrictHostKeyChecking=no adminbuah@34.101.110.121 "curl -s -I http://localhost/"
+ssh -i /Users/avocado/.ssh/id_ed25519 -o StrictHostKeyChecking=no adminbuah@34.101.110.121 "curl -s -I http://localhost/"
 ```
 
 #### 2. Verifikasi Pipeline Kafka & BigQuery:
@@ -415,7 +415,7 @@ bq query --use_legacy_sql=false \
 3. **Mandatory Dual-Host Synchronization**:
    * Dilarang melakukan update parsial hanya ke satu VM proxy (`34.101.110.121` atau `34.21.136.141`). Keduanya harus selalu identik.
 4. **Strict Secret Masking (§5)**:
-   * Private key SSH (`id_rsa`), Confluent Cloud API Secret, dan kredensial database Cloud SQL/HAProxy **TIDAK BOLEH** dicetak dalam teks percakapan terbuka, file dokumentasi markdown publik, maupun commit message Git.
+   * Private key SSH (`id_ed25519`; menggantikan `id_rsa` 2026-11-27), Confluent Cloud API Secret, dan kredensial database Cloud SQL/HAProxy **TIDAK BOLEH** dicetak dalam teks percakapan terbuka, file dokumentasi markdown publik, maupun commit message Git.
 5. **Pre-Upload JSON Syntax Validation**:
    * Setiap modifikasi `/home/adminbuah/config-new.json` wajib diuji menggunakan `python3 -m json.tool` sebelum diunggah ke server. Konfigurasi JSON yang cacat akan menghentikan proses proxy dan menyebabkan seluruh traffic vendor mati total.
 6. **Isolated Scratch Workspace Cleanup**:
