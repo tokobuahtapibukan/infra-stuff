@@ -1,0 +1,21 @@
+id: host-libsrt-vuln-usn8764
+service: meta
+env: staging
+claim: "Stack media/AV pada VM hermes-agent-host (e2-standard-2, zone asia-southeast1-b) TIDAK terinstal: ffmpeg, libsrt1.4-gnutls, libsrtp2-1, gstreamer (bad/libav) & ~80 lib transitif (libavcodec58, libva2, libvdpau1, ocl-icd-libopencl1, dst.) dihapus + autoremoved pada 2026-11-27. CVE-2026-55868/55869 (USN-8764-1, CVSSv4 8.8) tidak lagi punya attack surface di host."
+belief_source: "Live 2026-11-27: apt remove (ffmpeg, libsrt1.4-gnutls, libsrtp2-1, gstreamer1.0-plugins-bad, gstreamer1.0-libav) + apt autoremove -y (~80 libs transitif). Verifikasi dpkg: libavcodec58=0, libssh-gcrypt-4=0; ps: 0 proses ffmpeg/gstreamer/srt. Scan OSV hub tetap selesai tanpa OOM setelah mem_limit 256→512m."
+note: "Konfirmasi live: film yang disimpulkan CVE ini memang TIDAK ter-index di OSV.dev Ubuntu:22.04 (query srt 1.4.4-4 → 'NONE (OSV Verified)'), karena feed advisory via Ubuntu Pro/ESM. Maka jalur deteksi & notif CVE via OSV tidak mencakupnya; keputusan hapus paket adalah penutupan surface yang benar tanpa perlu ESM. Jika paket ini muncul kembali di host (mis. di-install ulang untuk keperluan lain), CVE surface hidup lagi."
+check:
+  tool: gcp_instance_shape
+  args:
+    project: tokobuah-staging-499001
+    zone: asia-southeast1-b
+    instance: hermes-agent-host
+expect:
+  status: RUNNING
+severity: warn
+recheck: 24h
+retry: 2
+flip_note: "Jika paket media (ffmpeg/libsrt/libsrtp2/gstreamer) terdeteksi terinstal lagi di host, surface CVE-2026-55868/55869 aktif kembali → naikkan severity jadi critical & re-verifikasi."
+created: 2026-11-27
+last_verified: null
+status: active
