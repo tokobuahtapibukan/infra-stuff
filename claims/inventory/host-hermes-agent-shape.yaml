@@ -1,0 +1,20 @@
+id: host-hermes-agent-shape
+service: meta
+env: staging
+claim: "VM hermes-agent-host (project tokobuah-staging-499001, zone asia-southeast1-b) RUNNING sebagai e2-standard-2 (2 vCPU, 8GB) — host untuk container hub & drift."
+belief_source: "Live 2026-11-27: docker hub container sehat (Restart=0), mem_limit hostcontainer 536870912 byte; gcp_instance_shape via gcloud."
+note: "Baseline host. Jika status != RUNNING atau shape berubah, indikasikan ada intervensi infra yang harus dicek (bukan asumsi down — verifikasi langsung per AGENTS.md §8)."
+check:
+  tool: gcp_instance_shape
+  args:
+    project: tokobuah-staging-499001
+    zone: asia-southeast1-b
+    instance: hermes-agent-host
+expect:
+  status: RUNNING
+severity: warn
+recheck: 24h
+retry: 2
+created: 2026-11-27
+last_verified: null
+status: active
