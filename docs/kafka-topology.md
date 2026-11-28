@@ -40,13 +40,31 @@ usulan penamaan: `fruit4d-prod-transaction`, konsisten pola `{service}-{env}-tra
 
 | Env | Connector | project.dataset | Topics di-map | Fruit4d? |
 | :-- | :-- | :-- | :-- | :-- |
-| prod | `lcc-nvy9oqz` (RUNNING) | `tokobuah-production.game_reports` | 14× `game-transaction-{company}` + `audit.event`, `ticket.granted`, `spinwheel.prize.won` | ❌ |
-| staging | `lcc-k8g202g` (RUNNING) | `tokobuah-staging-499001.game_reports` | `be.game.bet`→bets_raw, `audit.event`, `spinwheel.prize.won`, `ticket.granted`, `game-transaction-ikndev` | ❌ |
+| prod | `lcc-nvy9oqz` (RUNNING) | `tokobuah-production.game_reports` | 14× `game-transaction-{company}` + `audit.event`, `ticket.granted`, `spinwheel.prize.won` | ❌ (topik fruit4d prod belum ada — lottery belum live di prod) |
+| staging | `lcc-k8g202g` (RUNNING) | `tokobuah-staging-499001.game_reports` | `be.game.bet`→bets_raw, `audit.event`, `spinwheel.prize.won`, `ticket.granted`, `game-transaction-ikndev`→game_transactions_raw | ✅ **SUDAH MENGALIR** |
 
-Konsekuensi terverifikasi 2026-11-28: **data lottery (fruit4d) tidak ada di BigQuery mana pun**
-(0 row gameCode fruit/SHIO/4D di `view_all_game_transactions_raw`). Data bet lottery hanya hidup
-di MySQL lottery (`bet_events`, `bet_invoices`, `draws`). Catatan: `TCG_LOTTERY` (providerId=31,
-brand 384) di BQ adalah game lottery provider eksternal TCG via game-engine — BUKAN fruit4d.
+**Koreksi 2026-11-28 (vonis salah versi-1):** transaksi lottery fruit4d **SUDAH masuk BigQuery
+staging** — via jalur standar game-engine: pod lottery game-engine publish `game-transaction` →
+topik `game-transaction-ikndev` → `game_reports.game_transactions_raw`. GameCode di BQ:
+`FRUIT4D_LOTTERY` & `FRUIT4D_LOTTERY_CUSTOM` (providerId=40); siklus lengkap `bet`/`cashin`/
+`refund`/`rollback_bet` terverifikasi (61+ row, latest live hari ini). Kesalahan versi-1: query
+hanya dijalankan di project **production** — data memang belum ada di sana karena lottery belum
+live di prod (ingat §8: enumerasi lintas-environment wajib).
+
+**Yang TIDAK masuk BQ (by design, bukan bug):** topik `fruit4d-staging-transaction` (bet-event
+stream api-fruit-lottery) adalah jalur **payout-processing + audit internal** — tidak di-map ke
+connector, dan tidak perlu untuk dashboard superadmin karena angka bet/settle sudah tertutup
+oleh game-transaction path. Jika suatu hari Finance butuh audit `payout.failed/gave_up` di BQ,
+baru tambahkan mapping itu (SOP 5.2).
+
+**Checklist go-live lottery prod:** deploy lottery pod di prod dengan `KAFKA_PRODUCER_TOPIC:
+game-transaction` (runtime: `game-transaction-{company}`) — topik company sudah ter-cover di
+connector prod (14 company). Company baru → ikut SOP 5.2. Tidak ada wiring tambahan untuk
+dashboard, selama flow lottery tetap lewat seamless game-engine pod.
+
+Catatan: `TCG_LOTTERY` (providerId=31, brand 384) di BQ adalah game lottery provider eksternal
+TCG via game-engine — BUKAN fruit4d. Flow-nya berhenti 2026-11-11; masih terbuka apakah sengaja
+(game di-pause) atau anomali — cek terpisah.
 
 ## Checklist anti-vonis-salah (baca sebelum menyimpulkan "topik/resource tidak ada")
 
