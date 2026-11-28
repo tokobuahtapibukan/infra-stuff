@@ -1,8 +1,8 @@
 id: game-cluster-services-alive
 service: game-engine
 env: production
-claim: "5 deployment game-engine di game-cluster ns/game semuanya available"
-belief_source: "kubectl recon 2026-11-20"
+claim: "7 deployment game-engine di game-cluster ns/game (all, internal, launcher, lottery, pg, pp, transactions) semuanya available"
+belief_source: "kubectl recon 2026-11-20 (5 deployments) -> 2026-11-28: +2 deployments (game-engine-internal-deployment, game-engine-lottery-deployment)"
 requires_tools: [kubectl]
 check:
   tool: k8s_deployments_healthy
@@ -11,7 +11,7 @@ check:
     namespaces: [game]
 expect:
   unhealthy: 0
-  deployments_total: 5
+  deployments_total: 7
 severity: critical
 recheck: 12h
 retry: 2
