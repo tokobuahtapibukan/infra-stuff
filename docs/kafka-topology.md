@@ -23,11 +23,21 @@
 
 ## Topik per cluster (snapshot 2026-11-28 — cek live sebelum memakai)
 
-### Staging (`lkc-2227jno`, 11 topik)
+### Staging (`lkc-2227jno`, 12 topik)
 `audit.event`, `be.game.bet`, `be.prize.credited`, `dlq-lcc-k8g202g`, `dlq-lcc-pgkvzj5`,
 **`fruit4d-staging-transaction`** (3 partisi, RF 3 — topik bet-event api-fruit-lottery),
-`game-transaction`, `game-transaction-ikndev`, `game-transaction-outbox-kafka-ikndev`,
+`game-transaction`, `game-transaction-ikndev`, **`game-transaction-ikndemo`** (1 partisi, RF 3 —
+dibuat 2026-11-28, tenant staging kedua; sebelumnya TIDAK ADA sehingga game-flow ikndemo tidak
+mengalir ke BQ `game_transactions_raw`, tidak seperti ikndev), `game-transaction-outbox-kafka-ikndev`,
 `spinwheel.prize.won`, `ticket.granted`
+
+> **Resolusi topik game-tenant (diverifikasi 2026-11-28 di `transactional-engine-go/pkg/config/config.go`
+> `GameTopic()`):** `KAFKA_GAME_TOPIC + "-" + COMPANY_CODE`, kecuali `KAFKA_GAME_TOPIC_FULL` di-set
+> (verbatim). Tenant `client` (ikndev): `game-transaction` + `ikndev` → `game-transaction-ikndev`
+> (group `new-backend-staging-group`). Tenant `ikndemo`: `game-transaction` + `ikndemo` →
+> `game-transaction-ikndemo` (group `new-backend-staging-group-ikndemo`, agentCode filter `ikndemo`).
+> Topik dasar `game-transaction` (tanpa suffix) ada di daftar tapi TIDAK di-tuju resolusi mana pun —
+> kemungkinan sisa setup lama; belum dihapus (butuh izin §2).
 
 ### Production (`lkc-38r9y82`, 22 topik)
 `audit.event`, `be.game.bet`, `be.prize.credited`, `dlq-lcc-nvy9oqz`, `game-transaction`,
