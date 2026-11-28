@@ -1,0 +1,20 @@
+id: sa-companyend-cloudbuild-no-tls-bypass
+service: superadmin
+env: staging
+claim: "Konfigurasi deploy superadmin-companyend (cloudbuild*.yaml) TIDAK menyetel env var NODE_TLS_REJECT_UNAUTHORIZED"
+belief_source: "Live-verified 2026-11-28 (sesi hardening): cloudbuild.yaml membawa --update-env-vars=...,NODE_TLS_REJECT_UNAUTHORIZED=0; commit d0e0417 menghapusnya"
+note: "Pisahkan dari kartu sa-companyend-no-tls-bypass karena file build di luar src/**; dua kartu = dua fakta (kode vs konfigurasi deploy)."
+check:
+  tool: repo_grep_count
+  args:
+    repo: "~/tokobuah/superadmin-companyend"
+    pattern: "NODE_TLS_REJECT_UNAUTHORIZED"
+    files: "cloudbuild*.yaml"
+expect:
+  count: 0
+severity: critical
+recheck: 24h
+retry: 2
+created: 2026-11-28
+last_verified: null
+status: active

@@ -1,0 +1,20 @@
+id: sa-companyend-bff-requires-auth
+service: superadmin
+env: staging
+claim: "Repo superadmin-companyend: TIDAK ADA route BFF yang mem-gate akses dengan 'keberadaan cookie' saja (cookies.get(ACCESS_TOKEN_COOKIE)); semua route API wajib requireAuth (verifikasi JWT via auth-engine /auth/me)"
+belief_source: "Live-verified 2026-11-28 (sesi hardening): service staging superadmin-companyend @ tokobuah-staging-499001 punya ingress 'all' (publik, tanpa IAP) dan terverifikasi env NODE_TLS_REJECT_UNAUTHORIZED=0 dulu — 23 route hanya cek cookie ada, bisa di-forge; commit d0e0417 (2026-11-28) mengonversi semuanya ke requireAuth"
+note: "Service Cloud Run superadmin-companyend (staging) TIDAK ber-IAP dan reachable publik (annotation run.googleapis.com/ingress=all, verified 2026-11-28) — auth aplikasi adalah gerbang satu-satunya, jadi regresi ke cookie-presence = eksploitasi publik langsung (topup credit limit, whitelist, domain, maintenance flag). Kartu ini guard-nya. Production memakai service terpisah production-superadmin-web (tokobuah-production); deploy prod HARUS memakai image yang sudah include commit d0e0417."
+check:
+  tool: repo_grep_count
+  args:
+    repo: "~/tokobuah/superadmin-companyend"
+    pattern: "cookies\\.get\\(ACCESS_TOKEN_COOKIE\\)"
+    files: "src/app/api/**"
+expect:
+  count: 0
+severity: critical
+recheck: 24h
+retry: 2
+created: 2026-11-28
+last_verified: null
+status: active
