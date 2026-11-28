@@ -680,6 +680,43 @@ def chk_cloudarmor_cloudflare_coverage(args):
             "_cloudflare_count": len(cf), "_policy_ranges": len(allowed)}
 
 
+def chk_bq_query_count(args):
+    """Jalankan satu query BigQuery read-only (SELECT tunggal) → {count: N}.
+
+    Guard §4: sql WAJIB diawali SELECT (case-insensitive) — DDL/DML/INFORMATION SCHEMA
+    mutasi ditolak. Menggunakan CLI `bq` yang sudah ter-auth di mesin engine.
+    """
+    sql = (args.get("sql") or "").strip()
+    if not sql.upper().startswith("SELECT"):
+        raise CheckError("sql harus SELECT (read-only)")
+    if ";" in sql.rstrip(";"):
+        raise CheckError("sql multi-statement tidak diizinkan")
+    proc = subprocess.run(
+        ["bq", "query", "--use_legacy_sql=false", "--format=csv", sql],
+        capture_output=True, text=True, timeout=180,
+    )
+    if proc.returncode != 0:
+        raise CheckError(f"bq gagal: {proc.stderr.strip()[:160]}")
+    lines = [l for l in proc.stdout.strip().splitlines() if l.strip()]
+    if len(lines) < 2:
+        raise CheckError(f"bq output tidak terduga: {proc.stdout[:80]!r}")
+    header = lines[0].split(",")
+    value = lines[1].split(",")
+    row = dict(zip(header, value))
+    out = {}
+    for k, v in row.items():
+        try:
+            out[k.strip()] = int(v)
+        except ValueError:
+            try:
+                out[k.strip()] = float(v)
+            except ValueError:
+                out[k.strip()] = v
+    if "count" not in out:
+        raise CheckError("query tidak mengembalikan kolom count")
+    return out
+
+
 CHECKS = {
     "gcp_backend_services_policy": chk_gcp_backend_services_policy,
     "gcp_target_proxies_no_policy": chk_gcp_target_proxies_no_policy,
@@ -706,6 +743,7 @@ CHECKS = {
     "k8s_namespace_labels": chk_k8s_namespace_labels,
     "gcp_instance_shape": chk_gcp_instance_shape,
     "cloudarmor_cloudflare_coverage": chk_cloudarmor_cloudflare_coverage,
+    "bq_query_count": chk_bq_query_count,
 }
 
 

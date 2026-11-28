@@ -1,0 +1,19 @@
+id: lottery-bq-flow-staging
+service: lottery
+env: staging
+claim: "Transaksi lottery fruit4d mengalir realtime Kafka→BigQuery staging: pod lottery game-engine publish game-transaction-ikndev → connector lcc-k8g202g → game_reports.game_transactions_raw (gameCode FRUIT4D_LOTTERY & FRUIT4D_LOTTERY_CUSTOM, providerId 40) — siklus bet/cashin/refund/rollback_bet lengkap."
+belief_source: "Live 2026-11-28: 61+ row, latest hari itu juga (06:36 UTC), 4 memberId uji, amount IDR; siklus 4 tipe type terverifikasi via bq query. Peta jalur: docs/kafka-topology.md. Topik bet-event api-fruit-lottery (fruit4d-staging-transaction) sengaja TIDAK di-map ke BQ — itu jalur payout/audit internal, bukan jalur dashboard."
+note: "Jalur dashboard superadmin untuk lottery: angka bet/settle sudah tertutup jalur game-transaction standar — tidak perlu wiring tambahan. Saat go-live prod: pastikan lottery pod prod publish game-transaction-{company} (14 company sudah ter-cover connector prod lcc-nvy9oqz; company baru ikut SOP 5.2)."
+check:
+  tool: bq_query_count
+  args:
+    sql: "SELECT COUNT(*) AS count FROM `tokobuah-staging-499001.game_reports.game_transactions_raw` WHERE gameCode IN ('FRUIT4D_LOTTERY','FRUIT4D_LOTTERY_CUSTOM') AND processedAt > TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 7 DAY)"
+expect:
+  count_min: 1
+severity: warn
+recheck: 24h
+retry: 2
+flip_note: "(1) Saat lottery go-live prod → buat kartu pasangan env production (query view_all_game_transactions_raw di tokobuah-production, expect count_min 1 per 24-48h sesuai volume). (2) Jika staging lama sepi (QA idle >7 hari) sehingga kartu false-alarm, longgarkan window ke 30 hari atau retire kartu — jangan dinaikkan severity tanpa bukti flow putus."
+created: 2026-11-28
+last_verified: null
+status: active
