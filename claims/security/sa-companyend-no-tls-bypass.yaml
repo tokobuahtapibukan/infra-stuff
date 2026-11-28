@@ -2,7 +2,7 @@ id: sa-companyend-no-tls-bypass
 service: superadmin
 env: staging
 claim: "Repo superadmin-companyend: TIDAK ADA penyetelan NODE_TLS_REJECT_UNAUTHORIZED di kode src/** maupun di konfigurasi build/deploy (cloudbuild*.yaml)"
-belief_source: "Live-verified 2026-11-28 (sesi hardening): 43 route file menyetel process.env.NODE_TLS_REJECT_UNAUTHORIZED='0' + env var diset di service staging via --update-env-vars (verified gcloud run services describe); commit d0e0417 menghapus keduanya; env var lama di service di-clear via Run API patch pada deploy 2026-11-28"
+belief_source: "Live-verified 2026-11-28 (sesi hardening): 43 route file menyetel process.env.NODE_TLS_REJECT_UNAUTHORIZED='0' + env var diset di service staging via --update-env-vars (verified gcloud run services describe); commit d0e0417 menghapus keduanya. Env var lama di service dinetralkan via gcloud run services update --update-env-vars NODE_TLS_REJECT_UNAUTHORIZED= (nilai kosong; API REST update 404 dari edge). Nilai kosong ≡ unset diverifikasi empiris di Node 22: fetch https://expired.badssl.com → CERT_HAS_EXPIRED (env=''), FETCH_OK (env='0')."
 note: "Penyimpangan TLS = MITM antar BFF dan engine internal bisa mencuri Bearer JWT / memalsukan response balance. Jika engine di-migrasi ke https dengan CA privat, solusi yang benar adalah NODE_EXTRA_CA_CERTS, bukan disable verifikasi."
 check:
   tool: repo_grep_count
